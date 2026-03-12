@@ -188,7 +188,24 @@
         <div class="header">
             <div class="header-content">
                 <div><h1 id="pageTitle">Dashboard</h1><p>Validade Constru</p></div>
-                <div class="user-info"><div class="user-avatar" id="userAvatar">U</div><button class="logout-btn" onclick="doLogout()">Sair</button></div>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar" onclick="toggleUserMenu()" style="cursor: pointer;">U</div>
+                    <button class="logout-btn" onclick="doLogout()">Sair</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Menu Modal -->
+        <div id="userMenu" class="modal" style="display: none;">
+            <div class="modal-content" style="padding: 20px;">
+                <div class="modal-header">
+                    <div class="modal-title">⚙️ Configurações</div>
+                    <button class="close-btn" onclick="toggleUserMenu()">&times;</button>
+                </div>
+                <p style="margin-bottom: 16px; color: var(--text-light);">Gerencie seus dados</p>
+                <button class="btn btn-outline" onclick="exportAllData()" style="margin-bottom: 10px;">📤 Exportar Meus Produtos</button>
+                <button class="btn btn-outline" onclick="document.getElementById('importProductsFile').click()">📥 Importar Produtos</button>
+                <input type="file" id="importProductsFile" accept=".json" onchange="importAllProducts(this)" style="display: none;">
             </div>
         </div>
 
@@ -257,8 +274,10 @@
             <div class="filter-row">
                 <button class="filter active" onclick="setStockFilter('all', this)">Todos</button>
                 <button class="filter" onclick="setStockFilter('baixo', this)">Estoque Baixo</button>
-                <button class="filter" onclick="setStockFilter('cimento', this)">Cimento</button>
-                <button class="filter" onclick="setStockFilter('tintas', this)">Tintas</button>
+                <button class="filter" onclick="setStockFilter('cimento', this)">Cimento/Argamassa</button>
+                <button class="filter" onclick="setStockFilter('tintas', this)">Tintas/Vernizes</button>
+                <button class="filter" onclick="setStockFilter('selantes', this)">Selantes</button>
+                <button class="filter" onclick="setStockFilter('cal', this)">Cal</button>
             </div>
             <div id="productsList"></div>
             <button class="fab" onclick="openAddModal()">+</button>
@@ -283,6 +302,15 @@
                 <button class="btn" onclick="exportData()" id="exportButton">📥 Baixar Planilha</button>
             </div>
             <div class="card"><div class="section-title">Preview</div><div id="exportPreview"></div></div>
+            
+            <!-- Backup Section -->
+            <div class="card">
+                <div class="section-title">💾 Backup GitHub</div>
+                <p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;">Exporte seus dados como JSON e salve no GitHub para usar em outro dispositivo.</p>
+                <button class="btn btn-outline" onclick="exportBackup()" style="margin-bottom: 8px;">📤 Exportar Dados (JSON)</button>
+                <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">📥 Importar Dados</button>
+                <input type="file" id="importFile" accept=".json" onchange="importBackup(this)" style="display: none;">
+            </div>
         </div>
 
         <!-- Tabs -->
@@ -511,19 +539,19 @@
                 if (lotes.length === 0) {
                     p.innerHTML = '<div class="empty">Nenhum lote com data de validade.<br>Adicione produtos com data de validade primeiro.</div>';
                 } else {
-                    p.innerHTML = lotes.slice(0, 5).map(l => {
+                    p.innerHTML = lotes.map(l => {
                         const d = getDias(l.data_validade), s = getStatus(d, l.produto?.categoria || 'Outros');
                         const c = { vencido: 'var(--red)', alerta: 'var(--yellow)', ok: 'var(--green)' };
-                        return `<div style="padding: 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;"><div><div style="font-weight: 500">${l.produto?.nome || 'Produto'}</div><div style="font-size: 12px; color: var(--text-light)">${l.produto?.categoria || ''}</div></div><div style="text-align: right"><div>Qtd: ${l.quantidade}</div><div style="color: ${c[s]}; font-size: 12px">${d < 0 ? 'Vencido' : d + ' dias'}</div></div></div>`;
+                        return `<div style="padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 13px;"><div><div style="font-weight: 500">${l.produto?.nome || 'Produto'}</div><div style="font-size: 11px; color: var(--text-light)">${l.produto?.categoria || ''} • ${l.produto?.marca || ''}</div></div><div style="text-align: right"><div>Qty: ${l.quantidade}</div><div style="color: ${c[s]}; font-size: 11px">${d < 0 ? 'Vencido' : d + ' dias'}</div></div></div>`;
                     }).join('');
                 }
             } else {
                 if (produtos.length === 0) {
                     p.innerHTML = '<div class="empty">Nenhum produto cadastrado.<br>Adicione produtos primeiro.</div>';
                 } else {
-                    p.innerHTML = produtos.slice(0, 5).map(pd => {
+                    p.innerHTML = produtos.map(pd => {
                         const q = pd.quantidade || 0, min = pd.min_estoque_alerta || 10, low = q <= min;
-                        return `<div style="padding: 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;"><div><div style="font-weight: 500">${pd.nome}</div><div style="font-size: 12px; color: var(--text-light)">${pd.categoria}</div></div><div style="text-align: right"><div style="color: ${low ? 'var(--red)' : 'var(--green)'}; font-weight: 600">${q} un</div><div style="font-size: 12px; color: ${low ? 'var(--red)' : 'var(--text-light)'}">${low ? '⚠️ Baixo' : 'OK'}</div></div></div>`;
+                        return `<div style="padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 13px;"><div><div style="font-weight: 500">${pd.nome}</div><div style="font-size: 11px; color: var(--text-light)">${pd.categoria} • ${pd.marca || ''}</div></div><div style="text-align: right"><div style="color: ${low ? 'var(--red)' : 'var(--green)'}; font-weight: 600">${q} un</div><div style="font-size: 11px; color: ${low ? 'var(--red)' : 'var(--text-light)'}">${low ? 'Baixo' : 'OK'}</div></div></div>`;
                     }).join('');
                 }
             }
@@ -559,6 +587,112 @@
         function getDias(dt) { const h = new Date(); h.setHours(0,0,0,0); const v = new Date(dt); v.setHours(0,0,0,0); return Math.ceil((v - h) / (1000*60*60*24)); }
         function getStatus(d, cat) { const a = (cat === 'Cimento' || cat === 'Argamassa') ? 15 : 30; return d < 0 ? 'vencido' : d <= a ? 'alerta' : 'ok'; }
         function formatCurrency(v) { return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
+        
+        // Backup functions
+        function exportBackup() {
+            const user = getCurrentUser();
+            const backup = {
+                usuario: user?.name || 'Usuario',
+                email: user?.email || '',
+                dataExportacao: new Date().toISOString(),
+                produtos: produtos,
+                lotes: lotes,
+                missoes: missoes
+            };
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `validade_constru_backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            alert('Dados exportados! Salve este arquivo no GitHub para usar em outro dispositivo.');
+        }
+        
+        function importBackup(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    if (backup.produtos) produtos = backup.produtos;
+                    if (backup.lotes) lotes = backup.lotes;
+                    if (backup.missoes) missoes = backup.missoes;
+                    saveUserData();
+                    renderProducts();
+                    renderDashboard();
+                    renderExport();
+                    renderMissions();
+                    alert('Dados importados com sucesso!');
+                } catch(err) {
+                    alert('Erro ao importar: arquivo inválido');
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // User Menu functions
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+        }
+        
+        function exportAllData() {
+            const data = {
+                exportadoPor: getCurrentUser()?.name || 'Usuario',
+                dataExportacao: new Date().toISOString(),
+                produtos: produtos,
+                lotes: lotes
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `produtos_validade_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            toggleUserMenu();
+            alert('Produtos exportados! Você pode compartilhar este arquivo com outros usuários.');
+        }
+        
+        function importAllProducts(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    let produtosImportados = 0;
+                    let lotesImportados = 0;
+                    
+                    if (data.produtos && Array.isArray(data.produtos)) {
+                        data.produtos.forEach(p => {
+                            const existente = produtos.find(ex => ex.ean_code === p.ean_code);
+                            if (!existente) {
+                                p.id = Date.now() + Math.random();
+                                produtos.push(p);
+                                produtosImportados++;
+                            }
+                        });
+                    }
+                    
+                    if (data.lotes && Array.isArray(data.lotes)) {
+                        data.lotes.forEach(l => {
+                            l.id = Date.now() + Math.random();
+                            lotes.push(l);
+                            lotesImportados++;
+                        });
+                    }
+                    
+                    saveUserData();
+                    renderProducts();
+                    renderDashboard();
+                    renderExport();
+                    toggleUserMenu();
+                    alert(`Importado!\nProdutos: ${produtosImportados}\nLotes: ${lotesImportados}`);
+                } catch(err) {
+                    alert('Erro ao importar: arquivo inválido');
+                }
+            };
+            reader.readAsText(file);
+        }
         
         // Dashboard
         function renderDashboard() {
@@ -601,11 +735,15 @@
             let filtered = [...produtos];
             
             if (stockFilter === 'baixo') {
-                filtered = filtered.filter(p => (p.quantidade || 0) <= 10);
+                filtered = filtered.filter(p => (p.quantidade || 0) <= (p.min_estoque_alerta || 10));
             } else if (stockFilter === 'cimento') {
                 filtered = filtered.filter(p => p.categoria === 'Cimento' || p.categoria === 'Argamassa');
             } else if (stockFilter === 'tintas') {
-                filtered = filtered.filter(p => p.categoria === 'Tintas');
+                filtered = filtered.filter(p => p.categoria === 'Tintas' || p.categoria === 'Vernizes');
+            } else if (stockFilter === 'selantes') {
+                filtered = filtered.filter(p => p.categoria === 'Selantes');
+            } else if (stockFilter === 'cal') {
+                filtered = filtered.filter(p => p.categoria === 'Cal');
             }
             
             filtered.sort((a, b) => (a.quantidade || 0) - (b.quantidade || 0));
