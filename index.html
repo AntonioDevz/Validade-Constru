@@ -175,6 +175,7 @@
             </div>
             <div id="registerForm" class="hidden">
                 <div class="form-group"><label class="form-label">Nome</label><input type="text" class="input" id="registerName" placeholder="Seu nome"></div>
+                <div class="form-group"><label class="form-label">Usuário</label><input type="text" class="input" id="registerUsername" placeholder="Nome de usuário"></div>
                 <div class="form-group"><label class="form-label">Senha</label><input type="password" class="input" id="registerPassword" placeholder="••••••••"></div>
                 <div class="form-group"><label class="form-label">Confirmar Senha</label><input type="password" class="input" id="registerConfirmPassword" placeholder="••••••••"></div>
                 <button class="btn" onclick="doRegister()">Criar Conta</button>
@@ -342,7 +343,7 @@
             <div class="form-group"><label class="form-label">Marca</label><input type="text" class="input" id="produtoMarca" placeholder="Ex: Suvinil"></div>
             <div class="form-group"><label class="form-label">Quantidade em Estoque</label><input type="number" class="input" id="produtoQuantidade" value="10"></div>
             <div class="form-group"><label class="form-label">Quantidade do Lote</label><input type="number" class="input" id="loteQuantidade" value="1"></div>
-            <div class="form-group"><label class="form-label">Data de Validade</label><input type="date" class="input" id="loteDataValidade"></div>
+            <div class="form-group"><label class="form-label">Data de Validade (opcional)</label><input type="date" class="input" id="loteDataValidade" onchange="autoSyncDate()"></div>
             <button class="btn" onclick="addProduct()">Salvar Produto</button>
         </div>
     </div>
@@ -369,7 +370,7 @@
         
         function doRegister() {
             const name = document.getElementById('registerName').value.trim();
-            const username = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const username = document.getElementById('registerUsername').value.trim().toLowerCase();
             const pass = document.getElementById('registerPassword').value;
             const conf = document.getElementById('registerConfirmPassword').value;
             
@@ -834,14 +835,20 @@
             const p = produtos.find(x => x.id === id);
             if (!p) return;
             
+            // Find existing lot for this product - check both produto_id and id
+            let existingLot = lotes.find(l => l.produto_id === id);
+            if (!existingLot) {
+                existingLot = lotes.find(l => l.produto && l.produto.id === id);
+            }
+            
             editingProductId = id;
             document.getElementById('modalTitle').innerText = 'Editar Produto';
             document.getElementById('produtoNome').value = p.nome;
             document.getElementById('produtoEan').value = p.ean_code || '';
             document.getElementById('produtoMarca').value = p.marca || '';
             document.getElementById('produtoQuantidade').value = p.quantidade || 10;
-            document.getElementById('loteQuantidade').value = 1;
-            document.getElementById('loteDataValidade').value = '';
+            document.getElementById('loteQuantidade').value = existingLot ? existingLot.quantidade : (p.quantidade || 1);
+            document.getElementById('loteDataValidade').value = existingLot ? existingLot.data_validade : '';
             
             document.querySelectorAll('#categoryGrid .category-chip').forEach(b => {
                 b.classList.remove('active');
@@ -878,6 +885,35 @@
             document.getElementById('addModal').classList.add('show');
         }
         
+        function autoSyncDate() {
+            if (!editingProductId) return;
+            
+            const qtdLot = parseInt(document.getElementById('loteQuantidade').value) || 1;
+            const dtVal = document.getElementById('loteDataValidade').value;
+            const prod = produtos.find(p => p.id === editingProductId);
+            
+            if (!prod) return;
+            
+            let existingLotIndex = lotes.findIndex(l => l.produto_id === editingProductId);
+            if (existingLotIndex < 0) {
+                existingLotIndex = lotes.findIndex(l => l.produto && l.produto.id === editingProductId);
+            }
+            
+            if (dtVal) {
+                const lotData = { produto_id: prod.id, quantidade: qtdLot, data_validade: dtVal, produto: prod };
+                if (existingLotIndex >= 0) {
+                    lotes[existingLotIndex] = { ...lotes[existingLotIndex], ...lotData };
+                } else {
+                    lotes.push({ id: Date.now(), ...lotData });
+                }
+            } else if (existingLotIndex >= 0) {
+                lotes.splice(existingLotIndex, 1);
+            }
+            
+            saveUserData();
+            renderExport();
+        }
+        
         function closeModal() { document.getElementById('addModal').classList.remove('show'); scannedCode = null; editingProductId = null; renderProducts(); }
         function setCategory(cat, btn) { document.querySelectorAll('#categoryGrid .category-chip').forEach(e => e.classList.remove('active')); btn.classList.add('active'); }
         
@@ -902,6 +938,24 @@
                     prod.marca = marca;
                     prod.quantidade = qtdEst;
                 }
+                
+                // Find existing lot
+                let existingLotIndex = lotes.findIndex(l => l.produto_id === editingProductId);
+                if (existingLotIndex < 0) {
+                    existingLotIndex = lotes.findIndex(l => l.produto && l.produto.id === editingProductId);
+                }
+                
+                if (dtVal) {
+                    const lotData = { produto_id: prod.id, quantidade: qtdLot, data_validade: dtVal, produto: prod };
+                    if (existingLotIndex >= 0) {
+                        lotes[existingLotIndex] = { ...lotes[existingLotIndex], ...lotData };
+                    } else {
+                        lotes.push({ id: Date.now(), ...lotData });
+                    }
+                } else if (existingLotIndex >= 0) {
+                    // Remove lot if no validity date
+                    lotes.splice(existingLotIndex, 1);
+                }
             } else {
                 prod = produtos.find(p => p.ean_code === ean);
                 if (!prod) { 
@@ -912,11 +966,11 @@
                     prod.categoria = cat;
                     prod.marca = marca;
                 }
-            }
-            
-            // Only add lot if there's a validity date and not editing
-            if (dtVal && !editingProductId) {
-                lotes.push({ id: Date.now(), produto_id: prod.id, quantidade: qtdLot, data_validade: dtVal, produto: prod });
+                
+                // Add lot only for new products with validity date
+                if (dtVal) {
+                    lotes.push({ id: Date.now(), produto_id: prod.id, quantidade: qtdLot, data_validade: dtVal, produto: prod });
+                }
             }
             
             saveUserData();
