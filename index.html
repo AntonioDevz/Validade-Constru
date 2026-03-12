@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Validade Constru</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1E40AF">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html, body { height: 100%; overflow-x: hidden; }
+        
+        :root {
+            --primary: #1E40AF;
+            --primary-light: #3B82F6;
+            --bg: #F3F4F6;
+            --surface: #FFFFFF;
+            --text: #1F2937;
+            --text-light: #6B7280;
+            --border: #E5E7EB;
+            --red: #EF4444;
+            --yellow: #F59E0B;
+            --green: #22C55E;
+            --purple: #8B5CF6;
+        }
+        
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); }
+        
+        .header { background: var(--surface); padding: 16px 20px; padding-top: calc(16px + env(safe-area-inset-top)); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 20px; font-weight: 700; }
+        .header p { font-size: 13px; color: var(--text-light); }
+        .user-info { display: flex; align-items: center; gap: 8px; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 18px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
+        .logout-btn { background: none; border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 12px; color: var(--text-light); cursor: pointer; }
+        
+        .tabs { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); display: flex; border-top: 1px solid var(--border); z-index: 100; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 20px rgba(0,0,0,0.1); }
+        .tab { flex: 1; text-align: center; padding: 12px 8px; font-size: 11px; color: var(--text-light); cursor: pointer; background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .tab:active { background: var(--bg); transform: scale(0.95); }
+        .tab.active { color: var(--primary); font-weight: 600; }
+        .tab-icon { font-size: 20px; line-height: 1; }
+        .tab-label { font-size: 10px; white-space: nowrap; }
+        
+        .content { padding: 16px; padding-bottom: calc(16px + 90px); min-height: calc(100vh - 60px); }
+        
+        .card { background: var(--surface); border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .stat-card { background: var(--primary); color: white; padding: 16px; border-radius: 12px; }
+        .stat-card.secondary { background: var(--surface); color: var(--text); }
+        .stat-value { font-size: 28px; font-weight: 700; }
+        .stat-label { font-size: 12px; opacity: 0.9; }
+        
+        .btn { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 16px; font-weight: 600; width: 100%; cursor: pointer; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-small { padding: 10px 16px; font-size: 14px; }
+        
+        .input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 16px; margin-bottom: 12px; }
+        .filter-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; }
+        .filter { padding: 8px 16px; border-radius: 20px; background: var(--border); font-size: 13px; white-space: nowrap; cursor: pointer; border: none; }
+        .filter.active { background: var(--primary); color: white; }
+        
+        .item { background: var(--surface); border-radius: 12px; padding: 14px; margin-bottom: 10px; border-left: 4px solid var(--green); }
+        .item.alert { border-left-color: var(--yellow); }
+        .item.vencido { border-left-color: var(--red); }
+        .item.baixo { border-left-color: var(--yellow); }
+        .item.ok { border-left-color: var(--green); }
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+        .item-name { font-weight: 600; font-size: 15px; }
+        .item-category { font-size: 12px; color: var(--text-light); }
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge.green { background: #DCFCE7; color: #166534; }
+        .badge.yellow { background: #FEF3C7; color: #92400E; }
+        .badge.red { background: #FEE2E2; color: #991B1B; }
+        .badge.purple { background: #EDE9FE; color: #5B21B6; }
+        .item-details { display: flex; gap: 16px; font-size: 13px; color: var(--text-light); flex-wrap: wrap; }
+        .empty { text-align: center; padding: 40px; color: var(--text-light); }
+        
+        .auth-screen { display: flex; flex-direction: column; justify-content: center; min-height: 100vh; min-height: 100dvh; padding: 24px; padding-top: calc(24px + env(safe-area-inset-top)); padding-bottom: calc(24px + env(safe-area-inset-bottom)); background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
+        .auth-card { background: var(--surface); border-radius: 20px; padding: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.2); }
+        .auth-logo { width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+        .auth-title { text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .auth-subtitle { text-align: center; color: var(--text-light); margin-bottom: 24px; }
+        .auth-tabs { display: flex; margin-bottom: 24px; border-bottom: 2px solid var(--border); }
+        .auth-tab { flex: 1; padding: 12px; text-align: center; font-size: 16px; font-weight: 600; color: var(--text-light); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+        .auth-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .auth-error { background: #FEE2E2; color: #991B1B; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; display: none; }
+        .auth-error.show { display: block; }
+        
+        .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .bar-chart { margin-top: 16px; }
+        .bar-item { margin-bottom: 16px; }
+        .bar-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+        .bar-bg { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 4px; }
+        
+        .fab { position: fixed; bottom: calc(90px + 20px); right: 20px; width: 56px; height: 56px; border-radius: 28px; background: var(--primary); color: white; border: none; font-size: 24px; box-shadow: 0 4px 20px rgba(30, 64, 175, 0.5); cursor: pointer; z-index: 99; display: flex; align-items: center; justify-content: center; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: var(--surface); border-radius: 20px; padding: 24px; width: 90%; max-width: 400px; max-height: 85vh; overflow-y: auto; margin-bottom: env(safe-area-inset-bottom); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 18px; font-weight: 600; }
+        .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; padding: 4px; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+        .category-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .category-chip { padding: 8px 14px; border-radius: 16px; background: var(--border); font-size: 13px; cursor: pointer; border: none; }
+        .category-chip.active { background: var(--primary); color: white; }
+        .hidden { display: none !important; }
+        
+        .mission-card { background: var(--surface); border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 4px solid var(--purple); }
+        .mission-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .mission-title { font-weight: 600; font-size: 15px; }
+        .mission-progress { font-size: 12px; color: var(--text-light); }
+        .mission-progress-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+        .mission-progress-fill { height: 100%; background: var(--purple); border-radius: 4px; transition: width 0.3s ease; }
+        .mission-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--bg); border-radius: 8px; margin-bottom: 8px; }
+        .mission-item.completed { background: #DCFCE7; }
+        .mission-item-info { flex: 1; }
+        .mission-item-name { font-size: 14px; font-weight: 500; }
+        .mission-item-detail { font-size: 12px; color: var(--text-light); }
+        .mission-check { width: 28px; height: 28px; border-radius: 14px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
+        .mission-check.completed { background: var(--green); border-color: var(--green); color: white; }
+        
+        .daily-mission-banner { background: linear-gradient(135deg, var(--purple) 0%, #A78BFA 100%); color: white; border-radius: 16px; padding: 16px; margin-bottom: 16px; cursor: pointer; }
+        .daily-mission-banner h3 { font-size: 16px; margin-bottom: 4px; }
+        .daily-mission-banner p { font-size: 13px; opacity: 0.9; }
+        
+        .export-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .export-option { background: var(--surface); border-radius: 12px; padding: 16px; text-align: center; border: 2px solid var(--border); cursor: pointer; transition: all 0.2s ease; }
+        .export-option:active { transform: scale(0.98); }
+        .export-option.selected { border-color: var(--primary); background: var(--primary); color: white; }
+        .export-option-icon { font-size: 32px; margin-bottom: 8px; }
+        .export-option-title { font-weight: 600; font-size: 14px; }
+        .export-option-desc { font-size: 11px; opacity: 0.8; margin-top: 4px; }
+        
+        #scanner-container { width: 100%; height: 320px; background: #000; border-radius: 16px; overflow: hidden; position: relative; margin-bottom: 16px; }
+        #scanner-video { width: 100%; height: 100%; object-fit: cover; }
+        #scanner-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: 160px; border: 3px solid var(--primary); border-radius: 12px; background: transparent; }
+        .scanner-status { position: absolute; bottom: 10px; left: 0; right: 0; text-align: center; color: white; font-size: 14px; background: rgba(0,0,0,0.6); padding: 8px; }
+        .scanner-info { text-align: center; padding: 20px; color: white; background: var(--primary); border-radius: 12px; margin-bottom: 16px; }
+        .permission-box { background: var(--surface); border-radius: 16px; padding: 24px; text-align: center; }
+        .result-box { background: #DCFCE7; border: 2px solid var(--green); border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center; }
+        
+        .stock-alert { background: #FEF3C7; border: 1px solid #F59E0B; border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+        .stock-alert-icon { font-size: 24px; }
+        .stock-alert-text { flex: 1; }
+        .stock-alert-title { font-weight: 600; font-size: 14px; color: #92400E; }
+        .stock-alert-desc { font-size: 12px; color: #B45309; }
+    </style>
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="showAuthTab('login')">Entrar</button>
+                <button class="auth-tab" onclick="showAuthTab('register')">Criar Conta</button>
+            </div>
+            <div id="authError" class="auth-error"></div>
+            <div id="loginForm">
+                <div class="form-group"><label class="form-label">E-mail</label><input type="email" class="input" id="loginEmail" placeholder="seu@email.com"></div>
+                <div class="form-group"><label class="form-label">Senha</label><input type="password" class="input" id="loginPassword" placeholder="••••••••"></div>
+                <button class="btn" onclick="doLogin()">Entrar</button>
+            </div>
+            <div id="registerForm" class="hidden">
+                <div class="form-group"><label class="form-label">Nome</label><input type="text" class="input" id="registerName" placeholder="Seu nome"></div>
+                <div class="form-group"><label class="form-label">E-mail</label><input type="email" class="input" id="registerEmail" placeholder="seu@email.com"></div>
+                <div class="form-group"><label class="form-label">Senha</label><input type="password" class="input" id="registerPassword" placeholder="••••••••"></div>
+                <div class="form-group"><label class="form-label">Confirmar Senha</label><input type="password" class="input" id="registerConfirmPassword" placeholder="••••••••"></div>
+                <button class="btn" onclick="doRegister()">Criar Conta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App -->
+    <div id="app" class="hidden">
+        <div class="header">
+            <div class="header-content">
+                <div><h1 id="pageTitle">Dashboard</h1><p>Validade Constru</p></div>
+                <div class="user-info"><div class="user-avatar" id="userAvatar">U</div><button class="logout-btn" onclick="doLogout()">Sair</button></div>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="content tab-content">
+            <div class="daily-mission-banner" onclick="showTab('missions', document.querySelectorAll('.tab')[4])">
+                <h3>🎯 Missões Diárias</h3>
+                <p>Complete as tarefas do dia e ganhe pontos!</p>
+            </div>
+            <div class="card-grid">
+                <div class="stat-card"><div class="stat-value" id="totalVencendo">0</div><div class="stat-label">Vencendo em 30 dias</div></div>
+                <div class="stat-card secondary"><div class="stat-value" id="valorRisco" style="color: var(--yellow)">R$ 0</div><div class="stat-label">Valor em Risco</div></div>
+            </div>
+            <div id="stockAlerts"></div>
+            <div class="card">
+                <div class="section-title">Status dos Lotes</div>
+                <div style="display: flex; justify-content: space-around; text-align: center;">
+                    <div><div style="width: 44px; height: 44px; background: #FEE2E2; border-radius: 22px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div><div style="font-size: 24px; font-weight: 700;" id="statVencidos">0</div><div style="font-size: 12px; color: var(--text-light);">Vencidos</div></div>
+                    <div><div style="width: 44px; height: 44px; background: #FEF3C7; border-radius: 22px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div style="font-size: 24px; font-weight: 700;" id="statAlerta">0</div><div style="font-size: 12px; color: var(--text-light);">Em Alerta</div></div>
+                    <div><div style="width: 44px; height: 44px; background: #DCFCE7; border-radius: 22px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/></svg></div><div style="font-size: 24px; font-weight: 700;" id="statOk">0</div><div style="font-size: 12px; color: var(--text-light);">No Prazo</div></div>
+                </div>
+            </div>
+            <div class="card"><div class="section-title">Por Categoria</div><div class="bar-chart" id="chart"></div></div>
+        </div>
+
+        <!-- Missions -->
+        <div id="missions" class="content tab-content hidden">
+            <div class="daily-mission-banner">
+                <h3>🎯 Missões Diárias</h3>
+                <p>Complete as tarefas e ganhe pontos!</p>
+            </div>
+            <div id="missionsList"></div>
+            <button class="btn" onclick="generateDailyMissions()" style="margin-top: 16px;">🔄 Gerar Novas Missões</button>
+        </div>
+
+        <!-- Scanner -->
+        <div id="scanner" class="content tab-content hidden">
+            <div id="scannerStart">
+                <div class="permission-box">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+                    <h3>Escanear Código de Barras</h3>
+                    <p>Use a câmera do celular para escanear o código de barras.</p>
+                    <div style="background: #FEF3C7; padding: 10px; border-radius: 8px; font-size: 12px; color: #92400E; margin-bottom: 12px;">
+                        ⚠️ Para usar a câmera, o app precisa estar em <strong>HTTPS</strong> (site seguro).<br>
+                        Se não funcionar, use a opção de digitar manualmente.
+                    </div>
+                    <button class="btn" onclick="startScanner()">📷 Iniciar Scanner</button>
+                    <div style="margin-top: 12px; color: var(--primary); font-size: 14px; cursor: pointer; text-decoration: underline;" onclick="showManualInput()">Ou digitar manualmente</div>
+                </div>
+            </div>
+            <div id="scannerRunning" class="hidden">
+                <div id="scanner-container"><video id="scanner-video" autoplay playsinline></video><div id="scanner-overlay"></div><div class="scanner-status" id="scannerStatus">Aguardando código...</div></div>
+                <div class="scanner-info"><strong>Posicione o código de barras no centro</strong></div>
+                <button class="btn btn-outline" onclick="stopScanner()">Parar Scanner</button>
+            </div>
+            <div id="manualInput" class="hidden">
+                <div class="card"><div class="section-title">Digitar Código</div>
+                <div class="form-group"><label class="form-label">Código EAN</label><input type="text" class="input" id="manualEan" placeholder="7891234567890"></div>
+                <button class="btn" onclick="searchManualCode()">Buscar Produto</button>
+                <div style="margin-top: 12px; color: var(--primary); font-size: 14px; cursor: pointer; text-decoration: underline;" onclick="showScannerStart()">📷 Escanear código</div></div>
+            </div>
+        </div>
+
+        <!-- Stock -->
+        <div id="stock" class="content tab-content hidden">
+            <div class="filter-row">
+                <button class="filter active" onclick="setStockFilter('all', this)">Todos</button>
+                <button class="filter" onclick="setStockFilter('baixo', this)">Estoque Baixo</button>
+                <button class="filter" onclick="setStockFilter('cimento', this)">Cimento</button>
+                <button class="filter" onclick="setStockFilter('tintas', this)">Tintas</button>
+            </div>
+            <div id="productsList"></div>
+            <button class="fab" onclick="openAddModal()">+</button>
+        </div>
+
+        <!-- Export -->
+        <div id="export" class="content tab-content hidden">
+            <div class="card">
+                <div class="section-title">Escolha o Tipo de Exportação</div>
+                <div class="export-options">
+                    <div class="export-option selected" id="exportValidade" onclick="selectExportType('validade')">
+                        <div class="export-option-icon">📅</div>
+                        <div class="export-option-title">Validade</div>
+                        <div class="export-option-desc">Controle de datas</div>
+                    </div>
+                    <div class="export-option" id="exportEstoque" onclick="selectExportType('estoque')">
+                        <div class="export-option-icon">📦</div>
+                        <div class="export-option-title">Estoque</div>
+                        <div class="export-option-desc">Produtos que estão acabando</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="exportData()" id="exportButton">📥 Baixar Planilha</button>
+            </div>
+            <div class="card"><div class="section-title">Preview</div><div id="exportPreview"></div></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('dashboard', this)"><span class="tab-icon">📊</span><span class="tab-label">Dashboard</span></button>
+            <button class="tab" onclick="showTab('scanner', this)"><span class="tab-icon">📷</span><span class="tab-label">Scanner</span></button>
+            <button class="tab" onclick="showTab('stock', this)"><span class="tab-icon">📦</span><span class="tab-label">Estoque</span></button>
+            <button class="tab" onclick="showTab('export', this)"><span class="tab-icon">📥</span><span class="tab-label">Exportar</span></button>
+            <button class="tab" onclick="showTab('missions', this)"><span class="tab-icon">🎯</span><span class="tab-label">Missões</span></button>
+        </div>
+    </div>
+
+    <!-- Add Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><div class="modal-title" id="modalTitle">Adicionar Produto</div><button class="close-btn" onclick="closeModal()">&times;</button></div>
+            <div id="scannedInfo" class="hidden result-box"><h4>✓ Produto Encontrado!</h4><p id="scannedProductName"></p></div>
+            <div class="form-group"><label class="form-label">Nome do Produto *</label><input type="text" class="input" id="produtoNome" placeholder="Ex: Tinta Acrílica"></div>
+            <div class="form-group"><label class="form-label">Código EAN</label><input type="text" class="input" id="produtoEan" placeholder="7891234567890"></div>
+            <div class="form-group"><label class="form-label">Categoria</label>
+                <div class="category-grid" id="categoryGrid">
+                    <button type="button" class="category-chip active" onclick="setCategory('Tintas', this)">Tintas</button>
+                    <button type="button" class="category-chip" onclick="setCategory('Cimento', this)">Cimento</button>
+                    <button type="button" class="category-chip" onclick="setCategory('Argamassa', this)">Argamassa</button>
+                    <button type="button" class="category-chip" onclick="setCategory('Selantes', this)">Selantes</button>
+                    <button type="button" class="category-chip" onclick="setCategory('Cal', this)">Cal</button>
+                    <button type="button" class="category-chip" onclick="setCategory('Vernizes', this)">Vernizes</button>
+                </div>
+            </div>
+            <div class="form-group"><label class="form-label">Marca</label><input type="text" class="input" id="produtoMarca" placeholder="Ex: Suvinil"></div>
+            <div class="form-group"><label class="form-label">Quantidade em Estoque</label><input type="number" class="input" id="produtoQuantidade" value="10"></div>
+            <div class="form-group"><label class="form-label">Quantidade do Lote</label><input type="number" class="input" id="loteQuantidade" value="1"></div>
+            <div class="form-group"><label class="form-label">Data de Validade *</label><input type="date" class="input" id="loteDataValidade"></div>
+            <button class="btn" onclick="addProduct()">Adicionar Produto</button>
+        </div>
+    </div>
+
+    <script>
+        // Auth - localStorage
+        function simpleHash(str) { let hash = 0; for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash = hash & hash; } return hash.toString(16); }
+        function getUsers() { return JSON.parse(localStorage.getItem('validade_users') || '{}'); }
+        function saveUsers(users) { localStorage.setItem('validade_users', JSON.stringify(users)); }
+        function getCurrentUser() { return JSON.parse(localStorage.getItem('validade_current_user')); }
+        function setCurrentUser(user) { localStorage.setItem('validade_current_user', JSON.stringify(user)); }
+        function clearCurrentUser() { localStorage.removeItem('validade_current_user'); }
+        
+        function showAuthError(msg) { const el = document.getElementById('authError'); el.innerText = msg; el.classList.add('show'); }
+        function hideAuthError() { document.getElementById('authError').classList.remove('show'); }
+        
+        function showAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+            document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+            hideAuthError();
+        }
+        
+        function doRegister() {
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('registerPassword').value;
+            const conf = document.getElementById('registerConfirmPassword').value;
+            
+            if (!name || !email || !pass) { showAuthError('Preencha todos os campos'); return; }
+            if (pass !== conf) { showAuthError('As senhas não coincidem'); return; }
+            if (pass.length < 4) { showAuthError('Senha mínimo 4 caracteres'); return; }
+            
+            const users = getUsers();
+            if (users[email]) { showAuthError('E-mail já cadastrado'); return; }
+            
+            const user = {
+                name, email, passwordHash: simpleHash(pass),
+                createdAt: new Date().toISOString(),
+                produtos: [
+                    { id: 1, nome: 'Cimento Portland CP II', ean_code: '7891234567890', categoria: 'Cimento', marca: 'Votoran', quantidade: 50 },
+                    { id: 2, nome: 'Argamassa ACIII', ean_code: '7891234567891', categoria: 'Argamassa', marca: 'quartzolit', quantidade: 30 },
+                    { id: 3, nome: 'Tinta Acrílica Branco', ean_code: '7891234567892', categoria: 'Tintas', marca: 'Suvinil', quantidade: 25 },
+                    { id: 4, nome: 'Selante Silicone', ean_code: '7891234567893', categoria: 'Selantes', marca: 'Tekbond', quantidade: 15 },
+                    { id: 5, nome: 'Cal Hidratada', ean_code: '7891234567894', categoria: 'Cal', marca: 'Dolomítica', quantidade: 40 },
+                    { id: 6, nome: 'Verniz Premium', ean_code: '7891234567895', categoria: 'Vernizes', marca: 'Eucalar', quantidade: 20 },
+                ],
+                lotes: [],
+                missoes: generateInitialMissions()
+            };
+            
+            users[email] = user;
+            saveUsers(users);
+            setCurrentUser(user);
+            hideAuthError();
+            showApp();
+        }
+        
+        function doLogin() {
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('loginPassword').value;
+            if (!email || !pass) { showAuthError('Preencha todos os campos'); return; }
+            
+            const users = getUsers();
+            const user = users[email];
+            if (!user) { showAuthError('Usuário não encontrado'); return; }
+            if (user.passwordHash !== simpleHash(pass)) { showAuthError('Senha incorreta'); return; }
+            
+            setCurrentUser(user);
+            hideAuthError();
+            showApp();
+        }
+        
+        function doLogout() {
+            clearCurrentUser();
+            document.getElementById('app').classList.add('hidden');
+            document.getElementById('authScreen').classList.remove('hidden');
+        }
+        
+        // App
+        let produtos = [], lotes = [], missoes = [];
+        let currentFilter = 'all', scannedCode = null, stream = null, isScanning = false, barcodeDetector = null, exportType = 'validade', editingProductId = null;
+        
+        function showApp() {
+            const user = getCurrentUser();
+            if (!user) return;
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            document.getElementById('userAvatar').innerText = user.name.charAt(0).toUpperCase();
+            loadUserData();
+            renderDashboard();
+            renderProducts();
+            renderExport();
+            renderMissions();
+        }
+        
+        function loadUserData() {
+            const user = getCurrentUser();
+            if (user) {
+                produtos = user.produtos || [];
+                lotes = user.lotes || [];
+                missoes = user.missoes || generateInitialMissions();
+            }
+        }
+        
+        function saveUserData() {
+            const user = getCurrentUser();
+            if (!user) return;
+            const users = getUsers();
+            users[user.email].produtos = produtos;
+            users[user.email].lotes = lotes;
+            users[user.email].missoes = missoes;
+            saveUsers(users);
+            setCurrentUser(users[user.email]);
+        }
+        
+        // Missions
+        function generateInitialMissions() {
+            return [
+                { id: 1, titulo: 'Verificar produtos vencidos', descricao: 'Revise todos os produtos vencidos', tipo: 'vencidos', meta: 3, atual: 0, completa: false, pontos: 10 },
+                { id: 2, titulo: 'Atualizar estoque de Tintas', descricao: 'Conte e atualize a quantidade de tintas', tipo: 'categoria', categoria: 'Tintas', meta: 1, atual: 0, completa: false, pontos: 15 },
+                { id: 3, titulo: 'Escanear 5 produtos', descricao: 'Use o scanner para verificar 5 produtos', tipo: 'scanner', meta: 5, atual: 0, completa: false, pontos: 20 },
+            ];
+        }
+        
+        function generateDailyMissions() {
+            const types = [
+                { titulo: 'Verificar produtos vencidos', descricao: 'Revise os produtos', tipo: 'vencidos', meta: 3, pontos: 10 },
+                { titulo: 'Atualizar Tintas', descricao: 'Conte as tintas', tipo: 'categoria', categoria: 'Tintas', meta: 1, pontos: 15 },
+                { titulo: 'Escanear produtos', descricao: 'Use o scanner', tipo: 'scanner', meta: 5, pontos: 20 },
+                { titulo: 'Verificar Cimento', descricao: 'Revise o cimento', tipo: 'categoria', categoria: 'Cimento', meta: 1, pontos: 15 },
+                { titulo: 'Exportar relatório', descricao: 'Exporte uma planilha', tipo: 'export', meta: 1, pontos: 10 },
+            ];
+            missoes = types.sort(() => 0.5 - Math.random()).slice(0, 3).map((m, i) => ({ ...m, id: Date.now() + i, atual: 0, completa: false }));
+            saveUserData();
+            renderMissions();
+            alert('Novas missões geradas!');
+        }
+        
+        function renderMissions() {
+            const concluidas = missoes.filter(m => m.completa).length;
+            const progresso = Math.round((concluidas / missoes.length) * 100);
+            let html = `<div class="mission-card"><div class="mission-header"><span class="mission-title">Progresso do Dia</span><span class="mission-progress">${concluidas}/${missoes.length}</span></div><div class="mission-progress-bar"><div class="mission-progress-fill" style="width: ${progresso}%"></div></div></div>`;
+            missoes.forEach(m => {
+                const cls = m.completa ? 'completed' : '';
+                const checkCls = m.completa ? 'completed' : '';
+                html += `<div class="mission-card"><div class="mission-header"><span class="mission-title">${m.titulo}</span><span class="badge ${m.completa ? 'green' : 'purple'}">${m.completa ? '✓' : m.pontos + ' pts'}</span></div><p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;">${m.descricao}</p><div class="mission-item ${cls}"><div class="mission-item-info"><div class="mission-item-name">${m.titulo}</div><div class="mission-item-detail">Progresso: ${m.atual}/${m.meta}</div></div><div class="mission-check ${checkCls}" onclick="toggleMission(${m.id})">${m.completa ? '✓' : ''}</div></div></div>`;
+            });
+            document.getElementById('missionsList').innerHTML = html;
+        }
+        
+        function toggleMission(id) {
+            const m = missoes.find(x => x.id === id);
+            if (!m) return;
+            m.completa = !m.completa;
+            m.atual = m.completa ? m.meta : 0;
+            saveUserData();
+            renderMissions();
+        }
+        
+        function updateMissionProgress(tipo) {
+            missoes.forEach(m => {
+                if (m.completa || m.tipo !== tipo) return;
+                m.atual = Math.min(m.atual + 1, m.meta);
+                if (m.atual >= m.meta) m.completa = true;
+            });
+            saveUserData();
+        }
+
+        // Tabs
+        function showTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+            const titles = { dashboard: 'Dashboard', scanner: 'Scanner', stock: 'Lista de Estoque', export: 'Exportar', missions: 'Missões Diárias' };
+            document.getElementById('pageTitle').innerText = titles[tabId];
+        }
+        
+        // Export
+        function selectExportType(type) {
+            exportType = type;
+            document.getElementById('exportValidade').classList.toggle('selected', type === 'validade');
+            document.getElementById('exportEstoque').classList.toggle('selected', type === 'estoque');
+            document.getElementById('exportButton').innerText = type === 'validade' ? '📥 Baixar Planilha de Validade' : '📥 Baixar Planilha de Estoque';
+            renderExport();
+        }
+        
+        function renderExport() {
+            const p = document.getElementById('exportPreview');
+            if (exportType === 'validade') {
+                p.innerHTML = lotes.slice(0, 5).map(l => {
+                    const d = getDias(l.data_validade), s = getStatus(d, l.produto.categoria);
+                    const c = { vencido: 'var(--red)', alerta: 'var(--yellow)', ok: 'var(--green)' };
+                    return `<div style="padding: 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;"><div><div style="font-weight: 500">${l.produto.nome}</div><div style="font-size: 12px; color: var(--text-light)">${l.produto.categoria}</div></div><div style="text-align: right"><div>Qtd: ${l.quantidade}</div><div style="color: ${c[s]}; font-size: 12px">${d < 0 ? 'Vencido' : d + ' dias'}</div></div></div>`;
+                }).join('');
+            } else {
+                p.innerHTML = produtos.slice(0, 5).map(pd => {
+                    const q = pd.quantidade || 0, low = q <= 10;
+                    return `<div style="padding: 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;"><div><div style="font-weight: 500">${pd.nome}</div><div style="font-size: 12px; color: var(--text-light)">${pd.categoria}</div></div><div style="text-align: right"><div style="color: ${low ? 'var(--red)' : 'var(--green)'}; font-weight: 600">${q} un</div><div style="font-size: 12px; color: ${low ? 'var(--red)' : 'var(--text-light)'}">${low ? '⚠️ Baixo' : 'OK'}</div></div></div>`;
+                }).join('');
+            }
+        }
+        
+        function exportData() {
+            let csv = '';
+            if (exportType === 'validade') {
+                csv = 'Produto,Categoria,Marca,Quantidade,Data Validade,Status\n';
+                lotes.forEach(l => { const d = getDias(l.data_validade), s = d < 0 ? 'VENCIDO' : d <= 30 ? 'VENCENDO' : 'OK'; csv += `"${l.produto.nome}","${l.produto.categoria}","${l.produto.marca}",${l.quantidade},"${l.data_validade}","${s}"\n`; });
+                updateMissionProgress('export');
+            } else {
+                csv = 'Produto,Categoria,Marca,Quantidade,Estoque Mínimo,Status\n';
+                produtos.forEach(p => { const q = p.quantidade || 0, min = p.min_estoque_alerta || 10, s = q <= min ? 'BAIXO' : 'OK'; csv += `"${p.nome}","${p.categoria}","${p.marca}",${q},${min},"${s}"\n`; });
+            }
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `validade_constru_${exportType}_${new Date().toISOString().split('T')[0]}.csv`; a.click();
+            alert('Planilha exportada!');
+        }
+
+        // Utils
+        function getDias(dt) { const h = new Date(); h.setHours(0,0,0,0); const v = new Date(dt); v.setHours(0,0,0,0); return Math.ceil((v - h) / (1000*60*60*24)); }
+        function getStatus(d, cat) { const a = (cat === 'Cimento' || cat === 'Argamassa') ? 15 : 30; return d < 0 ? 'vencido' : d <= a ? 'alerta' : 'ok'; }
+        function formatCurrency(v) { return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
+        
+        // Dashboard
+        function renderDashboard() {
+            let v = 0, a = 0, o = 0, v30 = 0, risco = 0, pc = {};
+            lotes.forEach(l => { const d = getDias(l.data_validade), s = getStatus(d, l.produto.categoria);
+                if (s === 'vencido') v++; else if (s === 'alerta') a++; else o++;
+                if (d >= 0 && d <= 30) v30 += l.quantidade;
+                if (s === 'vencido' || s === 'alerta') risco += l.quantidade * 25;
+                if (!pc[l.produto.categoria]) pc[l.produto.categoria] = { total: 0 };
+                pc[l.produto.categoria].total += l.quantidade;
+            });
+            document.getElementById('totalVencendo').innerText = v30;
+            document.getElementById('valorRisco').innerText = formatCurrency(risco);
+            document.getElementById('statVencidos').innerText = v;
+            document.getElementById('statAlerta').innerText = a;
+            document.getElementById('statOk').innerText = o;
+            
+            const sa = document.getElementById('stockAlerts');
+            const low = produtos.filter(p => (p.quantidade || 0) <= 10);
+            sa.innerHTML = low.slice(0, 3).map(p => `<div class="stock-alert"><span class="stock-alert-icon">⚠️</span><div class="stock-alert-text"><div class="stock-alert-title">Estoque baixo: ${p.nome}</div><div class="stock-alert-desc">Apenas ${p.quantidade} unidades</div></div></div>`).join('');
+            
+            const c = { Cimento: '#6366F1', Argamassa: '#8B5CF6', Tintas: '#EC4899', Selantes: '#F97316', Cal: '#84CC16', Vernizes: '#14B8A6' };
+            const max = Math.max(...Object.values(pc).map(x => x.total), 1);
+            document.getElementById('chart').innerHTML = Object.entries(pc).map(([cat, d]) => `<div class="bar-item"><div class="bar-label"><span>${cat}</span><span>${d.total}</span></div><div class="bar-bg"><div class="bar-fill" style="width: ${(d.total/max)*100}%; background: ${c[cat]||'#6B7280'}"></div></div></div>`).join('');
+        }
+        
+        // Stock
+        function setFilter(f, btn) { currentFilter = f; document.querySelectorAll('.filter').forEach(e => e.classList.remove('active')); btn.classList.add('active'); renderStock(); }
+        
+        let stockFilter = 'all';
+        
+        function setStockFilter(filter, btn) {
+            stockFilter = filter;
+            document.querySelectorAll('#stock .filter').forEach(e => e.classList.remove('active'));
+            btn.classList.add('active');
+            renderProducts();
+        }
+        
+        function renderProducts() {
+            let filtered = [...produtos];
+            
+            if (stockFilter === 'baixo') {
+                filtered = filtered.filter(p => (p.quantidade || 0) <= 10);
+            } else if (stockFilter === 'cimento') {
+                filtered = filtered.filter(p => p.categoria === 'Cimento' || p.categoria === 'Argamassa');
+            } else if (stockFilter === 'tintas') {
+                filtered = filtered.filter(p => p.categoria === 'Tintas');
+            }
+            
+            filtered.sort((a, b) => (a.quantidade || 0) - (b.quantidade || 0));
+            
+            const list = document.getElementById('productsList');
+            
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="empty">Nenhum produto encontrado</div>';
+                return;
+            }
+            
+            list.innerHTML = filtered.map(p => {
+                const qtd = p.quantidade || 0;
+                const isLow = qtd <= 10;
+                const status = isLow ? 'baixo' : 'ok';
+                
+                return `
+                    <div class="item ${status}">
+                        <div class="item-header">
+                            <div>
+                                <div class="item-name">${p.nome}</div>
+                                <div class="item-category">${p.categoria} • ${p.marca}</div>
+                                <div style="font-size: 11px; color: var(--text-light); margin-top: 4px;">EAN: ${p.ean_code || 'N/A'}</div>
+                            </div>
+                            <span class="badge ${isLow ? 'red' : 'green'}">
+                                ${isLow ? '⚠️ Estoque Baixo' : '✅ OK'}
+                            </span>
+                        </div>
+                        <div class="item-details">
+                            <span>Estoque: <strong>${qtd} unidades</strong></span>
+                            <span>Mínimo: ${p.min_estoque_alerta || 10}</span>
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-outline btn-small" onclick="editProduct(${p.id})">Editar</button>
+                            <button class="btn btn-outline btn-small" onclick="deleteProduct(${p.id})" style="border-color: var(--red); color: var(--red);">Excluir</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function editProduct(id) {
+            const p = produtos.find(x => x.id === id);
+            if (!p) return;
+            
+            editingProductId = id;
+            document.getElementById('modalTitle').innerText = 'Editar Produto';
+            document.getElementById('produtoNome').value = p.nome;
+            document.getElementById('produtoEan').value = p.ean_code || '';
+            document.getElementById('produtoMarca').value = p.marca || '';
+            document.getElementById('produtoQuantidade').value = p.quantidade || 10;
+            document.getElementById('loteQuantidade').value = 1;
+            document.getElementById('loteDataValidade').value = '';
+            
+            document.querySelectorAll('#categoryGrid .category-chip').forEach(b => {
+                b.classList.remove('active');
+                if (b.innerText === p.categoria) b.classList.add('active');
+            });
+            
+            document.getElementById('addModal').classList.add('show');
+        }
+        
+        function deleteProduct(id) {
+            if (confirm('Excluir este produto e todos os seus lotes?')) {
+                produtos = produtos.filter(p => p.id !== id);
+                lotes = lotes.filter(l => l.produto_id !== id);
+                saveUserData();
+                renderProducts();
+                renderDashboard();
+                renderExport();
+            }
+        }
+        
+        // Add Modal
+        function openAddModal() {
+            scannedCode = null;
+            editingProductId = null;
+            document.getElementById('modalTitle').innerText = 'Adicionar Produto';
+            document.getElementById('scannedInfo').classList.add('hidden');
+            document.getElementById('produtoNome').value = '';
+            document.getElementById('produtoEan').value = '';
+            document.getElementById('produtoMarca').value = '';
+            document.getElementById('produtoQuantidade').value = '10';
+            document.getElementById('loteQuantidade').value = '1';
+            const t = new Date(); t.setDate(t.getDate() + 30);
+            document.getElementById('loteDataValidade').value = t.toISOString().split('T')[0];
+            document.getElementById('addModal').classList.add('show');
+        }
+        
+        function closeModal() { document.getElementById('addModal').classList.remove('show'); scannedCode = null; editingProductId = null; renderProducts(); }
+        function setCategory(cat, btn) { document.querySelectorAll('#categoryGrid .category-chip').forEach(e => e.classList.remove('active')); btn.classList.add('active'); }
+        
+        function addProduct() {
+            const nome = document.getElementById('produtoNome').value;
+            const ean = document.getElementById('produtoEan').value;
+            const cat = document.querySelector('#categoryGrid .category-chip.active').innerText;
+            const marca = document.getElementById('produtoMarca').value;
+            const qtdEst = parseInt(document.getElementById('produtoQuantidade').value) || 10;
+            const qtdLot = parseInt(document.getElementById('loteQuantidade').value) || 1;
+            const dtVal = document.getElementById('loteDataValidade').value;
+            
+            if (!nome) { alert('Preencha o nome do produto'); return; }
+            
+            let prod;
+            if (editingProductId) {
+                prod = produtos.find(p => p.id === editingProductId);
+                if (prod) {
+                    prod.nome = nome;
+                    prod.ean_code = ean || 'manual_' + Date.now();
+                    prod.categoria = cat;
+                    prod.marca = marca;
+                    prod.quantidade = qtdEst;
+                }
+            } else {
+                prod = produtos.find(p => p.ean_code === ean);
+                if (!prod) { 
+                    prod = { id: Date.now(), nome, ean_code: ean || 'manual_' + Date.now(), cat, marca: marca || 'Sem marca', quantidade: qtdEst, min_estoque_alerta: 10 }; 
+                    produtos.push(prod); 
+                } else { 
+                    prod.quantidade = qtdEst; 
+                    prod.categoria = cat;
+                    prod.marca = marca;
+                }
+            }
+            
+            // Only add lot if there's a validity date and not editing
+            if (dtVal && !editingProductId) {
+                lotes.push({ id: Date.now(), produto_id: prod.id, quantidade: qtdLot, data_validade: dtVal, produto: prod });
+            }
+            
+            saveUserData();
+            closeModal();
+            renderProducts();
+            renderDashboard();
+            renderExport();
+        }
+        
+        function deleteLote(id) { if (confirm('Excluir este lote?')) { lotes = lotes.filter(l => l.id !== id); saveUserData(); renderStock(); renderDashboard(); renderExport(); } }
+        
+        // Scanner
+        async function startScanner() {
+            // Check if HTTPS (required for camera)
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                alert('A câmera requer HTTPS (site seguro). Para usar o scanner, você precisa acessar via HTTPS ou usar a opção de digitar manualmente.');
+                showManualInput();
+                return;
+            }
+            
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: { ideal: 'environment' },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                };
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                document.getElementById('scanner-video').srcObject = stream;
+                document.getElementById('scanner-video').play();
+                document.getElementById('scannerStart').classList.add('hidden');
+                document.getElementById('scannerRunning').classList.remove('hidden');
+                isScanning = true;
+                if ('BarcodeDetector' in window) { 
+                    barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39'] }); 
+                    scanFrame(); 
+                } else {
+                    document.getElementById('scannerStatus').innerText = 'Escaneie o código manualmente';
+                    alert('Seu navegador não suporta detecção de código de barras. Use a opção de digitar manualmente.');
+                }
+            } catch (err) { 
+                console.error('Camera error:', err);
+                let msg = '';
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    msg = 'Permissão de câmera negada.\n\nPara permitir:\n1. Clique no ícone 🔒/📍 na barra de endereço\n2. Vá em "Configurações do site"\n3. Permitir acesso à câmera';
+                } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                    msg = 'Camera não encontrada no dispositivo.';
+                } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                    msg = 'Camera está sendo usada por outro aplicativo.\nFeche outros apps que usam a câmera e tente novamente.';
+                } else if (err.name === 'NotSupportedError' || err.message?.includes('secure')) {
+                    msg = 'A câmera requer HTTPS (site seguro).\n\nUse a opção de digitar manualmente.';
+                } else {
+                    msg = 'Erro ao acessar câmera: ' + err.message;
+                }
+                alert(msg);
+                showManualInput(); 
+            }
+        }
+        
+        async function scanFrame() {
+            if (!isScanning) return;
+            const v = document.getElementById('scanner-video');
+            const s = document.getElementById('scannerStatus');
+            if (barcodeDetector && v.readyState === v.HAVE_ENOUGH_DATA) {
+                try {
+                    const bs = await barcodeDetector.detect(v);
+                    if (bs.length > 0) {
+                        const code = bs[0].rawValue;
+                        s.innerText = '✓: ' + code;
+                        if (navigator.vibrate) navigator.vibrate(200);
+                        updateMissionProgress('scanner');
+                        stopScanner();
+                        handleScannedCode(code);
+                        return;
+                    }
+                } catch (e) {}
+            }
+            s.innerText = 'Aponte para o código...';
+            requestAnimationFrame(scanFrame);
+        }
+        
+        function stopScanner() { isScanning = false; if (stream) stream.getTracks().forEach(t => t.stop()); document.getElementById('scannerRunning').classList.add('hidden'); document.getElementById('scannerStart').classList.remove('hidden'); }
+        function showManualInput() { document.getElementById('scannerStart').classList.add('hidden'); document.getElementById('scannerRunning').classList.add('hidden'); document.getElementById('manualInput').classList.remove('hidden'); }
+        function showScannerStart() { document.getElementById('manualInput').classList.add('hidden'); document.getElementById('scannerRunning').classList.add('hidden'); document.getElementById('scannerStart').classList.remove('hidden'); }
+        function searchManualCode() { const ean = document.getElementById('manualEan').value.trim(); if (!ean) { alert('Digite um código'); return; } handleScannedCode(ean); }
+        
+        function handleScannedCode(code) {
+            scannedCode = code;
+            const prod = produtos.find(p => p.ean_code === code);
+            if (prod) {
+                document.getElementById('modalTitle').innerText = 'Adicionar Lote';
+                document.getElementById('scannedInfo').classList.remove('hidden');
+                document.getElementById('scannedProductName').innerText = prod.nome + ' - ' + prod.categoria;
+                document.getElementById('produtoNome').value = prod.nome;
+                document.getElementById('produtoEan').value = prod.ean_code;
+                document.getElementById('produtoMarca').value = prod.marca;
+                document.getElementById('produtoQuantidade').value = prod.quantidade;
+                document.querySelectorAll('#categoryGrid .category-chip').forEach(b => { b.classList.remove('active'); if (b.innerText === prod.categoria) b.classList.add('active'); });
+            } else {
+                document.getElementById('modalTitle').innerText = 'Novo Produto';
+                document.getElementById('scannedInfo').classList.add('hidden');
+                document.getElementById('produtoNome').value = '';
+                document.getElementById('produtoEan').value = code;
+                document.getElementById('produtoMarca').value = '';
+                document.getElementById('produtoQuantidade').value = '10';
+            }
+            const t = new Date(); t.setDate(t.getDate() + 30);
+            document.getElementById('loteDataValidade').value = t.toISOString().split('T')[0];
+            document.getElementById('addModal').classList.add('show');
+        }
+        
+        // Init
+        window.onload = function() { const u = getCurrentUser(); if (u) { loadUserData(); showApp(); } };
+    </script>
+</body>
+</html>
