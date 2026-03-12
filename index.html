@@ -314,9 +314,25 @@
             <button class="tab active" onclick="showTab('dashboard', this)"><span class="tab-icon">📊</span><span class="tab-label">Dashboard</span></button>
             <button class="tab" onclick="showTab('scanner', this)"><span class="tab-icon">📷</span><span class="tab-label">Scanner</span></button>
             <button class="tab" onclick="showTab('stock', this)"><span class="tab-icon">📦</span><span class="tab-label">Estoque</span></button>
+            <button class="tab" onclick="showTab('dailylist', this)"><span class="tab-icon">📝</span><span class="tab-label">Lista</span></button>
             <button class="tab" onclick="showTab('export', this)"><span class="tab-icon">📥</span><span class="tab-label">Exportar</span></button>
             <button class="tab" onclick="showTab('missions', this)"><span class="tab-icon">🎯</span><span class="tab-label">Missões</span></button>
         </div>
+    </div>
+
+    <!-- Daily List -->
+    <div id="dailylist" class="content tab-content hidden">
+        <div class="card">
+            <div class="section-title">📝 Lista de Compras do Dia</div>
+            <p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;">Selecione os produtos que estão acabando</p>
+            <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                <button class="btn btn-small btn-outline" onclick="selectAllLowStock()">Selecionar Todos Baixos</button>
+                <button class="btn btn-small btn-outline" onclick="clearDailyList()">Limpar</button>
+                <button class="btn btn-small" onclick="openAddModalFromDailyList()">+ Adicionar Produto</button>
+            </div>
+            <div id="dailyListProducts"></div>
+        </div>
+        <button class="btn" onclick="exportDailyListAsImage()" style="margin-top: 12px;">🖼️ Exportar como Imagem</button>
     </div>
 
     <!-- Add Modal -->
@@ -559,8 +575,9 @@
             document.getElementById(tabId).classList.remove('hidden');
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
             btn.classList.add('active');
-            const titles = { dashboard: 'Dashboard', scanner: 'Scanner', stock: 'Lista de Estoque', export: 'Exportar', missions: 'Missões Diárias' };
+            const titles = { dashboard: 'Dashboard', scanner: 'Scanner', stock: 'Lista de Estoque', dailylist: 'Lista Diária', export: 'Exportar', missions: 'Missões Diárias' };
             document.getElementById('pageTitle').innerText = titles[tabId];
+            if (tabId === 'dailylist') renderDailyList();
         }
         
         // Export
@@ -626,6 +643,138 @@
         function getDias(dt) { const h = new Date(); h.setHours(0,0,0,0); const v = new Date(dt); v.setHours(0,0,0,0); return Math.ceil((v - h) / (1000*60*60*24)); }
         function getStatus(d, cat) { const a = (cat === 'Cimento' || cat === 'Argamassa') ? 15 : 30; return d < 0 ? 'vencido' : d <= a ? 'alerta' : 'ok'; }
         function formatCurrency(v) { return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
+        
+        // Daily List functions
+        let dailyListSelected = [];
+        
+        function selectAllLowStock() {
+            const lowStock = produtos.filter(p => (p.quantidade || 0) <= (p.min_estoque_alerta || 10));
+            dailyListSelected = lowStock.map(p => p.id);
+            renderDailyList();
+        }
+        
+        function clearDailyList() {
+            dailyListSelected = [];
+            renderDailyList();
+        }
+        
+        function renderDailyList() {
+            const container = document.getElementById('dailyListProducts');
+            const lowStock = produtos.filter(p => (p.quantidade || 0) <= (p.min_estoque_alerta || 10));
+            
+            if (lowStock.length === 0) {
+                container.innerHTML = '<div class="empty">Nenhum produto com estoque baixo!</div>';
+                return;
+            }
+            
+            container.innerHTML = lowStock.map(p => {
+                const isSelected = dailyListSelected.includes(p.id);
+                return `
+                    <div class="daily-list-item ${isSelected ? 'selected' : ''}" onclick="toggleDailyListItem(${p.id})" style="padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; ${isSelected ? 'background: var(--primary-light); color: white;' : ''}">
+                        <div style="width: 24px; height: 24px; border-radius: 4px; border: 2px solid ${isSelected ? 'white' : 'var(--border)'}; display: flex; align-items: center; justify-content: center;">${isSelected ? '✓' : ''}</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">${p.nome}</div>
+                            <div style="font-size: 12px; opacity: 0.8;">${p.categoria} • ${p.marca || ''}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 600; color: ${isSelected ? 'white' : 'var(--red)'};">${p.quantidade || 0} un</div>
+                            <div style="font-size: 11px; opacity: 0.8;">Mín: ${p.min_estoque_alerta || 10}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function toggleDailyListItem(id) {
+            const index = dailyListSelected.indexOf(id);
+            if (index >= 0) {
+                dailyListSelected.splice(index, 1);
+            } else {
+                dailyListSelected.push(id);
+            }
+            renderDailyList();
+        }
+        
+        function exportDailyListAsImage() {
+            if (dailyListSelected.length === 0) {
+                alert('Selecione pelo menos um produto');
+                return;
+            }
+            
+            const selectedProducts = produtos.filter(p => dailyListSelected.includes(p.id));
+            const today = new Date().toLocaleDateString('pt-BR');
+            
+            // Create a canvas with the design
+            const canvas = document.createElement('canvas');
+            canvas.width = 600;
+            canvas.height = 100 + (selectedProducts.length * 70);
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#F3F4F6';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Header
+            ctx.fillStyle = '#1E40AF';
+            ctx.fillRect(0, 0, canvas.width, 80);
+            
+            // Title
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 28px Arial';
+            ctx.fillText('📝 Lista de Compras', 20, 45);
+            ctx.font = '14px Arial';
+            ctx.fillText(today, 20, 65);
+            
+            // Products
+            let y = 100;
+            selectedProducts.forEach((p, i) => {
+                // Item background
+                ctx.fillStyle = 'white';
+                ctx.fillRect(10, y - 30, canvas.width - 20, 60);
+                
+                // Number
+                ctx.fillStyle = '#1E40AF';
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText((i + 1) + '.', 20, y);
+                
+                // Product name
+                ctx.fillStyle = '#1F2937';
+                ctx.font = '16px Arial';
+                ctx.fillText(p.nome.substring(0, 30), 50, y - 5);
+                
+                // Category
+                ctx.fillStyle = '#6B7280';
+                ctx.font = '12px Arial';
+                ctx.fillText(p.categoria + ' • ' + (p.marca || ''), 50, y + 12);
+                
+                // Quantity
+                ctx.fillStyle = '#EF4444';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('Estoque: ' + (p.quantidade || 0) + ' un', canvas.width - 120, y);
+                
+                // Line
+                ctx.strokeStyle = '#E5E7EB';
+                ctx.beginPath();
+                ctx.moveTo(20, y + 40);
+                ctx.lineTo(canvas.width - 20, y + 40);
+                ctx.stroke();
+                
+                y += 70;
+            });
+            
+            // Footer
+            ctx.fillStyle = '#6B7280';
+            ctx.font = '12px Arial';
+            ctx.fillText('Validade Constru - Lista gerada em ' + today, 20, canvas.height - 15);
+            
+            // Download
+            const link = document.createElement('a');
+            link.download = 'lista_compras_' + new Date().toISOString().split('T')[0] + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            alert('Lista exportada como imagem!');
+        }
         
         // Backup functions
         function exportBackup() {
@@ -885,6 +1034,16 @@
             document.getElementById('addModal').classList.add('show');
         }
         
+        function openAddModalFromDailyList() {
+            // First switch to stock tab
+            const stockTab = document.querySelectorAll('.tab')[2];
+            showTab('stock', stockTab);
+            // Then open modal
+            setTimeout(() => {
+                openAddModal();
+            }, 100);
+        }
+        
         function autoSyncDate() {
             if (!editingProductId) return;
             
@@ -914,7 +1073,7 @@
             renderExport();
         }
         
-        function closeModal() { document.getElementById('addModal').classList.remove('show'); scannedCode = null; editingProductId = null; renderProducts(); }
+        function closeModal() { document.getElementById('addModal').classList.remove('show'); scannedCode = null; editingProductId = null; renderProducts(); renderDailyList(); }
         function setCategory(cat, btn) { document.querySelectorAll('#categoryGrid .category-chip').forEach(e => e.classList.remove('active')); btn.classList.add('active'); }
         
         function addProduct() {
