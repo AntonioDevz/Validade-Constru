@@ -169,13 +169,12 @@
             </div>
             <div id="authError" class="auth-error"></div>
             <div id="loginForm">
-                <div class="form-group"><label class="form-label">E-mail</label><input type="email" class="input" id="loginEmail" placeholder="seu@email.com"></div>
+                <div class="form-group"><label class="form-label">Usuário</label><input type="text" class="input" id="loginEmail" placeholder="Seu nome de usuário"></div>
                 <div class="form-group"><label class="form-label">Senha</label><input type="password" class="input" id="loginPassword" placeholder="••••••••"></div>
                 <button class="btn" onclick="doLogin()">Entrar</button>
             </div>
             <div id="registerForm" class="hidden">
                 <div class="form-group"><label class="form-label">Nome</label><input type="text" class="input" id="registerName" placeholder="Seu nome"></div>
-                <div class="form-group"><label class="form-label">E-mail</label><input type="email" class="input" id="registerEmail" placeholder="seu@email.com"></div>
                 <div class="form-group"><label class="form-label">Senha</label><input type="password" class="input" id="registerPassword" placeholder="••••••••"></div>
                 <div class="form-group"><label class="form-label">Confirmar Senha</label><input type="password" class="input" id="registerConfirmPassword" placeholder="••••••••"></div>
                 <button class="btn" onclick="doRegister()">Criar Conta</button>
@@ -271,13 +270,9 @@
 
         <!-- Stock -->
         <div id="stock" class="content tab-content hidden">
-            <div class="filter-row">
+            <div class="filter-row" id="stockFilters">
                 <button class="filter active" onclick="setStockFilter('all', this)">Todos</button>
                 <button class="filter" onclick="setStockFilter('baixo', this)">Estoque Baixo</button>
-                <button class="filter" onclick="setStockFilter('cimento', this)">Cimento/Argamassa</button>
-                <button class="filter" onclick="setStockFilter('tintas', this)">Tintas/Vernizes</button>
-                <button class="filter" onclick="setStockFilter('selantes', this)">Selantes</button>
-                <button class="filter" onclick="setStockFilter('cal', this)">Cal</button>
             </div>
             <div id="productsList"></div>
             <button class="fab" onclick="openAddModal()">+</button>
@@ -339,12 +334,16 @@
                     <button type="button" class="category-chip" onclick="setCategory('Cal', this)">Cal</button>
                     <button type="button" class="category-chip" onclick="setCategory('Vernizes', this)">Vernizes</button>
                 </div>
+                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                    <input type="text" class="input" id="novaCategoria" placeholder="Nova categoria" style="flex: 1; margin-bottom: 0;">
+                    <button type="button" class="btn btn-small" onclick="addNovaCategoria()" style="padding: 10px 16px;">+</button>
+                </div>
             </div>
             <div class="form-group"><label class="form-label">Marca</label><input type="text" class="input" id="produtoMarca" placeholder="Ex: Suvinil"></div>
             <div class="form-group"><label class="form-label">Quantidade em Estoque</label><input type="number" class="input" id="produtoQuantidade" value="10"></div>
             <div class="form-group"><label class="form-label">Quantidade do Lote</label><input type="number" class="input" id="loteQuantidade" value="1"></div>
-            <div class="form-group"><label class="form-label">Data de Validade *</label><input type="date" class="input" id="loteDataValidade"></div>
-            <button class="btn" onclick="addProduct()">Adicionar Produto</button>
+            <div class="form-group"><label class="form-label">Data de Validade</label><input type="date" class="input" id="loteDataValidade"></div>
+            <button class="btn" onclick="addProduct()">Salvar Produto</button>
         </div>
     </div>
 
@@ -370,19 +369,19 @@
         
         function doRegister() {
             const name = document.getElementById('registerName').value.trim();
-            const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+            const username = document.getElementById('loginEmail').value.trim().toLowerCase();
             const pass = document.getElementById('registerPassword').value;
             const conf = document.getElementById('registerConfirmPassword').value;
             
-            if (!name || !email || !pass) { showAuthError('Preencha todos os campos'); return; }
+            if (!name || !username || !pass) { showAuthError('Preencha todos os campos'); return; }
             if (pass !== conf) { showAuthError('As senhas não coincidem'); return; }
             if (pass.length < 4) { showAuthError('Senha mínimo 4 caracteres'); return; }
             
             const users = getUsers();
-            if (users[email]) { showAuthError('E-mail já cadastrado'); return; }
+            if (users[username]) { showAuthError('Usuário já cadastrado'); return; }
             
             const user = {
-                name, email, passwordHash: simpleHash(pass),
+                name, username, passwordHash: simpleHash(pass),
                 createdAt: new Date().toISOString(),
                 produtos: [
                     { id: 1, nome: 'Cimento Portland CP II', ean_code: '7891234567890', categoria: 'Cimento', marca: 'Votoran', quantidade: 50 },
@@ -396,7 +395,7 @@
                 missoes: generateInitialMissions()
             };
             
-            users[email] = user;
+            users[username] = user;
             saveUsers(users);
             setCurrentUser(user);
             hideAuthError();
@@ -404,12 +403,12 @@
         }
         
         function doLogin() {
-            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const username = document.getElementById('loginEmail').value.trim().toLowerCase();
             const pass = document.getElementById('loginPassword').value;
-            if (!email || !pass) { showAuthError('Preencha todos os campos'); return; }
+            if (!username || !pass) { showAuthError('Preencha todos os campos'); return; }
             
             const users = getUsers();
-            const user = users[email];
+            const user = users[username];
             if (!user) { showAuthError('Usuário não encontrado'); return; }
             if (user.passwordHash !== simpleHash(pass)) { showAuthError('Senha incorreta'); return; }
             
@@ -427,6 +426,41 @@
         // App
         let produtos = [], lotes = [], missoes = [];
         let currentFilter = 'all', scannedCode = null, stream = null, isScanning = false, barcodeDetector = null, exportType = 'validade', editingProductId = null;
+        let categorias = ['Tintas', 'Cimento', 'Argamassa', 'Selantes', 'Cal', 'Vernizes'];
+        
+        // Category functions
+        function getCategorias() {
+            const cats = localStorage.getItem('validade_categorias');
+            if (cats) {
+                categorias = JSON.parse(cats);
+            }
+            return categorias;
+        }
+        
+        function saveCategorias() {
+            localStorage.setItem('validade_categorias', JSON.stringify(categorias));
+        }
+        
+        function addNovaCategoria() {
+            const input = document.getElementById('novaCategoria');
+            const novaCat = input.value.trim();
+            if (!novaCat) { alert('Digite o nome da categoria'); return; }
+            if (categorias.includes(novaCat)) { alert('Categoria já existe'); return; }
+            categorias.push(novaCat);
+            saveCategorias();
+            renderCategoryGrid();
+            input.value = '';
+            setCategory(novaCat, document.querySelector('#categoryGrid .category-chip:last-child'));
+            alert('Categoria "' + novaCat + '" adicionada!');
+        }
+        
+        function renderCategoryGrid() {
+            const grid = document.getElementById('categoryGrid');
+            if (!grid) return;
+            grid.innerHTML = categorias.map(cat => 
+                `<button type="button" class="category-chip" onclick="setCategory('${cat}', this)">${cat}</button>`
+            ).join('');
+        }
         
         function showApp() {
             const user = getCurrentUser();
@@ -435,6 +469,9 @@
             document.getElementById('app').classList.remove('hidden');
             document.getElementById('userAvatar').innerText = user.name.charAt(0).toUpperCase();
             loadUserData();
+            getCategorias();
+            renderCategoryGrid();
+            renderStockFilters();
             renderDashboard();
             renderProducts();
             renderExport();
@@ -454,11 +491,12 @@
             const user = getCurrentUser();
             if (!user) return;
             const users = getUsers();
-            users[user.email].produtos = produtos;
-            users[user.email].lotes = lotes;
-            users[user.email].missoes = missoes;
+            const key = user.username || user.email;
+            users[key].produtos = produtos;
+            users[key].lotes = lotes;
+            users[key].missoes = missoes;
             saveUsers(users);
-            setCurrentUser(users[user.email]);
+            setCurrentUser(users[key]);
         }
         
         // Missions
@@ -731,19 +769,26 @@
             renderProducts();
         }
         
+        function renderStockFilters() {
+            const container = document.getElementById('stockFilters');
+            if (!container) return;
+            const cats = getCategorias();
+            let html = '<button class="filter active" onclick="setStockFilter(\'all\', this)">Todos</button>';
+            html += '<button class="filter" onclick="setStockFilter(\'baixo\', this)">Estoque Baixo</button>';
+            cats.forEach(cat => {
+                html += `<button class="filter" onclick="setStockFilter('cat_${cat}', this)">${cat}</button>`;
+            });
+            container.innerHTML = html;
+        }
+        
         function renderProducts() {
             let filtered = [...produtos];
             
             if (stockFilter === 'baixo') {
                 filtered = filtered.filter(p => (p.quantidade || 0) <= (p.min_estoque_alerta || 10));
-            } else if (stockFilter === 'cimento') {
-                filtered = filtered.filter(p => p.categoria === 'Cimento' || p.categoria === 'Argamassa');
-            } else if (stockFilter === 'tintas') {
-                filtered = filtered.filter(p => p.categoria === 'Tintas' || p.categoria === 'Vernizes');
-            } else if (stockFilter === 'selantes') {
-                filtered = filtered.filter(p => p.categoria === 'Selantes');
-            } else if (stockFilter === 'cal') {
-                filtered = filtered.filter(p => p.categoria === 'Cal');
+            } else if (stockFilter.startsWith('cat_')) {
+                const cat = stockFilter.replace('cat_', '');
+                filtered = filtered.filter(p => p.categoria === cat);
             }
             
             filtered.sort((a, b) => (a.quantidade || 0) - (b.quantidade || 0));
