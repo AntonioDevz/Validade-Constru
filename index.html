@@ -317,6 +317,11 @@
 
         <!-- Stock -->
         <div id="stock" class="content tab-content hidden">
+            <div class="search-container" style="position: relative; margin-bottom: 12px;">
+                <input type="text" class="input" id="stockSearch" placeholder="🔍 Pesquisar produto..." style="width: 100%; padding-left: 40px; margin-bottom: 0;" oninput="handleStockSearch(this.value)">
+                <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px;">🔍</span>
+                <div id="searchSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 200px; overflow-y: auto; z-index: 100; display: none;"></div>
+            </div>
             <div class="filter-row" id="stockFilters">
                 <button class="filter active" onclick="setStockFilter('all', this)">Todos</button>
                 <button class="filter" onclick="setStockFilter('baixo', this)">Estoque Baixo</button>
@@ -512,7 +517,7 @@
         
         // App
         let produtos = [], lotes = [], missoes = [];
-        let currentFilter = 'all', scannedCode = null, stream = null, isScanning = false, barcodeDetector = null, exportType = 'validade', editingProductId = null;
+        let currentFilter = 'all', scannedCode = null, stream = null, isScanning = false, barcodeDetector = null, exportType = 'validade', editingProductId = null, stockSearchTerm = '';
         let categorias = ['Tintas', 'Cimento', 'Argamassa', 'Selantes', 'Cal', 'Vernizes'];
         
         // Category functions
@@ -649,6 +654,11 @@
             const titles = { dashboard: 'Dashboard', scanner: 'Scanner', stock: 'Lista de Estoque', dailylist: 'Lista Diária', export: 'Exportar', missions: 'Missões Diárias', chat: 'Assistente Virtual' };
             document.getElementById('pageTitle').innerText = titles[tabId];
             if (tabId === 'dailylist') renderDailyList();
+            if (tabId === 'stock') {
+                stockSearchTerm = '';
+                document.getElementById('stockSearch').value = '';
+                document.getElementById('searchSuggestions').style.display = 'none';
+            }
         }
         
         // Export
@@ -1087,102 +1097,48 @@
                             <div style="font-size: 10px; color: var(--text-light);">unidades</div>
                         </div>
                     </div>
-                `).join('');
-            }
-            
-            // Category chart - use produtos data
-            const c = { Cimento: '#6366F1', Argamassa: '#8B5CF6', Tintas: '#EC4899', Selantes: '#F97316', Cal: '#84CC16', Vernizes: '#14B8A6' };
-            
-            // Count products by category
-            const prodByCat = {};
-            produtos.forEach(p => {
-                const cat = p.categoria || 'Outros';
-                if (!prodByCat[cat]) prodByCat[cat] = 0;
-                prodByCat[cat]++;
-            });
-            
-            const max = Math.max(...Object.values(prodByCat).map(x => x || 1), 1);
-            document.getElementById('chart').innerHTML = Object.entries(prodByCat).map(([cat, count]) => `
-                <div class="bar-item">
-                    <div class="bar-label"><span>${cat}</span><span>${count} produtos</span></div>
-                    <div class="bar-bg">
-                        <div class="bar-fill" style="width: ${(count/max)*100}%; background: ${c[cat]||'#6B7280'}"></div>
-                    </div>
-                </div>
-            `).join('') || '<div style="text-align: center; padding: 20px; color: var(--text-light);">Nenhum produto cadastrado</div>';
+`).join('');
         }
         
-        // Stock
-        function setFilter(f, btn) { currentFilter = f; document.querySelectorAll('.filter').forEach(e => e.classList.remove('active')); btn.classList.add('active'); renderStock(); }
-        
-        let stockFilter = 'all';
-        
-        function setStockFilter(filter, btn) {
-            stockFilter = filter;
-            document.querySelectorAll('#stock .filter').forEach(e => e.classList.remove('active'));
-            btn.classList.add('active');
+        function handleStockSearch(term) {
+            stockSearchTerm = term;
             renderProducts();
-        }
-        
-        function renderStockFilters() {
-            const container = document.getElementById('stockFilters');
-            if (!container) return;
-            const cats = getCategorias();
-            let html = '<button class="filter active" onclick="setStockFilter(\'all\', this)">Todos</button>';
-            html += '<button class="filter" onclick="setStockFilter(\'baixo\', this)">Estoque Baixo</button>';
-            cats.forEach(cat => {
-                html += `<button class="filter" onclick="setStockFilter('cat_${cat}', this)">${cat}</button>`;
-            });
-            container.innerHTML = html;
-        }
-        
-        function renderProducts() {
-            let filtered = [...produtos];
             
-            if (stockFilter === 'baixo') {
-                filtered = filtered.filter(p => (p.quantidade || 0) <= (p.min_estoque_alerta || 10));
-            } else if (stockFilter.startsWith('cat_')) {
-                const cat = stockFilter.replace('cat_', '');
-                filtered = filtered.filter(p => p.categoria === cat);
-            }
-            
-            filtered.sort((a, b) => (a.quantidade || 0) - (b.quantidade || 0));
-            
-            const list = document.getElementById('productsList');
-            
-            if (filtered.length === 0) {
-                list.innerHTML = '<div class="empty">Nenhum produto encontrado</div>';
+            const suggestions = document.getElementById('searchSuggestions');
+            if (!term || term.length < 1) {
+                suggestions.style.display = 'none';
                 return;
             }
             
-            list.innerHTML = filtered.map(p => {
-                const qtd = p.quantidade || 0;
-                const isLow = qtd <= 10;
-                const status = isLow ? 'baixo' : 'ok';
-                
-                return `
-                    <div class="item ${status}">
-                        <div class="item-header">
-                            <div>
-                                <div class="item-name">${p.nome}</div>
-                                <div class="item-category">${p.categoria} • ${p.marca}</div>
-                                <div style="font-size: 11px; color: var(--text-light); margin-top: 4px;">EAN: ${p.ean_code || 'N/A'}</div>
-                            </div>
-                            <span class="badge ${isLow ? 'red' : 'green'}">
-                                ${isLow ? '⚠️ Estoque Baixo' : '✅ OK'}
-                            </span>
-                        </div>
-                        <div class="item-details">
-                            <span>Estoque: <strong>${qtd} unidades</strong></span>
-                            <span>Mínimo: ${p.min_estoque_alerta || 10}</span>
-                        </div>
-                        <div class="actions">
-                            <button class="btn btn-outline btn-small" onclick="editProduct(${p.id})">Editar</button>
-                            <button class="btn btn-outline btn-small" onclick="deleteProduct(${p.id})" style="border-color: var(--red); color: var(--red);">Excluir</button>
-                        </div>
+            const lowerTerm = term.toLowerCase();
+            const matches = produtos.filter(p => 
+                p.nome.toLowerCase().includes(lowerTerm) || 
+                (p.marca && p.marca.toLowerCase().includes(lowerTerm))
+            ).slice(0, 5);
+            
+            if (matches.length === 0) {
+                suggestions.style.display = 'none';
+                return;
+            }
+            
+            suggestions.innerHTML = matches.map(p => `
+                <div style="padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'" onclick="selectSuggestion('${p.nome.replace(/'/g, "\\'")}')">
+                    <div>
+                        <div style="font-weight: 600; font-size: 14px;">${p.nome}</div>
+                        <div style="font-size: 12px; color: #666;">${p.categoria} • ${p.marca || 'Sem marca'}</div>
                     </div>
-                `;
-            }).join('');
+                    <div style="font-size: 12px; color: ${p.quantidade <= 10 ? '#dc2626' : '#16a34a'}; font-weight: 600;">${p.quantidade} un.</div>
+                </div>
+            `).join('');
+            
+            suggestions.style.display = 'block';
+        }
+        
+        function selectSuggestion(nome) {
+            stockSearchTerm = nome;
+            document.getElementById('stockSearch').value = nome;
+            document.getElementById('searchSuggestions').style.display = 'none';
+            renderProducts();
         }
         
         function editProduct(id) {
@@ -1624,7 +1580,16 @@
         }
 
         // Init
-        window.onload = function() { const u = getCurrentUser(); if (u) { loadUserData(); showApp(); } };
+        window.onload = function() { 
+            document.addEventListener('click', function(e) {
+                const suggestions = document.getElementById('searchSuggestions');
+                const searchInput = document.getElementById('stockSearch');
+                if (suggestions && !suggestions.contains(e.target) && e.target !== searchInput) {
+                    suggestions.style.display = 'none';
+                }
+            });
+            const u = getCurrentUser(); if (u) { loadUserData(); showApp(); } 
+        };
     </script>
 </body>
 </html>
