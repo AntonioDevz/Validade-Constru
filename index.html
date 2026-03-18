@@ -240,6 +240,122 @@
                 padding: 10px;
             }
         }
+        
+        /* Budget Mobile Responsive */
+        .budget-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .budget-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .budget-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .budget-actions .btn {
+            font-size: 13px;
+            padding: 12px 10px;
+        }
+        .budget-table-wrapper {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .budget-table-header {
+            display: grid;
+            grid-template-columns: 50px 1fr 90px 90px 40px;
+            background: var(--primary);
+            padding: 10px 8px;
+            font-weight: 700;
+            font-size: 10px;
+            color: white;
+        }
+        .budget-table-cell {
+            padding: 0 6px;
+            display: flex;
+            align-items: center;
+        }
+        .budget-table-cell.right {
+            justify-content: flex-end;
+        }
+        .budget-products-list {
+            min-height: 100px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .budget-product-row {
+            display: grid;
+            grid-template-columns: 50px 1fr 90px 90px 40px;
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            align-items: center;
+        }
+        .budget-product-row:last-child {
+            border-bottom: none;
+        }
+        .budget-product-row:nth-child(even) {
+            background: #F9FAFB;
+        }
+        .budget-product-row > div:nth-child(3),
+        .budget-product-row > div:nth-child(4) {
+            text-align: right;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .budget-product-row > div:last-child {
+            text-align: center;
+        }
+        .budget-product-delete {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 600px) {
+            .budget-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .budget-card {
+                padding: 12px;
+            }
+            .budget-actions {
+                grid-template-columns: 1fr 1fr;
+            }
+            .budget-actions .btn {
+                font-size: 12px;
+                padding: 10px 8px;
+            }
+            .budget-table-header {
+                grid-template-columns: 40px 1fr 70px 70px 35px;
+                font-size: 9px;
+                padding: 8px 6px;
+            }
+            .budget-product-row {
+                grid-template-columns: 40px 1fr 70px 70px 35px;
+                font-size: 11px;
+                padding: 8px 6px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .budget-actions {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -549,75 +665,78 @@
         <!-- Header com Empresa e Documento -->
         <div class="card" style="margin-bottom: 12px;">
             <div class="section-title">📋 Orcamento / Pedido</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <div style="flex: 1; min-width: 150px;">
+                        <select class="input" id="budgetCompanySelect" onchange="selectBudgetCompany(this.value)" style="margin-bottom: 0;">
+                            <option value="">Selecione empresa...</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-outline btn-small" onclick="openCompanyModal()" style="white-space: nowrap;">+ Empresa</button>
+                    <button class="btn btn-outline btn-small" onclick="editSelectedCompany()" id="editCompanyBtn" style="display: none; white-space: nowrap;">✏️ Editar</button>
+                </div>
                 <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
-                <div style="flex: 1; min-width: 200px;">
-                    <select class="input" id="budgetCompanySelect" onchange="selectBudgetCompany(this.value)" style="margin-bottom: 0;">
-                        <option value="">Selecione a empresa...</option>
-                    </select>
-                </div>
-                <button class="btn btn-outline btn-small" onclick="openCompanyModal()">+ Empresa</button>
-                <button class="btn btn-outline btn-small" onclick="editSelectedCompany()" id="editCompanyBtn" style="display: none;">✏️ Editar</button>
-                <div style="display: flex; gap: 16px; align-items: center;">
-                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                        <input type="radio" name="budgetDocType" id="budgetTypeOrcamento" value="ORCAMENTO" checked> Orcamento
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                        <input type="radio" name="budgetDocType" id="budgetTypePedido" value="PEDIDO"> Pedido
-                    </label>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <strong>Data:</strong>
-                    <input type="text" id="budgetDate" style="border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; width: 120px;">
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 13px;">
+                            <input type="radio" name="budgetDocType" id="budgetTypeOrcamento" value="ORCAMENTO" checked> Orcamento
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 13px;">
+                            <input type="radio" name="budgetDocType" id="budgetTypePedido" value="PEDIDO"> Pedido
+                        </label>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
+                        <strong>Data:</strong>
+                        <input type="text" id="budgetDate" style="border: 1px solid var(--border); padding: 6px 10px; border-radius: 8px; width: 110px; font-size: 12px;">
+                    </div>
                 </div>
             </div>
-            <div id="budgetCompanyInfo" style="margin-top: 8px; font-size: 12px; color: var(--text-light);"></div>
+            <div id="budgetCompanyInfo" style="margin-top: 8px; font-size: 11px; color: var(--text-light);"></div>
         </div>
         
         <!-- Cliente e Financeiro -->
-        <div class="card-grid" style="grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
-            <div>
+        <div class="budget-grid">
+            <div class="budget-card">
                 <div class="section-title">Pessoa / Cliente</div>
-                <div style="position: relative;">
-                    <input type="text" class="input" id="budgetClientSearch" placeholder="Buscar cliente pelo nome..." autocomplete="off" oninput="searchClients(this.value)" onfocus="if(this.value)searchClients(this.value)">
-                    <div id="clientSearchResults" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 0 0 12px 12px; max-height: 200px; overflow-y: auto; z-index: 50; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>
+                <div style="position: relative; margin-bottom: 12px;">
+                    <input type="text" class="input" id="budgetClientSearch" placeholder="Buscar cliente..." autocomplete="off" oninput="searchClients(this.value)" onfocus="if(this.value)searchClients(this.value)" style="margin-bottom: 0;">
+                    <div id="clientSearchResults" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 0 0 12px 12px; max-height: 150px; overflow-y: auto; z-index: 50; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>
                 </div>
                 <input type="hidden" id="selectedClientId">
                 <div class="form-group">
                     <label class="form-label">Nome *</label>
-                    <input type="text" class="input" id="budgetClientName" placeholder="Nome completo" onchange="clearClientSelection()">
+                    <input type="text" class="input" id="budgetClientName" placeholder="Nome completo" onchange="clearClientSelection()" style="margin-bottom: 10px;">
                 </div>
                 <div class="form-group">
                     <label class="form-label">CPF/CNPJ</label>
-                    <input type="text" class="input" id="budgetClientCpf" placeholder="000.000.000-00">
+                    <input type="text" class="input" id="budgetClientCpf" placeholder="000.000.000-00" style="margin-bottom: 10px;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Telefone</label>
+                    <input type="text" class="input" id="budgetClientPhone" placeholder="(11) 99999-9999" style="margin-bottom: 10px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label class="form-label">Endereco</label>
+                    <input type="text" class="input" id="budgetClientAddress" placeholder="Endereco completo">
+                </div>
+                <button class="btn btn-outline btn-small" onclick="openClientModal()">+ Salvar Cliente</button>
+            </div>
+            <div class="budget-card">
+                <div class="section-title">Financeiro</div>
+                <div class="form-group">
+                    <label class="form-label">Entrada (R$)</label>
+                    <input type="text" class="input" id="budgetEntrada" placeholder="0,00" oninput="calculateBudgetTotals()" style="margin-bottom: 10px;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">A Vista (R$)</label>
+                    <input type="text" class="input" id="budgetVista" placeholder="0,00" oninput="calculateBudgetTotals()" style="margin-bottom: 10px;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Desconto (%)</label>
+                    <input type="number" class="input" id="budgetDiscount" placeholder="0" min="0" max="100" oninput="calculateBudgetTotals()" style="margin-bottom: 10px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label">Telefone / Endereco</label>
-                    <input type="text" class="input" id="budgetClientPhone" placeholder="(11) 99999-9999">
-                    <input type="text" class="input" id="budgetClientAddress" placeholder="Endereco completo" style="margin-top: 8px;">
-                </div>
-                <button class="btn btn-outline btn-small" onclick="openClientModal()" style="margin-top: 12px;">+ Salvar Cliente</button>
-            </div>
-            <div>
-                <div class="section-title">Financeiro</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="form-group">
-                        <label class="form-label">Entrada (R$)</label>
-                        <input type="text" class="input" id="budgetEntrada" placeholder="0,00" oninput="calculateBudgetTotals()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">A Vista (R$)</label>
-                        <input type="text" class="input" id="budgetVista" placeholder="0,00" oninput="calculateBudgetTotals()">
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="form-group">
-                        <label class="form-label">Desconto (%)</label>
-                        <input type="number" class="input" id="budgetDiscount" placeholder="0" min="0" max="100" oninput="calculateBudgetTotals()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Restante</label>
-                        <div style="background: #F3F4F6; padding: 14px; border-radius: 8px; font-weight: 700; color: var(--text);" id="budgetRestante">R$ 0,00</div>
-                    </div>
+                    <label class="form-label">Restante</label>
+                    <div style="background: #F3F4F6; padding: 14px; border-radius: 8px; font-weight: 700; color: var(--text); font-size: 18px;" id="budgetRestante">R$ 0,00</div>
                 </div>
             </div>
         </div>
@@ -628,46 +747,46 @@
                 <div class="section-title" style="margin-bottom: 0;">Produtos / Servicos</div>
                 <button class="btn btn-small btn-outline" onclick="openBudgetProductModal()">+ Adicionar</button>
             </div>
-            <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
-                <div style="display: grid; grid-template-columns: 60px 1fr 120px 120px 50px; background: #EFF6FF; padding: 12px; font-weight: 700; font-size: 13px; color: var(--primary); border-bottom: 2px solid var(--primary);">
-                    <div>Qtd</div>
-                    <div>Item</div>
-                    <div style="text-align: right;">Valor Unit.</div>
-                    <div style="text-align: right;">Total</div>
-                    <div></div>
+            <div class="budget-table-wrapper">
+                <div class="budget-table-header">
+                    <div class="budget-table-cell">Qtd</div>
+                    <div class="budget-table-cell">Item</div>
+                    <div class="budget-table-cell right">Valor Unit.</div>
+                    <div class="budget-table-cell right">Total</div>
+                    <div class="budget-table-cell"></div>
                 </div>
-                <div id="budgetProductsList" style="min-height: 120px; max-height: 350px; overflow-y: auto;"></div>
+                <div id="budgetProductsList" class="budget-products-list"></div>
             </div>
             <button class="btn btn-outline btn-small" onclick="openBudgetProductModal()" style="margin-top: 12px; width: 100%;">+ Adicionar Produto</button>
         </div>
         
         <!-- Totais e Acoes -->
-        <div class="card-grid" style="grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div>
+        <div class="budget-grid">
+            <div class="budget-card">
                 <div class="section-title">Observacoes</div>
                 <textarea class="input" id="budgetObservations" placeholder="Observacoes..." rows="3" style="margin-bottom: 0;"></textarea>
             </div>
-            <div>
+            <div class="budget-card">
                 <div class="section-title">Totais</div>
-                <div style="background: #F3F4F6; padding: 16px; border-radius: 12px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
+                <div style="background: #F3F4F6; padding: 14px; border-radius: 12px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
                         <span>Subtotal:</span>
                         <span id="budgetSubtotal">R$ 0,00</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
                         <span>Desconto:</span>
                         <span id="budgetDiscountValue">R$ 0,00</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 14px 16px; border-radius: 8px; font-size: 18px; font-weight: 700;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 12px 14px; border-radius: 8px; font-size: 16px; font-weight: 700;">
                         <span>TOTAL:</span>
                         <span id="budgetTotal">R$ 0,00</span>
                     </div>
                 </div>
-                <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
-                    <button class="btn" onclick="saveBudget()" style="flex: 1;">💾 Salvar</button>
-                    <button class="btn btn-outline" onclick="openSpreadsheetEditor()" style="flex: 1;">📋 Editar</button>
-                    <button class="btn btn-outline" onclick="printBudget()" style="flex: 1;">🖨️ Imprimir</button>
-                    <button class="btn btn-outline" onclick="exportBudgetAsPDF()" style="flex: 1;">📄 PDF</button>
+                <div class="budget-actions">
+                    <button class="btn" onclick="saveBudget()">💾 Salvar</button>
+                    <button class="btn btn-outline" onclick="openSpreadsheetEditor()">📋 Editar</button>
+                    <button class="btn btn-outline" onclick="printBudget()">🖨️ Imprimir</button>
+                    <button class="btn btn-outline" onclick="exportBudgetAsPDF()">📄 PDF</button>
                 </div>
             </div>
         </div>
