@@ -185,8 +185,64 @@
         .budget-client-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .budget-discount-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .budget-total-bar { display: flex; justify-content: space-between; align-items: center; }
-        .budget-actions-row { display: flex; gap: 12px; }
+        .budget-actions-row { display: flex; gap: 12px; flex-wrap: wrap; }
         .budget-item-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        
+        /* New Budget Layout Styles */
+        .budget-header-card { background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); color: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+        .budget-header-content { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .budget-header-content select { background: white; color: var(--text); border: none; padding: 10px 12px; border-radius: 8px; font-weight: 600; font-size: 16px; min-width: 200px; }
+        .budget-logo { font-size: 48px; }
+        .budget-company-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .budget-company-detail { font-size: 13px; opacity: 0.9; margin: 2px 0; }
+        .budget-header-content .btn { flex-shrink: 0; }
+        
+        .company-card { background: var(--surface); border-radius: 12px; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); }
+        .company-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .company-card-name { font-weight: 600; font-size: 15px; }
+        .company-card-details { font-size: 12px; color: var(--text-light); }
+        
+        .budget-doc-row { display: flex; justify-content: space-between; align-items: center; background: white; border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; flex-wrap: wrap; gap: 12px; }
+        .budget-doc-type { display: flex; gap: 20px; }
+        .budget-radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .budget-radio-label input { display: none; }
+        .budget-radio-box { width: 20px; height: 20px; border: 2px solid var(--primary); border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+        .budget-radio-label input:checked + .budget-radio-box { background: var(--primary); }
+        .budget-radio-label input:checked + .budget-radio-box::after { content: '✓'; color: white; font-size: 12px; }
+        .budget-date-field { display: flex; align-items: center; gap: 8px; }
+        
+        .budget-client-card, .budget-products-card, .budget-financial-card, .budget-observations-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+        .budget-section-title { font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--primary); text-transform: uppercase; letter-spacing: 1px; }
+        .budget-client-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .budget-client-field { }
+        .budget-client-field.full-width { grid-column: 1 / -1; }
+        .budget-input { margin-bottom: 0 !important; }
+        
+        .budget-table-header { display: grid; grid-template-columns: 60px 1fr 100px 100px 40px; gap: 8px; background: #EFF6FF; padding: 10px 12px; border-radius: 8px 8px 0 0; font-weight: 600; font-size: 12px; color: var(--primary); }
+        .budget-table-col { text-align: center; }
+        .budget-table-col.item { text-align: left; }
+        .budget-table-col.valor { text-align: right; }
+        
+        .budget-products-list { min-height: 100px; }
+        .budget-product-row { display: grid; grid-template-columns: 60px 1fr 100px 100px 40px; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center; }
+        .budget-product-row:last-child { border-bottom: none; }
+        .budget-product-qtd, .budget-product-price, .budget-product-total { text-align: center; font-size: 14px; }
+        .budget-product-price, .budget-product-total { color: var(--primary); font-weight: 600; }
+        .budget-product-total { font-weight: 700; }
+        .budget-product-name { font-size: 14px; font-weight: 500; }
+        .budget-product-delete { background: none; border: none; color: var(--red); cursor: pointer; font-size: 18px; padding: 4px; }
+        
+        .budget-add-product-btn { width: 100%; padding: 12px; background: #F3F4F6; border: 2px dashed var(--border); border-radius: 8px; color: var(--text-light); font-weight: 600; cursor: pointer; margin-top: 8px; transition: all 0.2s; }
+        .budget-add-product-btn:hover { border-color: var(--primary); color: var(--primary); background: #EFF6FF; }
+        
+        .budget-financial-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .budget-financial-item { }
+        .budget-financial-value { font-size: 18px; font-weight: 700; color: var(--text-light); padding: 8px 0; }
+        
+        .budget-total-section { background: #F3F4F6; border-radius: 8px; padding: 16px; }
+        .budget-total-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; }
+        .budget-discount-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 13px; }
+        .budget-grand-total { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 14px 16px; border-radius: 8px; font-size: 18px; font-weight: 700; }
         
         @media (min-width: 768px) {
             .budget-page { flex-direction: row; }
@@ -196,11 +252,14 @@
         }
         
         @media (max-width: 480px) {
-            .budget-client-row { grid-template-columns: 1fr; }
-            .budget-discount-row { grid-template-columns: 1fr; }
+            .budget-client-grid { grid-template-columns: 1fr; }
+            .budget-client-field.full-width { grid-column: 1; }
+            .budget-table-header { grid-template-columns: 50px 1fr 80px 80px 30px; font-size: 10px; }
+            .budget-product-row { grid-template-columns: 50px 1fr 80px 80px 30px; font-size: 12px; }
+            .budget-financial-grid { grid-template-columns: 1fr; }
+            .budget-doc-row { flex-direction: column; align-items: flex-start; }
             .budget-actions-row { flex-direction: column; }
-            .budget-total-bar { flex-direction: column; gap: 8px; text-align: center; }
-            .budget-item-actions { justify-content: center; }
+            .budget-actions-row .btn { width: 100%; }
         }
     </style>
 </head>
@@ -254,6 +313,46 @@
                 <button class="btn btn-outline" onclick="exportAllData()" style="margin-bottom: 10px;">📤 Exportar Meus Produtos</button>
                 <button class="btn btn-outline" onclick="document.getElementById('importProductsFile').click()">📥 Importar Produtos</button>
                 <input type="file" id="importProductsFile" accept=".json" onchange="importAllProducts(this)" style="display: none;">
+            </div>
+        </div>
+        
+        <!-- Company Modal -->
+        <div id="companyModal" class="modal">
+            <div class="modal-content" style="padding: 20px; max-width: 500px;">
+                <div class="modal-header">
+                    <div class="modal-title">🏢 Gerenciar Empresas</div>
+                    <button class="close-btn" onclick="closeCompanyModal()">&times;</button>
+                </div>
+                
+                <!-- Add New Company Form -->
+                <div class="card" style="margin-bottom: 16px;">
+                    <div class="section-title" id="companyFormTitle">+ Nova Empresa</div>
+                    <input type="hidden" id="editingCompanyId">
+                    <div class="form-group">
+                        <label class="form-label">Nome da Empresa *</label>
+                        <input type="text" class="input" id="companyName" placeholder="Nome da empresa">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">CNPJ</label>
+                        <input type="text" class="input" id="companyCnpj" placeholder="00.000.000/0001-00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Telefone/WhatsApp</label>
+                        <input type="text" class="input" id="companyPhone" placeholder="(11) 99999-9999">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Endereco</label>
+                        <input type="text" class="input" id="companyAddress" placeholder="Rua, numero, bairro, cidade - UF">
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 16px;">
+                        <button class="btn" onclick="saveCompany()" id="companySaveBtn">Salvar Empresa</button>
+                        <button class="btn btn-outline" onclick="cancelCompanyEdit()" id="companyCancelBtn" style="display: none;">Cancelar</button>
+                    </div>
+                </div>
+                
+                <!-- Company List -->
+                <div class="section-title">Empresas Cadastradas</div>
+                <div id="companyList" style="max-height: 300px; overflow-y: auto;"></div>
             </div>
         </div>
 
@@ -465,74 +564,130 @@
     <div id="budget" class="content tab-content hidden">
         <div class="budget-page">
             <div class="budget-main">
-                <div class="card">
-                    <div class="section-title">📋 Novo Orçamento</div>
-                    
-                    <!-- Client Info -->
-                    <div class="budget-client-row">
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Nome do Cliente *</label>
-                            <input type="text" class="input" id="budgetClientName" placeholder="Nome completo" style="margin-bottom: 0;">
+                <!-- Header with Company Selector -->
+                <div class="budget-header-card">
+                    <div class="budget-header-content">
+                        <div class="budget-logo">🏗️</div>
+                        <div class="budget-company-info">
+                            <select class="input" id="budgetCompanySelect" onchange="selectBudgetCompany(this.value)" style="margin-bottom: 8px; font-weight: 600; font-size: 16px;">
+                                <option value="">Selecione a empresa...</option>
+                            </select>
+                            <p class="budget-company-detail" id="budgetCompanyPhone"></p>
+                            <p class="budget-company-detail" id="budgetCompanyAddress"></p>
                         </div>
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Telefone/WhatsApp</label>
-                            <input type="text" class="input" id="budgetClientPhone" placeholder="(11) 99999-9999" style="margin-bottom: 0;">
+                        <button class="btn btn-small" onclick="openCompanyModal()" style="margin-left: auto;">🏢 Gerenciar</button>
+                    </div>
+                </div>
+                
+                <!-- Document Type & Date -->
+                <div class="budget-doc-row">
+                    <div class="budget-doc-type">
+                        <label class="budget-radio-label">
+                            <input type="radio" name="budgetDocType" id="budgetTypeOrcamento" value="ORCAMENTO" checked>
+                            <span class="budget-radio-box"></span>
+                            ORCAMENTO
+                        </label>
+                        <label class="budget-radio-label">
+                            <input type="radio" name="budgetDocType" id="budgetTypePedido" value="PEDIDO">
+                            <span class="budget-radio-box"></span>
+                            PEDIDO
+                        </label>
+                    </div>
+                    <div class="budget-date-field">
+                        <label class="form-label">Data:</label>
+                        <input type="text" class="input" id="budgetDate" style="margin-bottom: 0; width: 140px;">
+                    </div>
+                </div>
+                
+                <!-- Client Info -->
+                <div class="budget-client-card">
+                    <h3 class="budget-section-title">DADOS DO CLIENTE</h3>
+                    <div class="budget-client-grid">
+                        <div class="budget-client-field">
+                            <label class="form-label">Nome</label>
+                            <input type="text" class="input budget-input" id="budgetClientName" placeholder="Nome completo">
+                        </div>
+                        <div class="budget-client-field">
+                            <label class="form-label">CPF/CNPJ</label>
+                            <input type="text" class="input budget-input" id="budgetClientCpf" placeholder="000.000.000-00">
+                        </div>
+                        <div class="budget-client-field">
+                            <label class="form-label">Telefone</label>
+                            <input type="text" class="input budget-input" id="budgetClientPhone" placeholder="(11) 99999-9999">
+                        </div>
+                        <div class="budget-client-field full-width">
+                            <label class="form-label">Endereco</label>
+                            <input type="text" class="input budget-input" id="budgetClientAddress" placeholder="Rua, numero, bairro, cidade">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Endereço</label>
-                        <input type="text" class="input" id="budgetClientAddress" placeholder="Rua, número, bairro, cidade">
+                </div>
+                
+                <!-- Products Table -->
+                <div class="budget-products-card">
+                    <h3 class="budget-section-title">ITENS DO ORCAMENTO</h3>
+                    <div class="budget-table-header">
+                        <div class="budget-table-col qtd">Qtd</div>
+                        <div class="budget-table-col item">Item (Descricao)</div>
+                        <div class="budget-table-col valor">Valor Unit.</div>
+                        <div class="budget-table-col valor">Valor Total</div>
+                        <div class="budget-table-col action"></div>
                     </div>
-                    
-                    <!-- Products Section -->
-                    <div style="border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                            <div class="section-title" style="margin-bottom: 0;">Produtos</div>
-                            <button class="btn btn-small btn-outline" onclick="openBudgetProductModal()">+ Adicionar</button>
+                    <div id="budgetProductsList" class="budget-products-list"></div>
+                    <button class="budget-add-product-btn" onclick="openBudgetProductModal()">+ Adicionar Item</button>
+                </div>
+                
+                <!-- Financial Footer -->
+                <div class="budget-financial-card">
+                    <div class="budget-financial-grid">
+                        <div class="budget-financial-item">
+                            <label class="form-label">Entrada (R$)</label>
+                            <input type="text" class="input budget-input" id="budgetEntrada" placeholder="0,00" oninput="calculateBudgetTotals()">
                         </div>
-                        <div id="budgetProductsList"></div>
-                        
-                        <!-- Totals -->
-                        <div style="border-top: 2px solid var(--primary); padding-top: 16px; margin-top: 16px;">
-                            <div class="budget-total-bar" style="margin-bottom: 12px;">
-                                <span style="color: var(--text-light);">Subtotal:</span>
-                                <span id="budgetSubtotal" style="font-size: 18px; font-weight: 600;">R$ 0,00</span>
-                            </div>
-                            <div class="budget-discount-row">
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label class="form-label">Desconto (%)</label>
-                                    <input type="number" class="input" id="budgetDiscount" placeholder="0" min="0" max="100" oninput="calculateBudgetTotal()" style="margin-bottom: 0;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label class="form-label">Valor Desconto (R$)</label>
-                                    <input type="text" class="input" id="budgetDiscountValue" placeholder="0,00" oninput="calculateBudgetTotalFromFixed()" style="margin-bottom: 0;">
-                                </div>
-                            </div>
-                            <div class="budget-total-bar" style="background: var(--primary); color: white; padding: 16px; border-radius: 12px; margin-top: 12px;">
-                                <span style="font-size: 16px; font-weight: 600;">TOTAL:</span>
-                                <span id="budgetTotal" style="font-size: 24px; font-weight: 700;">R$ 0,00</span>
-                            </div>
+                        <div class="budget-financial-item">
+                            <label class="form-label">A Vista (R$)</label>
+                            <input type="text" class="input budget-input" id="budgetVista" placeholder="0,00" oninput="calculateBudgetTotals()">
                         </div>
-                        
-                        <!-- Observations -->
-                        <div class="form-group" style="margin-top: 16px; margin-bottom: 0;">
-                            <label class="form-label">Observações</label>
-                            <textarea class="input" id="budgetObservations" placeholder="Observações adicionais..." rows="2" style="margin-bottom: 0; resize: none;"></textarea>
-                        </div>
-                        
-                        <!-- Actions -->
-                        <div class="budget-actions-row" style="margin-top: 16px;">
-                            <button class="btn" onclick="saveBudget()">💾 Salvar</button>
-                            <button class="btn btn-outline" onclick="exportBudgetToExcel()">📥 Exportar Excel</button>
+                        <div class="budget-financial-item">
+                            <label class="form-label">Restante (R$)</label>
+                            <div class="budget-financial-value" id="budgetRestante">R$ 0,00</div>
                         </div>
                     </div>
+                    <div class="budget-total-section">
+                        <div class="budget-total-row">
+                            <span>Subtotal:</span>
+                            <span id="budgetSubtotal">R$ 0,00</span>
+                        </div>
+                        <div class="budget-discount-row">
+                            <div>
+                                <label class="form-label" style="display: inline-block; margin-right: 8px;">Desconto (%):</label>
+                                <input type="number" class="input" id="budgetDiscount" placeholder="0" min="0" max="100" oninput="calculateBudgetTotals()" style="width: 70px; margin-bottom: 0; display: inline-block;">
+                            </div>
+                            <div id="budgetDiscountValue">R$ 0,00</div>
+                        </div>
+                        <div class="budget-grand-total">
+                            <span>TOTAL GERAL:</span>
+                            <span id="budgetTotal">R$ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Observations -->
+                <div class="budget-observations-card">
+                    <label class="form-label">Observacoes</label>
+                    <textarea class="input" id="budgetObservations" placeholder="Observacoes adicionais..." rows="2"></textarea>
+                </div>
+                
+                <!-- Actions -->
+                <div class="budget-actions-row">
+                    <button class="btn" onclick="saveBudget()">💾 Salvar</button>
+                    <button class="btn btn-outline" onclick="exportBudgetToExcel()">📥 Exportar Excel</button>
                 </div>
             </div>
             
             <div class="budget-sidebar">
                 <!-- Budget History -->
                 <div class="card">
-                    <div class="section-title">📁 Histórico</div>
+                    <div class="section-title">📁 Historico</div>
                     <div id="budgetHistory"></div>
                 </div>
             </div>
@@ -644,12 +799,12 @@
         #chatFab { position: fixed; bottom: calc(90px + 20px); right: 20px; width: 60px; height: 60px; border-radius: 30px; background: #001882; color: white; border: none; font-size: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 999; }
         
         @media (min-width: 768px) {
-            .content { padding: 20px 24px; padding-bottom: calc(20px + 100px); }
             .products-grid { grid-template-columns: repeat(2, 1fr); }
             .budget-page { flex-direction: row; }
             .budget-main { flex: 1.2; }
             .budget-sidebar { flex: 0.8; }
             #chatFab { bottom: calc(100px + 24px); }
+            .content { padding: 20px 24px; padding-bottom: calc(20px + 100px); }
         }
         
         @media (min-width: 1024px) {
@@ -657,11 +812,10 @@
         }
         
         @media (max-width: 480px) {
-            .budget-client-row { grid-template-columns: 1fr; }
-            .budget-discount-row { grid-template-columns: 1fr; }
-            .budget-actions-row { flex-direction: column; }
-            .budget-total-bar { flex-direction: column; gap: 8px; text-align: center; }
-            .budget-item-actions { justify-content: center; }
+            .budget-client-grid { grid-template-columns: 1fr; }
+            .budget-table-header { grid-template-columns: 50px 1fr 80px 80px 30px; font-size: 10px; }
+            .budget-product-row { grid-template-columns: 50px 1fr 80px 80px 30px; font-size: 12px; }
+            .budget-financial-grid { grid-template-columns: 1fr; }
             .product-card { padding: 12px; }
             .product-stock { padding: 6px 10px; }
             .stock-qty { font-size: 18px; }
@@ -781,6 +935,7 @@
         let produtos = [], lotes = [], missoes = [];
         let currentFilter = 'all', scannedCode = null, stream = null, isScanning = false, barcodeDetector = null, exportType = 'validade', editingProductId = null;
         let budgetProducts = [], budgetHistory = [], editingBudgetId = null;
+        let companies = [], selectedCompanyId = null;
         let categorias = ['Tintas', 'Cimento', 'Argamassa', 'Selantes', 'Cal', 'Vernizes'];
         
         // Category functions
@@ -832,6 +987,7 @@
             renderExport();
             renderMissions();
             loadBudgetHistory();
+            loadCompanies();
             initChat();
         }
         
@@ -947,76 +1103,86 @@
             const list = document.getElementById('budgetProductsList');
             
             if (budgetProducts.length === 0) {
-                list.innerHTML = '<div class="budget-empty">Nenhum produto adicionado. Clique em "Adicionar Produto" para começar.</div>';
-                calculateBudgetTotal();
+                list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-light); font-size: 13px;">Nenhum item adicionado</div>';
+                calculateBudgetTotals();
                 return;
             }
             
             list.innerHTML = budgetProducts.map(p => `
-                <div class="budget-item">
-                    <div class="budget-item-header">
-                        <div>
-                            <div class="budget-item-name">${p.nome}</div>
-                            <div class="budget-item-details">
-                                <span>${p.quantidade} x ${formatCurrency(p.valor_unitario)}</span>
-                            </div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div class="budget-item-price">${formatCurrency(p.valor_total)}</div>
-                            <button onclick="removeBudgetProduct(${p.id})" style="background: none; border: none; color: var(--red); cursor: pointer; font-size: 12px;">🗑️ Remover</button>
-                        </div>
-                    </div>
+                <div class="budget-product-row">
+                    <div class="budget-product-qtd">${p.quantidade}</div>
+                    <div class="budget-product-name">${p.nome}</div>
+                    <div class="budget-product-price">${formatCurrency(p.valor_unitario)}</div>
+                    <div class="budget-product-total">${formatCurrency(p.valor_total)}</div>
+                    <button class="budget-product-delete" onclick="removeBudgetProduct(${p.id})">×</button>
                 </div>
             `).join('');
             
-            calculateBudgetTotal();
+            calculateBudgetTotals();
         }
         
-        function calculateBudgetTotal() {
+        function calculateBudgetTotals() {
             const subtotal = budgetProducts.reduce((sum, p) => sum + p.valor_total, 0);
             const discountPercent = parseFloat(document.getElementById('budgetDiscount').value) || 0;
             const discountValue = (subtotal * discountPercent) / 100;
             const total = subtotal - discountValue;
+            const entrada = parseCurrency(document.getElementById('budgetEntrada').value);
+            const vista = parseCurrency(document.getElementById('budgetVista').value);
+            const restante = total - entrada - vista;
             
             document.getElementById('budgetSubtotal').textContent = formatCurrency(subtotal);
+            document.getElementById('budgetDiscountValue').textContent = formatCurrency(discountValue);
             document.getElementById('budgetTotal').textContent = formatCurrency(total);
+            document.getElementById('budgetRestante').textContent = formatCurrency(restante);
+        }
+        
+        function calculateBudgetTotal() {
+            calculateBudgetTotals();
         }
         
         function calculateBudgetTotalFromFixed() {
-            const subtotal = budgetProducts.reduce((sum, p) => sum + p.valor_total, 0);
-            const discountValue = parseCurrency(document.getElementById('budgetDiscountValue').value);
-            const discountPercent = subtotal > 0 ? (discountValue / subtotal) * 100 : 0;
-            const total = subtotal - discountValue;
-            
-            document.getElementById('budgetDiscount').value = discountPercent.toFixed(2);
-            document.getElementById('budgetTotal').textContent = formatCurrency(total);
+            calculateBudgetTotals();
         }
         
         function saveBudget() {
             const clientName = document.getElementById('budgetClientName').value.trim();
             
+            if (!selectedCompanyId) { alert('Selecione uma empresa primeiro'); return; }
             if (!clientName) { alert('Digite o nome do cliente'); return; }
             if (budgetProducts.length === 0) { alert('Adicione pelo menos um produto'); return; }
+            
+            const company = companies.find(c => c.id === selectedCompanyId);
             
             const subtotal = budgetProducts.reduce((sum, p) => sum + p.valor_total, 0);
             const discountPercent = parseFloat(document.getElementById('budgetDiscount').value) || 0;
             const discountValue = (subtotal * discountPercent) / 100;
             const total = subtotal - discountValue;
+            const entrada = parseCurrency(document.getElementById('budgetEntrada').value);
+            const vista = parseCurrency(document.getElementById('budgetVista').value);
+            
+            const docType = document.querySelector('input[name="budgetDocType"]:checked')?.value || 'ORCAMENTO';
             
             const budget = {
                 id: editingBudgetId || Date.now(),
+                docType,
+                companyId: selectedCompanyId,
+                companyName: company?.name || '',
+                companyCnpj: company?.cnpj || '',
+                companyPhone: company?.phone || '',
+                companyAddress: company?.address || '',
                 clientName,
+                clientCpf: document.getElementById('budgetClientCpf').value.trim(),
                 clientPhone: document.getElementById('budgetClientPhone').value.trim(),
                 clientAddress: document.getElementById('budgetClientAddress').value.trim(),
                 products: [...budgetProducts],
                 subtotal,
                 discountPercent,
                 discountValue,
+                entrada,
+                vista,
                 total,
                 observations: document.getElementById('budgetObservations').value.trim(),
-                date: new Date().toISOString(),
-                storeName: getCurrentUser()?.name || 'Minha Loja',
-                storePhone: getCurrentUser()?.username || ''
+                date: new Date().toISOString()
             };
             
             const existingIndex = budgetHistory.findIndex(b => b.id === budget.id);
@@ -1029,21 +1195,185 @@
             saveBudgetHistory();
             renderBudgetHistory();
             
-            alert('Orçamento salvo com sucesso!');
+            alert('Orcamento salvo com sucesso!');
             editingBudgetId = null;
             clearBudgetForm();
         }
         
         function clearBudgetForm() {
+            selectedCompanyId = null;
+            document.getElementById('budgetCompanySelect').value = '';
+            document.getElementById('budgetCompanyPhone').textContent = '';
+            document.getElementById('budgetCompanyAddress').textContent = '';
             document.getElementById('budgetClientName').value = '';
+            document.getElementById('budgetClientCpf').value = '';
             document.getElementById('budgetClientPhone').value = '';
             document.getElementById('budgetClientAddress').value = '';
             document.getElementById('budgetDiscount').value = '';
-            document.getElementById('budgetDiscountValue').value = '';
+            document.getElementById('budgetEntrada').value = '';
+            document.getElementById('budgetVista').value = '';
             document.getElementById('budgetObservations').value = '';
+            document.getElementById('budgetTypeOrcamento').checked = true;
             budgetProducts = [];
             editingBudgetId = null;
             renderBudgetProducts();
+        }
+        
+        // Company Functions
+        function loadCompanies() {
+            const stored = localStorage.getItem('validade_companies');
+            if (stored) {
+                companies = JSON.parse(stored);
+            }
+            renderCompanySelect();
+            renderCompanyList();
+        }
+        
+        function saveCompanies() {
+            localStorage.setItem('validade_companies', JSON.stringify(companies));
+        }
+        
+        function saveCompany() {
+            const name = document.getElementById('companyName').value.trim();
+            const cnpj = document.getElementById('companyCnpj').value.trim();
+            const phone = document.getElementById('companyPhone').value.trim();
+            const address = document.getElementById('companyAddress').value.trim();
+            
+            if (!name) {
+                alert('Digite o nome da empresa');
+                return;
+            }
+            
+            const editingId = document.getElementById('editingCompanyId').value;
+            
+            if (editingId) {
+                const company = companies.find(c => c.id === editingId);
+                if (company) {
+                    company.name = name;
+                    company.cnpj = cnpj;
+                    company.phone = phone;
+                    company.address = address;
+                }
+            } else {
+                companies.push({
+                    id: Date.now(),
+                    name,
+                    cnpj,
+                    phone,
+                    address
+                });
+            }
+            
+            saveCompanies();
+            renderCompanySelect();
+            renderCompanyList();
+            cancelCompanyEdit();
+        }
+        
+        function editCompany(id) {
+            const company = companies.find(c => c.id === id);
+            if (!company) return;
+            
+            document.getElementById('editingCompanyId').value = company.id;
+            document.getElementById('companyName').value = company.name;
+            document.getElementById('companyCnpj').value = company.cnpj || '';
+            document.getElementById('companyPhone').value = company.phone || '';
+            document.getElementById('companyAddress').value = company.address || '';
+            
+            document.getElementById('companyFormTitle').textContent = 'Editar Empresa';
+            document.getElementById('companySaveBtn').textContent = 'Atualizar';
+            document.getElementById('companyCancelBtn').style.display = 'inline-block';
+        }
+        
+        function deleteCompany(id) {
+            if (!confirm('Deseja excluir esta empresa?')) return;
+            companies = companies.filter(c => c.id !== id);
+            saveCompanies();
+            renderCompanySelect();
+            renderCompanyList();
+            
+            if (selectedCompanyId === id) {
+                selectedCompanyId = null;
+                document.getElementById('budgetCompanySelect').value = '';
+                document.getElementById('budgetCompanyPhone').textContent = '';
+                document.getElementById('budgetCompanyAddress').textContent = '';
+            }
+        }
+        
+        function cancelCompanyEdit() {
+            document.getElementById('editingCompanyId').value = '';
+            document.getElementById('companyName').value = '';
+            document.getElementById('companyCnpj').value = '';
+            document.getElementById('companyPhone').value = '';
+            document.getElementById('companyAddress').value = '';
+            
+            document.getElementById('companyFormTitle').textContent = '+ Nova Empresa';
+            document.getElementById('companySaveBtn').textContent = 'Salvar Empresa';
+            document.getElementById('companyCancelBtn').style.display = 'none';
+        }
+        
+        function renderCompanySelect() {
+            const select = document.getElementById('budgetCompanySelect');
+            if (!select) return;
+            
+            let html = '<option value="">Selecione a empresa...</option>';
+            companies.forEach(c => {
+                const selected = selectedCompanyId === c.id ? 'selected' : '';
+                html += `<option value="${c.id}" ${selected}>${c.name}</option>`;
+            });
+            select.innerHTML = html;
+        }
+        
+        function renderCompanyList() {
+            const list = document.getElementById('companyList');
+            if (!list) return;
+            
+            if (companies.length === 0) {
+                list.innerHTML = '<div class="empty">Nenhuma empresa cadastrada</div>';
+                return;
+            }
+            
+            list.innerHTML = companies.map(c => `
+                <div class="budget-history-item" style="margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <div style="font-weight: 600;">${c.name}</div>
+                            <div style="font-size: 12px; color: var(--text-light);">
+                                ${c.cnpj ? 'CNPJ: ' + c.cnpj + '<br>' : ''}
+                                ${c.phone ? 'Tel: ' + c.phone + '<br>' : ''}
+                                ${c.address || ''}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-small btn-outline" onclick="editCompany(${c.id})">Editar</button>
+                            <button class="btn btn-small btn-outline" onclick="deleteCompany(${c.id})" style="color: var(--red); border-color: var(--red);">X</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function selectBudgetCompany(id) {
+            selectedCompanyId = id ? parseInt(id) : null;
+            const company = companies.find(c => c.id === selectedCompanyId);
+            
+            if (company) {
+                document.getElementById('budgetCompanyPhone').textContent = company.phone || '';
+                document.getElementById('budgetCompanyAddress').textContent = company.address || '';
+            } else {
+                document.getElementById('budgetCompanyPhone').textContent = '';
+                document.getElementById('budgetCompanyAddress').textContent = '';
+            }
+        }
+        
+        function openCompanyModal() {
+            renderCompanyList();
+            document.getElementById('companyModal').classList.add('show');
+        }
+        
+        function closeCompanyModal() {
+            cancelCompanyEdit();
+            document.getElementById('companyModal').classList.remove('show');
         }
         
         function loadBudgetHistory() {
@@ -1084,14 +1414,43 @@
             if (!budget) return;
             
             editingBudgetId = budget.id;
-            document.getElementById('budgetClientName').value = budget.clientName;
+            
+            // Company
+            if (budget.companyId) {
+                selectedCompanyId = budget.companyId;
+                document.getElementById('budgetCompanySelect').value = selectedCompanyId;
+                const company = companies.find(c => c.id === selectedCompanyId);
+                if (company) {
+                    document.getElementById('budgetCompanyPhone').textContent = company.phone || '';
+                    document.getElementById('budgetCompanyAddress').textContent = company.address || '';
+                }
+            } else {
+                selectedCompanyId = null;
+                document.getElementById('budgetCompanySelect').value = '';
+                document.getElementById('budgetCompanyPhone').textContent = '';
+                document.getElementById('budgetCompanyAddress').textContent = '';
+            }
+            
+            // Document type
+            if (budget.docType === 'PEDIDO') {
+                document.getElementById('budgetTypePedido').checked = true;
+            } else {
+                document.getElementById('budgetTypeOrcamento').checked = true;
+            }
+            
+            // Client data
+            document.getElementById('budgetClientName').value = budget.clientName || '';
+            document.getElementById('budgetClientCpf').value = budget.clientCpf || '';
             document.getElementById('budgetClientPhone').value = budget.clientPhone || '';
             document.getElementById('budgetClientAddress').value = budget.clientAddress || '';
+            
+            // Financial
             document.getElementById('budgetDiscount').value = budget.discountPercent || '';
-            document.getElementById('budgetDiscountValue').value = budget.discountValue ? formatCurrency(budget.discountValue).replace('R$ ', '') : '';
+            document.getElementById('budgetEntrada').value = budget.entrada ? formatCurrency(budget.entrada).replace('R$ ', '') : '';
+            document.getElementById('budgetVista').value = budget.vista ? formatCurrency(budget.vista).replace('R$ ', '') : '';
             document.getElementById('budgetObservations').value = budget.observations || '';
             
-            budgetProducts = [...budget.products];
+            budgetProducts = [...(budget.products || [])];
             renderBudgetProducts();
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1100,7 +1459,15 @@
         function exportBudgetToExcel() {
             if (budgetProducts.length === 0) { alert('Adicione produtos primeiro'); return; }
             
+            const company = companies.find(c => c.id === selectedCompanyId);
+            if (!company) {
+                alert('Selecione uma empresa primeiro');
+                return;
+            }
+            
+            const docType = document.querySelector('input[name="budgetDocType"]:checked')?.value || 'ORCAMENTO';
             const clientName = document.getElementById('budgetClientName').value.trim() || 'Cliente';
+            const clientCpf = document.getElementById('budgetClientCpf').value.trim();
             const clientPhone = document.getElementById('budgetClientPhone').value.trim();
             const clientAddress = document.getElementById('budgetClientAddress').value.trim();
             const observations = document.getElementById('budgetObservations').value.trim();
@@ -1109,32 +1476,67 @@
             const discountPercent = parseFloat(document.getElementById('budgetDiscount').value) || 0;
             const discountValue = (subtotal * discountPercent) / 100;
             const total = subtotal - discountValue;
+            const entrada = parseCurrency(document.getElementById('budgetEntrada').value);
+            const vista = parseCurrency(document.getElementById('budgetVista').value);
+            const restante = total - entrada - vista;
             
             let csv = '';
-            csv += 'ORÇAMENTO\n';
-            csv += `\nCliente,${clientName}`;
-            if (clientPhone) csv += `\nTelefone,${clientPhone}`;
-            if (clientAddress) csv += `\nEndereço,${clientAddress}`;
-            csv += `\nData,${formatDate(new Date().toISOString())}`;
-            csv += `\n\nPRODUTOS\n`;
-            csv += 'Produto,Quantidade,Valor Unitário,Valor Total\n';
             
+            // Header - Company Info
+            csv += company.name + '\n';
+            if (company.phone) csv += company.phone + '\n';
+            if (company.cnpj) csv += 'CNPJ: ' + company.cnpj + '\n';
+            if (company.address) csv += company.address + '\n';
+            csv += '\n';
+            
+            // Document Type and Date
+            csv += `${docType}                                  Data: ${formatDate(new Date().toISOString())}\n`;
+            csv += '\n';
+            
+            // Client Data
+            csv += 'DADOS DO CLIENTE\n';
+            csv += `Nome: ${clientName}\n`;
+            if (clientCpf) csv += `CPF/CNPJ: ${clientCpf}\n`;
+            if (clientPhone) csv += `Telefone: ${clientPhone}\n`;
+            if (clientAddress) csv += `Endereco: ${clientAddress}\n`;
+            csv += '\n';
+            
+            // Products Table Header
+            csv += 'ITENS DO ORCAMENTO\n';
+            csv += '--------------------------------------------------------------------------------\n';
+            csv += 'Qtd   Item                                                            Valor Unit.    Valor Total\n';
+            csv += '--------------------------------------------------------------------------------\n';
+            
+            // Products
             budgetProducts.forEach(p => {
-                csv += `"${p.nome}",${p.quantidade},${formatCurrency(p.valor_unitario)},${formatCurrency(p.valor_total)}\n`;
+                const nome = p.nome.padEnd(60).substring(0, 60);
+                csv += `${String(p.quantidade).padStart(3)}   ${nome}  ${formatCurrency(p.valor_unitario).padStart(12)}  ${formatCurrency(p.valor_total).padStart(12)}\n`;
             });
             
-            csv += '\n';
-            csv += `Subtotal,,${formatCurrency(subtotal)}\n`;
+            csv += '--------------------------------------------------------------------------------\n';
+            
+            // Financial Footer
+            csv += `\n`;
+            csv += `                              Subtotal:                              ${formatCurrency(subtotal)}\n`;
             if (discountPercent > 0) {
-                csv += `Desconto (${discountPercent}%),,${formatCurrency(discountValue)}\n`;
+                csv += `                        Desconto (${discountPercent}%):                            ${formatCurrency(discountValue)}\n`;
             }
-            csv += `TOTAL,,${formatCurrency(total)}\n`;
+            csv += '\n';
+            csv += `  Entrada: ${formatCurrency(entrada)}      A Vista: ${formatCurrency(vista)}      Restante: ${formatCurrency(restante)}\n`;
+            csv += '\n';
+            csv += '--------------------------------------------------------------------------------\n';
+            csv += `                              TOTAL GERAL:                           ${formatCurrency(total)}\n`;
+            csv += '--------------------------------------------------------------------------------\n';
             
             if (observations) {
-                csv += `\nObservações,\n"${observations}"\n`;
+                csv += `\nObservacoes: ${observations}\n`;
             }
             
-            downloadCSV(csv, `Orcamento_${clientName.replace(/\s+/g, '_')}_${formatDateFile(new Date().toISOString())}.csv`);
+            csv += '\n';
+            csv += '--------------------------------------------------------------------------------\n';
+            csv += 'Obrigado pela preferencia!\n';
+            
+            downloadCSV(csv, `${docType}_${clientName.replace(/\s+/g, '_')}_${formatDateFile(new Date().toISOString())}.csv`);
         }
         
         function downloadCSV(content, filename) {
@@ -1201,7 +1603,11 @@
             const titles = { dashboard: 'Dashboard', scanner: 'Scanner', stock: 'Lista de Estoque', dailylist: 'Lista Diária', budget: 'Orçamento', export: 'Exportar', missions: 'Missões Diárias', chat: 'Assistente Virtual' };
             document.getElementById('pageTitle').innerText = titles[tabId];
             if (tabId === 'dailylist') renderDailyList();
-            if (tabId === 'budget') { loadBudgetHistory(); renderBudgetHistory(); }
+            if (tabId === 'budget') { 
+                loadBudgetHistory(); 
+                renderBudgetHistory(); 
+                document.getElementById('budgetDate').value = formatDate(new Date().toISOString());
+            }
         }
         
         // Export
