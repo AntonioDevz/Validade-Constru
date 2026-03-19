@@ -41,12 +41,14 @@
         .user-avatar { width: 36px; height: 36px; border-radius: 18px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
         .logout-btn { background: none; border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 12px; color: var(--text-light); cursor: pointer; }
         
-        .tabs { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); display: flex; border-top: 1px solid var(--border); z-index: 100; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 20px rgba(0,0,0,0.1); overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .tab { flex: none; min-width: 70px; text-align: center; padding: 12px 8px; font-size: 11px; color: var(--text-light); cursor: pointer; background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .tabs { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); display: flex; border-top: 1px solid var(--border); z-index: 100; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 20px rgba(0,0,0,0.1); overflow-x: auto; -webkit-overflow-scrolling: touch; justify-content: space-around; }
+        .tab { flex: 1; max-width: 70px; text-align: center; padding: 10px 4px; color: var(--text-light); cursor: pointer; background: none; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; transition: all 0.2s ease; position: relative; }
+        .tab::after { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%) scaleX(0); width: 24px; height: 3px; background: var(--primary); border-radius: 0 0 3px 3px; transition: transform 0.2s ease; }
         .tab:active { background: var(--bg); transform: scale(0.95); }
-        .tab.active { color: var(--primary); font-weight: 600; }
-        .tab-icon { font-size: 20px; line-height: 1; }
-        .tab-label { font-size: 10px; white-space: nowrap; }
+        .tab.active { color: var(--primary); }
+        .tab.active::after { transform: translateX(-50%) scaleX(1); }
+        .tab-icon { width: 24px; height: 24px; }
+        .tab-icon svg { width: 100%; height: 100%; }
         
         .content { padding: 16px; padding-bottom: calc(16px + 90px); min-height: calc(100vh - 60px); }
         
@@ -101,6 +103,14 @@
         .bar-fill { height: 100%; border-radius: 4px; }
         
         .fab { position: fixed; bottom: calc(90px + 20px); right: 20px; width: 56px; height: 56px; border-radius: 28px; background: var(--primary); color: white; border: none; font-size: 24px; box-shadow: 0 4px 20px rgba(30, 64, 175, 0.5); cursor: pointer; z-index: 99; display: flex; align-items: center; justify-content: center; }
+        
+        @keyframes pointsPop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            30% { transform: translate(-50%, -50%) scale(1); }
+            80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -100%) scale(0.8); opacity: 0; }
+        }
         
         @media (min-width: 768px) {
             .fab { bottom: calc(100px + 24px); }
@@ -787,17 +797,157 @@
         
         <!-- User Menu Modal -->
         <div id="userMenu" class="modal" style="display: none;">
+            <div class="modal-content" style="padding: 0; max-width: 400px;">
+                <div style="background: linear-gradient(135deg, var(--primary) 0%, #3B82F6 100%); padding: 24px 20px; color: white; text-align: center; position: relative;">
+                    <button onclick="toggleUserMenu()" style="position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;">&times;</button>
+                    <div style="width: 72px; height: 72px; background: white; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: var(--primary);" id="menuUserAvatar">U</div>
+                    <div style="font-size: 18px; font-weight: 700;" id="menuUserName">Usuario</div>
+                    <div style="font-size: 13px; opacity: 0.9;" id="menuUserUsername">@usuario</div>
+                </div>
+                <div style="padding: 16px 20px; background: #FEF3C7; border-bottom: 1px solid #FDE68A;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <div style="font-size: 12px; color: #92400E;">Seus Pontos</div>
+                            <div style="font-size: 28px; font-weight: 700; color: #92400E;" id="menuUserPoints">0</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 12px; color: #92400E;">Ranking</div>
+                            <div style="font-size: 20px; font-weight: 700; color: #92400E;" id="menuUserRank">#1</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 8px 0;">
+                    <div style="padding: 14px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer;" onclick="openAccountData()" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='transparent'">
+                        <div style="width: 40px; height: 40px; background: #DBEAFE; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 15px;">Dados da Conta</div>
+                            <div style="font-size: 12px; color: var(--text-light);">Nome, usuario, senha</div>
+                        </div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                    <div style="padding: 14px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer;" onclick="openImportMenu()" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='transparent'">
+                        <div style="width: 40px; height: 40px; background: #DCFCE7; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 15px;">Importar Produtos</div>
+                            <div style="font-size: 12px; color: var(--text-light);">Excel (.xlsx, .csv) ou JSON</div>
+                        </div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                    <div style="padding: 14px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer;" onclick="exportAllData()" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='transparent'">
+                        <div style="width: 40px; height: 40px; background: #EDE9FE; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B21B6" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 15px;">Exportar Dados</div>
+                            <div style="font-size: 12px; color: var(--text-light);">Backup em JSON</div>
+                        </div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                    <div style="padding: 14px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer;" onclick="openPointsHistory()" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='transparent'">
+                        <div style="width: 40px; height: 40px; background: #FEF3C7; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 15px;">Historico de Pontos</div>
+                            <div style="font-size: 12px; color: var(--text-light);">Minhas missoes e pontos</div>
+                        </div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div style="padding: 16px 20px; border-top: 1px solid var(--border);">
+                    <button class="btn btn-outline" onclick="doLogout()" style="border-color: var(--red); color: var(--red);">Sair da Conta</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Account Data Modal -->
+        <div id="accountModal" class="modal">
             <div class="modal-content" style="padding: 20px;">
                 <div class="modal-header">
-                    <div class="modal-title">⚙️ Configurações</div>
-                    <button class="close-btn" onclick="toggleUserMenu()">&times;</button>
+                    <div class="modal-title">👤 Dados da Conta</div>
+                    <button class="close-btn" onclick="closeAccountModal()">&times;</button>
                 </div>
-                <p style="margin-bottom: 16px; color: var(--text-light);">Gerencie seus dados</p>
-                <button class="btn btn-outline" onclick="exportAllData()" style="margin-bottom: 10px;">📤 Exportar Meus Produtos</button>
-                <button class="btn btn-outline" onclick="document.getElementById('importProductsFile').click()" style="margin-bottom: 10px;">📥 Importar Produtos (JSON)</button>
-                <input type="file" id="importProductsFile" accept=".json" onchange="importAllProducts(this)" style="display: none;">
-                <button class="btn btn-outline" onclick="document.getElementById('importExcelFile').click()">📊 Importar Excel/CSV</button>
-                <input type="file" id="importExcelFile" accept=".csv,.xlsx,.xls" onchange="importExcelCSV(this)" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">Nome</label>
+                    <input type="text" class="input" id="accountName" placeholder="Seu nome">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Usuario</label>
+                    <input type="text" class="input" id="accountUsername" placeholder="Nome de usuario" readonly style="background: #F3F4F6;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Senha Atual</label>
+                    <div style="position: relative;">
+                        <input type="password" class="input" id="accountCurrentPassword" placeholder="••••••••" readonly style="padding-right: 50px;">
+                        <button type="button" onclick="togglePasswordVisibility('current')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px;">👁️</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nova Senha (deixe vazio para manter)</label>
+                    <div style="position: relative;">
+                        <input type="password" class="input" id="accountPassword" placeholder="••••••••">
+                        <button type="button" onclick="togglePasswordVisibility('new')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px;">👁️</button>
+                    </div>
+                </div>
+                <button class="btn" onclick="saveAccountData()">Salvar Alteracoes</button>
+            </div>
+        </div>
+        
+        <!-- Import Menu Modal -->
+        <div id="importModal" class="modal">
+            <div class="modal-content" style="padding: 20px;">
+                <div class="modal-header">
+                    <div class="modal-title">📥 Importar Produtos</div>
+                    <button class="close-btn" onclick="closeImportModal()">&times;</button>
+                </div>
+                <p style="margin-bottom: 16px; color: var(--text-light); font-size: 13px;">Escolha o formato do arquivo:</p>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div onclick="document.getElementById('importExcelFile').click()" style="padding: 20px; background: white; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 16px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+                        <div style="width: 48px; height: 48px; background: #DCFCE7; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px;">Arquivo Excel</div>
+                            <div style="font-size: 12px; color: var(--text-light);">.xlsx, .xls, .csv</div>
+                        </div>
+                    </div>
+                    <div onclick="document.getElementById('importProductsFile').click()" style="padding: 20px; background: white; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 16px; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+                        <div style="width: 48px; height: 48px; background: #DBEAFE; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px;">Arquivo JSON</div>
+                            <div style="font-size: 12px; color: var(--text-light);">Exportacao anterior</div>
+                        </div>
+                    </div>
+                </div>
+                <input type="file" id="importProductsFile" accept=".json" onchange="importAllProducts(this); closeImportModal();" style="display: none;">
+                <input type="file" id="importExcelFile" accept=".csv,.xlsx,.xls" onchange="importExcelCSV(this); closeImportModal();" style="display: none;">
+            </div>
+        </div>
+        
+        <!-- Points History Modal -->
+        <div id="pointsHistoryModal" class="modal">
+            <div class="modal-content" style="padding: 20px; max-height: 80vh;">
+                <div class="modal-header">
+                    <div class="modal-title">🏆 Historico de Pontos</div>
+                    <button class="close-btn" onclick="closePointsHistory()">&times;</button>
+                </div>
+                <div style="background: linear-gradient(135deg, #92400E 0%, #B45309 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 16px; text-align: center;">
+                    <div style="font-size: 12px; opacity: 0.9;">Total de Pontos</div>
+                    <div style="font-size: 36px; font-weight: 700;" id="pointsHistoryTotal">0</div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-light);">
+                        <span>Missao</span>
+                        <span>Pontos</span>
+                    </div>
+                </div>
+                <div id="pointsHistoryList" style="max-height: 300px; overflow-y: auto;"></div>
             </div>
         </div>
         
@@ -1003,9 +1153,17 @@
 
         <!-- Missions -->
         <div id="missions" class="content tab-content hidden">
-            <div class="daily-mission-banner">
-                <h3>🎯 Missões Diárias</h3>
-                <p>Complete as tarefas e ganhe pontos!</p>
+            <div style="background: linear-gradient(135deg, var(--purple) 0%, #A78BFA 100%); color: white; border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="font-size: 18px; margin-bottom: 4px;">🎯 Missões Diárias</h3>
+                        <p style="font-size: 13px; opacity: 0.9;">Complete as tarefas e ganhe pontos!</p>
+                    </div>
+                    <div style="text-align: center; background: rgba(255,255,255,0.2); padding: 12px 16px; border-radius: 12px;">
+                        <div style="font-size: 11px; opacity: 0.9;">Total</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="missionsTotalPoints">0</div>
+                    </div>
+                </div>
             </div>
             <div id="missionsList"></div>
             <button class="btn" onclick="generateDailyMissions()" style="margin-top: 16px;">🔄 Gerar Novas Missões</button>
@@ -1087,14 +1245,87 @@
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab active" onclick="showTab('dashboard', this)"><span class="tab-icon">📊</span><span class="tab-label">Dashboard</span></button>
-            <button class="tab" onclick="showTab('scanner', this)"><span class="tab-icon">📷</span><span class="tab-label">Scanner</span></button>
-            <button class="tab" onclick="showTab('stock', this)"><span class="tab-icon">📦</span><span class="tab-label">Estoque</span></button>
-            <button class="tab" onclick="showTab('dailylist', this)"><span class="tab-icon">📝</span><span class="tab-label">Lista</span></button>
-            <button class="tab" onclick="showTab('budget', this)"><span class="tab-icon">📋</span><span class="tab-label">Orçamento</span></button>
-            <button class="tab" onclick="showTab('export', this)"><span class="tab-icon">📥</span><span class="tab-label">Exportar</span></button>
-            <button class="tab" onclick="showTab('retirada', this)"><span class="tab-icon">🚚</span><span class="tab-label">Retirada</span></button>
-            <button class="tab" onclick="showTab('missions', this)"><span class="tab-icon">🎯</span><span class="tab-label">Missões</span></button>
+            <button class="tab active" onclick="showTab('dashboard', this)">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    </svg>
+                </span>
+            </button>
+            <button class="tab" onclick="showTab('scanner', this)">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                        <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                        <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                        <line x1="7" y1="12" x2="17" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <button class="tab" onclick="showTab('stock', this)">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <button class="tab" onclick="showTab('dailylist', this)">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="8" y1="6" x2="21" y2="6"/>
+                        <line x1="8" y1="12" x2="21" y2="12"/>
+                        <line x1="8" y1="18" x2="21" y2="18"/>
+                        <line x1="3" y1="6" x2="3.01" y2="6"/>
+                        <line x1="3" y1="12" x2="3.01" y2="12"/>
+                        <line x1="3" y1="18" x2="3.01" y2="18"/>
+                    </svg>
+                </span>
+            </button>
+            <button class="tab" onclick="showTab('budget', this)">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                </span>
+            </button>
+            <button class="tab" onclick="showTab('export', this)">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                </span>
+            </button>
+            <button class="tab" onclick="showTab('retirada', this)">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="3" width="15" height="13"/>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                        <circle cx="5.5" cy="18.5" r="2.5"/>
+                        <circle cx="18.5" cy="18.5" r="2.5"/>
+                    </svg>
+                </span>
+            </button>
+            <button class="tab" onclick="showTab('missions', this)">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <circle cx="12" cy="12" r="6"/>
+                        <circle cx="12" cy="12" r="2"/>
+                    </svg>
+                </span>
+            </button>
         </div>
     </div>
 
@@ -1289,7 +1520,6 @@
                 </div>
                 <div id="budgetProductsList" class="budget-products-list"></div>
             </div>
-            <button class="btn btn-outline btn-small" onclick="openBudgetProductModal()" style="margin-top: 12px; width: 100%;">+ Adicionar Produto</button>
         </div>
         
         <!-- Totais e Acoes -->
@@ -1332,30 +1562,44 @@
 
     <!-- Budget Product Modal -->
     <div id="budgetProductModal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content" style="max-width: 550px;">
             <div class="modal-header">
                 <div class="modal-title">Adicionar Produto</div>
                 <button class="close-btn" onclick="closeBudgetProductModal()">&times;</button>
             </div>
+            
+            <!-- Search Bar for Existing Products -->
             <div class="form-group">
-                <label class="form-label">Nome do Produto *</label>
-                <input type="text" class="input" id="budgetProductName" placeholder="Ex: Tinta Acrílica">
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label">Quantidade *</label>
-                    <input type="number" class="input" id="budgetProductQty" placeholder="1" min="1" style="margin-bottom: 0;">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label">Valor Unitário (R$) *</label>
-                    <input type="text" class="input" id="budgetProductPrice" placeholder="0,00" style="margin-bottom: 0;">
+                <label class="form-label">Buscar Produto Existente</label>
+                <div style="position: relative;">
+                    <input type="text" class="input" id="budgetProductSearch" placeholder="Digite para buscar produtos..." autocomplete="off" oninput="searchBudgetProducts(this.value)" onfocus="if(this.value)searchBudgetProducts(this.value)">
+                    <div id="budgetProductSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 0 0 12px 12px; max-height: 200px; overflow-y: auto; z-index: 10; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>
                 </div>
             </div>
-            <div class="budget-total-bar" style="background: #F3F4F6; padding: 14px; border-radius: 8px; margin: 16px 0;">
-                <span style="color: var(--text-light); font-size: 14px;">Valor Total:</span>
-                <span id="budgetProductTotal" style="font-size: 20px; font-weight: 700; color: var(--primary);">R$ 0,00</span>
+            
+            <div style="border-top: 1px dashed var(--border); padding-top: 16px; margin-top: 8px;">
+                <div style="font-size: 12px; color: var(--text-light); margin-bottom: 12px; text-align: center;">— ou digite um novo produto —</div>
+                
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label class="form-label">Nome do Produto *</label>
+                    <input type="text" class="input" id="budgetProductName" placeholder="Ex: Tinta Acrílica">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Quantidade *</label>
+                        <input type="number" class="input" id="budgetProductQty" placeholder="1" min="1" style="margin-bottom: 0;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Valor Unitário (R$) *</label>
+                        <input type="text" class="input" id="budgetProductPrice" placeholder="0,00" style="margin-bottom: 0;">
+                    </div>
+                </div>
+                <div class="budget-total-bar" style="background: #F3F4F6; padding: 14px; border-radius: 8px; margin-top: 12px;">
+                    <span style="color: var(--text-light); font-size: 14px;">Valor Total:</span>
+                    <span id="budgetProductTotal" style="font-size: 20px; font-weight: 700; color: var(--primary);">R$ 0,00</span>
+                </div>
+                <button class="btn" onclick="addBudgetProduct()" style="margin-top: 12px;">Adicionar ao Orçamento</button>
             </div>
-            <button class="btn" onclick="addBudgetProduct()">Adicionar ao Orçamento</button>
         </div>
     </div>
 
@@ -1411,24 +1655,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Chat Modal -->
-    <div id="chatModal" class="modal">
-        <div class="modal-content" style="max-width: 500px; height: 80vh; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden;">
-            <div class="modal-header" style="background: #001882; color: white; border-radius: 0;">
-                <div class="modal-title" style="color: white;">💬 Assistente Virtual</div>
-                <button class="close-btn" onclick="closeChatModal()" style="color: white;">&times;</button>
-            </div>
-            <div id="chatMessages" style="flex: 1; overflow-y: auto; padding: 16px; background: #F8F9FA; display: flex; flex-direction: column;"></div>
-            <div style="padding: 12px 16px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 10px; align-items: center;">
-                <input type="text" class="input" id="chatInput" placeholder="Digite sua pergunta..." style="flex: 1; margin-bottom: 0; height: 44px; border-radius: 22px; border: 2px solid #E5E7EB; padding: 0 16px;" onkeypress="if(event.key==='Enter')sendChatMessage()">
-                <button onclick="sendChatMessage()" style="width: 44px; height: 44px; border-radius: 22px; background: #001882; color: white; border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;">➤</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Floating Chat Button -->
-    <button id="chatFab" onclick="openChatModal()" style="position: fixed; bottom: calc(90px + 20px); right: 20px; width: 60px; height: 60px; border-radius: 30px; background: #001882; color: white; border: none; font-size: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 999;">💬</button>
     
     <style>
         /* Daily List Styles */
@@ -1484,13 +1710,10 @@
         .tab-icon { font-size: 20px; line-height: 1; }
         .tab-label { font-size: 10px; white-space: nowrap; }
         
-        #chatFab { position: fixed; bottom: calc(90px + 20px); right: 20px; width: 60px; height: 60px; border-radius: 30px; background: #001882; color: white; border: none; font-size: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; z-index: 999; }
-        
         /* Responsive */
         @media (min-width: 768px) {
             .products-grid { grid-template-columns: repeat(2, 1fr); }
             .content { padding: 24px 32px; padding-bottom: calc(24px + 100px); }
-            #chatFab { bottom: calc(100px + 24px); }
         }
         
         @media (min-width: 1024px) {
@@ -1712,7 +1935,6 @@
             loadBudgetHistory();
             loadCompanies();
             loadClients();
-            initChat();
         }
         
         function loadUserData() {
@@ -1752,8 +1974,6 @@
         
         function loadCompanies() { if (typeof populateCompanySelect === 'function') populateCompanySelect(); }
         
-        function initChat() { if (typeof setupChat === 'function') setupChat(); }
-        
         // Missions
         function generateInitialMissions() {
             return [
@@ -1778,6 +1998,10 @@
         }
         
         function renderMissions() {
+            const user = getCurrentUser();
+            const totalPontos = user.pontos || 0;
+            document.getElementById('missionsTotalPoints').textContent = totalPontos;
+            
             const concluidas = missoes.filter(m => m.completa).length;
             const progresso = Math.round((concluidas / missoes.length) * 100);
             let html = `<div class="mission-card"><div class="mission-header"><span class="mission-title">Progresso do Dia</span><span class="mission-progress">${concluidas}/${missoes.length}</span></div><div class="mission-progress-bar"><div class="mission-progress-fill" style="width: ${progresso}%"></div></div></div>`;
@@ -1790,11 +2014,72 @@
         }
         
         // Budget Functions
+        function searchBudgetProducts(search) {
+            const container = document.getElementById('budgetProductSuggestions');
+            const nameInput = document.getElementById('budgetProductName');
+            
+            if (!search || search.length < 2) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            const term = search.toLowerCase().trim();
+            const allProducts = getAllProducts();
+            
+            const matches = allProducts.filter(p => 
+                p.nome.toLowerCase().includes(term) ||
+                (p.marca && p.marca.toLowerCase().includes(term)) ||
+                (p.categoria && p.categoria.toLowerCase().includes(term))
+            ).slice(0, 10);
+            
+            if (matches.length === 0) {
+                container.innerHTML = '<div style="padding: 12px; color: var(--text-light); font-size: 13px;">Nenhum produto encontrado</div>';
+            } else {
+                container.innerHTML = matches.map(p => {
+                    const preco = p.preco_venda || 0;
+                    return `
+                        <div onclick="selectBudgetProduct('${p.nome.replace(/'/g, "\\'")}', ${preco})" 
+                             style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center;"
+                             onmouseover="this.style.background='#F3F4F6'"
+                             onmouseout="this.style.background='white'">
+                            <div>
+                                <div style="font-weight: 500; font-size: 14px;">${p.nome}</div>
+                                <div style="font-size: 11px; color: var(--text-light);">${p.categoria || ''} ${p.marca ? '• ' + p.marca : ''}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; color: var(--primary); font-size: 14px;">R$ ${preco.toFixed(2).replace('.', ',')}</div>
+                                <div style="font-size: 10px; color: var(--text-light);">Estoque: ${p.quantidade || 0}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            container.style.display = 'block';
+        }
+        
+        function selectBudgetProduct(name, price) {
+            const nameInput = document.getElementById('budgetProductName');
+            const priceInput = document.getElementById('budgetProductPrice');
+            const searchInput = document.getElementById('budgetProductSearch');
+            const container = document.getElementById('budgetProductSuggestions');
+            
+            nameInput.value = name;
+            priceInput.value = formatCurrencyInput(price);
+            searchInput.value = '';
+            container.style.display = 'none';
+            
+            calculateBudgetProductTotal();
+            nameInput.focus();
+        }
+        
         function openBudgetProductModal() {
+            document.getElementById('budgetProductSearch').value = '';
             document.getElementById('budgetProductName').value = '';
             document.getElementById('budgetProductQty').value = '1';
             document.getElementById('budgetProductPrice').value = '';
             document.getElementById('budgetProductTotal').textContent = 'R$ 0,00';
+            document.getElementById('budgetProductSuggestions').style.display = 'none';
             document.getElementById('budgetProductModal').classList.add('show');
             
             const qtyInput = document.getElementById('budgetProductQty');
@@ -1804,6 +2089,7 @@
         }
         
         function closeBudgetProductModal() {
+            document.getElementById('budgetProductSuggestions').style.display = 'none';
             document.getElementById('budgetProductModal').classList.remove('show');
         }
         
@@ -3171,10 +3457,47 @@
         function toggleMission(id) {
             const m = missoes.find(x => x.id === id);
             if (!m) return;
+            
+            const wasCompleted = m.completa;
             m.completa = !m.completa;
             m.atual = m.completa ? m.meta : 0;
+            
+            if (m.completa && !wasCompleted) {
+                addPoints(m.pontos, m.titulo);
+            }
+            
             saveUserData();
             renderMissions();
+        }
+        
+        function addPoints(pontos, missao) {
+            const user = getCurrentUser();
+            if (!user) return;
+            
+            user.pontos = (user.pontos || 0) + pontos;
+            
+            if (!user.pontosHistory) user.pontosHistory = [];
+            user.pontosHistory.unshift({
+                pontos: pontos,
+                missao: missao,
+                data: new Date().toLocaleDateString('pt-BR')
+            });
+            
+            if (user.pontosHistory.length > 50) {
+                user.pontosHistory = user.pontosHistory.slice(0, 50);
+            }
+            
+            saveUsers();
+            
+            showPointsAnimation(pontos);
+        }
+        
+        function showPointsAnimation(pontos) {
+            const anim = document.createElement('div');
+            anim.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #92400E, #B45309); color: white; padding: 24px 40px; border-radius: 16px; font-size: 24px; font-weight: 700; z-index: 9999; animation: pointsPop 1.5s ease forwards; pointer-events: none;';
+            anim.innerHTML = '+' + pontos + ' pts!';
+            document.body.appendChild(anim);
+            setTimeout(() => anim.remove(), 1500);
         }
         
         function updateMissionProgress(tipo) {
@@ -3192,7 +3515,7 @@
             document.getElementById(tabId).classList.remove('hidden');
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
             btn.classList.add('active');
-            const titles = { dashboard: 'Dashboard', scanner: 'Scanner', stock: 'Lista de Estoque', dailylist: 'Lista Diária', budget: 'Orçamento', export: 'Exportar', retirada: 'Retiradas', missions: 'Missões Diárias', chat: 'Assistente Virtual' };
+            const titles = { dashboard: 'Dashboard', scanner: 'Scanner', stock: 'Lista de Estoque', dailylist: 'Lista Diária', budget: 'Orçamento', export: 'Exportar', retirada: 'Retiradas', missions: 'Missões Diárias' };
             document.getElementById('pageTitle').innerText = titles[tabId] || 'Validade Constru';
             if (tabId === 'dailylist') renderDailyList();
             if (tabId === 'budget') { 
@@ -3641,6 +3964,102 @@
         function toggleUserMenu() {
             const menu = document.getElementById('userMenu');
             menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+            
+            if (menu.style.display === 'flex') {
+                const user = getCurrentUser();
+                if (user) {
+                    document.getElementById('menuUserAvatar').textContent = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+                    document.getElementById('menuUserName').textContent = user.name || 'Usuario';
+                    document.getElementById('menuUserUsername').textContent = '@' + (user.username || 'usuario');
+                    document.getElementById('menuUserPoints').textContent = user.pontos || 0;
+                    document.getElementById('menuUserRank').textContent = '#' + calculateUserRank(user.pontos || 0);
+                }
+            }
+        }
+        
+        function calculateUserRank(pontos) {
+            const ranks = [0, 50, 150, 350, 700, 1200, 2000, 3500, 6000, 10000];
+            for (let i = ranks.length - 1; i >= 0; i--) {
+                if (pontos >= ranks[i]) return i + 1;
+            }
+            return 1;
+        }
+        
+        function openAccountData() {
+            const user = getCurrentUser();
+            if (user) {
+                document.getElementById('accountName').value = user.name || '';
+                document.getElementById('accountUsername').value = user.username || '';
+                document.getElementById('accountCurrentPassword').value = user.password || '';
+                document.getElementById('accountPassword').value = '';
+            }
+            document.getElementById('accountModal').classList.add('show');
+        }
+        
+        function closeAccountModal() {
+            document.getElementById('accountModal').classList.remove('show');
+        }
+        
+        function togglePasswordVisibility(type) {
+            const input = type === 'current' ? document.getElementById('accountCurrentPassword') : document.getElementById('accountPassword');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+        
+        function saveAccountData() {
+            const name = document.getElementById('accountName').value.trim();
+            const password = document.getElementById('accountPassword').value;
+            
+            if (!name) {
+                alert('Digite o nome');
+                return;
+            }
+            
+            const user = getCurrentUser();
+            if (user) {
+                user.name = name;
+                if (password) {
+                    user.password = password;
+                }
+                saveUsers();
+                document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+                closeAccountModal();
+                alert('Dados atualizados com sucesso!');
+            }
+        }
+        
+        function openImportMenu() {
+            document.getElementById('importModal').classList.add('show');
+        }
+        
+        function closeImportModal() {
+            document.getElementById('importModal').classList.remove('show');
+        }
+        
+        function openPointsHistory() {
+            const user = getCurrentUser();
+            const history = user.pontosHistory || [];
+            
+            document.getElementById('pointsHistoryTotal').textContent = user.pontos || 0;
+            
+            if (history.length === 0) {
+                document.getElementById('pointsHistoryList').innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-light);">Nenhuma missao concluida ainda</div>';
+            } else {
+                document.getElementById('pointsHistoryList').innerHTML = history.map(h => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 500; font-size: 14px;">${h.missao}</div>
+                            <div style="font-size: 11px; color: var(--text-light);">${h.data}</div>
+                        </div>
+                        <div style="font-weight: 700; color: #92400E; font-size: 16px;">+${h.pontos}</div>
+                    </div>
+                `).join('');
+            }
+            
+            document.getElementById('pointsHistoryModal').classList.add('show');
+        }
+        
+        function closePointsHistory() {
+            document.getElementById('pointsHistoryModal').classList.remove('show');
         }
         
         function importAllProducts(input) {
@@ -4459,8 +4878,6 @@
         
         function closeModal() { document.getElementById('addModal').classList.remove('show'); scannedCode = null; editingProductId = null; renderProducts(); renderDailyList(); }
         
-        function openChatModal() { document.getElementById('chatModal').classList.add('show'); document.getElementById('chatInput').focus(); }
-        function closeChatModal() { document.getElementById('chatModal').classList.remove('show'); }
         function setCategory(cat, btn) { document.querySelectorAll('#categoryGrid .category-chip').forEach(e => e.classList.remove('active')); btn.classList.add('active'); }
         
         function addProduct() {
@@ -4662,167 +5079,6 @@
             return user ? user.lotes || [] : [];
         }
 
-        function addChatMessage(text, isUser = false) {
-            const container = document.getElementById('chatMessages');
-            const div = document.createElement('div');
-            div.style.cssText = `max-width: 85%; padding: 12px 16px; border-radius: 20px; margin-bottom: 10px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; ${isUser ? 'align-self: flex-end; background: #001882; color: white; border-bottom-right-radius: 6px;' : 'align-self: flex-start; background: white; color: #333; border-bottom-left-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);'}`;
-            div.innerText = text;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function sendChatMessage() {
-            const input = document.getElementById('chatInput');
-            const msg = input.value.trim();
-            if (!msg) return;
-            addChatMessage(msg, true);
-            input.value = '';
-            setTimeout(() => {
-                const resposta = getBotResponse(msg.toLowerCase());
-                addChatMessage(resposta, false);
-            }, 500);
-        }
-
-        function getBotResponse(msg) {
-            const prods = getAllProducts();
-            const lotes = getAllLotes();
-            if (prods.length === 0) return 'Você ainda não tem produtos cadastrados. Vá na aba Estoque para adicionar seus produtos!';
-
-            if (msg.includes('venc') || msg.includes('validade') || msg.includes('expirado')) {
-                const hoje = new Date();
-                hoje.setHours(0,0,0,0);
-                const vence30 = new Date(hoje); vence30.setDate(hoje.getDate() + 30);
-                
-                // Check both lotes (batches) and products with validity
-                let todosItens = [];
-                
-                // From lotes
-                lotes.forEach(l => {
-                    if (l.data_validade) {
-                        const dataVal = new Date(l.data_validade);
-                        const p = prods.find(pr => pr.id === l.produto_id);
-                        if (p) todosItens.push({ nome: p.nome, data: dataVal, quantidade: l.quantidade });
-                    }
-                });
-                
-                // Also check products directly for validity
-                prods.forEach(p => {
-                    if (p.data_validade) {
-                        todosItens.push({ nome: p.nome, data: new Date(p.data_validade), quantidade: p.quantidade });
-                    }
-                });
-                
-                const expirados = todosItens.filter(i => i.data < hoje).sort((a,b) => a.data - b.data);
-                const proximos = todosItens.filter(i => i.data >= hoje && i.data <= vence30).sort((a,b) => a.data - b.data);
-                
-                if (expirados.length === 0 && proximos.length === 0) {
-                    return 'Ótima notícia! Nenhum produto está próximo do vencimento. 👍';
-                }
-                let resp = '';
-                if (expirados.length > 0) {
-                    resp += `⚠️ ${expirados.length} produto(s) JÁ EXPIRARAM:\n`;
-                    expirados.forEach(i => {
-                        const dias = Math.floor((hoje - i.data) / (1000*60*60*24));
-                        resp += `• ${i.nome}\n   📅 Venceu em: ${formatDate(i.data)} (${dias} dias atrás)\n   📦 Qtd: ${i.quantidade}\n`;
-                    });
-                }
-                if (proximos.length > 0) {
-                    resp += `\n⏰ ${proximos.length} produto(s) vence(m) em até 30 dias:\n`;
-                    proximos.forEach(i => {
-                        const dias = Math.floor((i.data - hoje) / (1000*60*60*24));
-                        resp += `• ${i.nome}\n   📅 Vence em: ${formatDate(i.data)} (${dias} dias)\n   📦 Qtd: ${i.quantidade}\n`;
-                    });
-                }
-                return resp;
-            }
-
-            if (msg.includes('estoque') || msg.includes('quantidade') || msg.includes('acabando') || msg.includes('baixo')) {
-                const baixos = prods.filter(p => p.quantidade <= 5);
-                if (baixos.length === 0) return 'Seu estoque está bom! Nenhum produto está com estoque baixo.';
-                
-                let resp = `📦 Você tem ${baixos.length} produto(s) com estoque baixo:\n`;
-                baixos.forEach(p => {
-                    const categoriaEmoji = getCategoriaEmoji(p.categoria);
-                    resp += `${categoriaEmoji} ${p.nome}: ${p.quantidade} un.\n`;
-                });
-                return resp;
-            }
-
-            if (msg.includes('categoria') || msg.includes('tipo')) {
-                const cats = [...new Set(prods.map(p => p.categoria))];
-                if (cats.length === 0) return 'Nenhuma categoria encontrada.';
-                
-                let resp = `📂 Categorias cadastradas (${cats.length}):\n`;
-                cats.forEach(cat => {
-                    const count = prods.filter(p => p.categoria === cat).length;
-                    const emoji = getCategoriaEmoji(cat);
-                    resp += `${emoji} ${cat}: ${count} produto(s)\n`;
-                });
-                return resp;
-            }
-
-            const palavras = msg.split(' ').filter(p => p.length > 2);
-            let encontrados = [];
-            palavras.forEach(pal => {
-                prods.forEach(pr => {
-                    if (pr.nome.toLowerCase().includes(pal) || pr.categoria.toLowerCase().includes(pal) || (pr.marca && pr.marca.toLowerCase().includes(pal))) {
-                        if (!encontrados.find(e => e.id === pr.id)) encontrados.push(pr);
-                    }
-                });
-            });
-
-            if (encontrados.length > 0) {
-                let resp = `🔍 Encontrei ${encontrados.length} produto(s):\n`;
-                encontrados.slice(0, 5).forEach(p => {
-                    const emoji = getCategoriaEmoji(p.categoria);
-                    resp += `${emoji} ${p.nome}\n   Marca: ${p.marca || '-'} | Qtd: ${p.quantidade} | ${p.categoria}\n`;
-                });
-                return resp;
-            }
-
-            if (msg.includes('total') || msg.includes('quantos') || msg.includes('quantidade total')) {
-                const total = prods.reduce((acc, p) => acc + p.quantidade, 0);
-                return `Você tem ${prods.length} produtos cadastrados, com um total de ${total} unidades em estoque.`;
-            }
-
-            if (msg.includes('marca')) {
-                const marcas = [...new Set(prods.filter(p => p.marca).map(p => p.marca))];
-                if (marcas.length === 0) return 'Nenhuma marca cadastrada.';
-                return `Marcas cadastradas: ${marcas.join(', ')}`;
-            }
-
-            if (msg.includes('lista') || msg.includes('listar') || msg.includes('liste')) {
-                let resp = `📋 Seus produtos (${prods.length}):\n`;
-                prods.slice(0, 10).forEach(p => {
-                    const emoji = getCategoriaEmoji(p.categoria);
-                    resp += `${emoji} ${p.nome} - ${p.quantidade} un.\n`;
-                });
-                if (prods.length > 10) resp += `\n...e mais ${prods.length - 10} produtos`;
-                return resp;
-            }
-
-            return `Desculpe, não entendi. 😕 Tente perguntas como:\n• "Quais produtos estão vencendo?"\n• "Produtos com estoque baixo"\n• "Liste produtos"\n• "Quantidade de tintas"`;
-        }
-
-        function getCategoriaEmoji(cat) {
-            const map = {
-                'Tintas': '🎨', 'Cimento': '🏗️', 'Argamassa': '🧱', 'Selantes': '🔧',
-                'Cal': '⚪', 'Vernizes': '✨', 'Ferramentas': '🔨', 'EPIs': '🦺',
-                'Outros': '📦'
-            };
-            return map[cat] || '📦';
-        }
-
-        function formatDate(dateStr) {
-            if (!dateStr) return '-';
-            const d = new Date(dateStr);
-            return d.toLocaleDateString('pt-BR');
-        }
-        
-        function initChat() {
-            addChatMessage('Olá! 👋 Sou seu assistente virtual. Posso te ajudar a encontrar informações sobre seus produtos. Pergunte coisas como:\n\n• "Quais produtos estão vencendo?"\n• "Produtos com estoque baixo"\n• "Liste produtos da categoria tinta"\n• "Quantidade total em estoque"', false);
-        }
-        
         // =====================
         // RETIRADA FUNCTIONS
         // =====================
