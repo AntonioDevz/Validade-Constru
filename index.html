@@ -5312,8 +5312,14 @@
             retiradaCompleteEnabled: true
         };
 
+        function getCurrentUserKey() {
+            const user = getCurrentUser();
+            return user ? (user.username || user.name || 'default') : 'default';
+        }
+
         function loadNotificationSettings() {
-            const settings = localStorage.getItem('notificationSettings_' + currentUser);
+            const userKey = getCurrentUserKey();
+            const settings = localStorage.getItem('notificationSettings_' + userKey);
             if (settings) {
                 try {
                     const parsed = JSON.parse(settings);
@@ -5332,7 +5338,8 @@
         }
 
         function saveNotificationSettings() {
-            localStorage.setItem('notificationSettings_' + currentUser, JSON.stringify(notificationSettings));
+            const userKey = getCurrentUserKey();
+            localStorage.setItem('notificationSettings_' + userKey, JSON.stringify(notificationSettings));
         }
 
         function updateNotificationToggles() {
@@ -5360,14 +5367,20 @@
         }
 
         function loadNotifications() {
-            const stored = localStorage.getItem('notifications_' + currentUser);
+            const userKey = getCurrentUserKey();
+            const stored = localStorage.getItem('notifications_' + userKey);
             if (stored) {
-                notifications = JSON.parse(stored);
+                try {
+                    notifications = JSON.parse(stored);
+                } catch (e) {
+                    notifications = [];
+                }
             }
         }
 
         function saveNotifications() {
-            localStorage.setItem('notifications_' + currentUser, JSON.stringify(notifications));
+            const userKey = getCurrentUserKey();
+            localStorage.setItem('notifications_' + userKey, JSON.stringify(notifications));
         }
 
         function addNotification(type, title, text, icon, priority, data) {
@@ -5814,7 +5827,7 @@
         }
 
         function runNotificationChecks() {
-            if (!currentUser) return;
+            if (!getCurrentUser()) return;
             loadNotificationSettings();
             updateNotificationBadge();
             updateRetiradaSummary();
