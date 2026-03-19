@@ -5390,6 +5390,13 @@
                 return null;
             }
             
+            let notificationType = 'activated';
+            if (type === 'retirada') {
+                if (priority === 'retirada-created') notificationType = 'created';
+                else if (priority === 'retirada-partial') notificationType = 'partial';
+                else if (priority === 'retirada-complete') notificationType = 'complete';
+            }
+            
             const notification = {
                 id: Date.now(),
                 type: type,
@@ -5399,7 +5406,8 @@
                 priority: priority || 'info',
                 read: false,
                 createdAt: new Date().toISOString(),
-                data: data || {}
+                data: data || {},
+                notificationType: notificationType
             };
             
             notifications.unshift(notification);
@@ -5417,7 +5425,8 @@
             showBrowserNotification({
                 title: data?.pushTitle || title,
                 body: data?.pushBody || text,
-                id: notification.id
+                id: notification.id,
+                notificationType: notificationType
             });
             
             return notification;
@@ -5657,45 +5666,112 @@
         function showTestNotification() {
             if (Notification.permission === 'granted') {
                 setTimeout(function() {
+                    const iconUrl = createNotificationImage('activated');
                     new Notification('Validade Constru', {
                         body: 'Notificacoes push ativadas com sucesso!',
-                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚚</text></svg>',
+                        icon: iconUrl,
                         tag: 'test-notification'
                     });
                 }, 500);
             }
         }
 
+        function createNotificationImage(type) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 192;
+            canvas.height = 192;
+            const ctx = canvas.getContext('2d');
+            
+            let bgColor, icon, subtitle;
+            
+            switch(type) {
+                case 'created':
+                    bgColor = '#1E40AF';
+                    icon = '🚚';
+                    subtitle = 'NOVA RETIRADA';
+                    break;
+                case 'partial':
+                    bgColor = '#F59E0B';
+                    icon = '📦';
+                    subtitle = 'RETIRADA PARCIAL';
+                    break;
+                case 'complete':
+                    bgColor = '#22C55E';
+                    icon = '✅';
+                    subtitle = 'RETIRADA COMPLETA';
+                    break;
+                case 'activated':
+                default:
+                    bgColor = '#6C4CF1';
+                    icon = '🔔';
+                    subtitle = 'NOTIFICACOES';
+                    break;
+            }
+            
+            const gradient = ctx.createLinearGradient(0, 0, 192, 192);
+            gradient.addColorStop(0, bgColor);
+            gradient.addColorStop(1, shadeColor(bgColor, -20));
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 192, 192);
+            
+            ctx.fillStyle = 'rgba(255,255,255,0.08)';
+            ctx.beginPath();
+            ctx.arc(160, 160, 60, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = 'rgba(255,255,255,0.05)';
+            ctx.beginPath();
+            ctx.arc(30, 30, 45, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            ctx.fillRect(0, 140, 192, 52);
+            
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 22px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(subtitle, 96, 155);
+            
+            ctx.font = '80px Arial';
+            ctx.fillText(icon, 96, 75);
+            
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(6, 6, 180, 180);
+            
+            return canvas.toDataURL('image/png');
+        }
+
+        function shadeColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return '#' + (0x1000000 + 
+                (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + 
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + 
+                (B < 255 ? B < 1 ? 0 : B : 255)
+            ).toString(16).slice(1);
+        }
+
         function showBrowserNotification(notification) {
-            console.log('showBrowserNotification called', notification);
-            console.log('pushEnabled:', notificationSettings.pushEnabled);
-            console.log('permission:', Notification.permission);
-            
-            if (!notificationSettings.pushEnabled) {
-                console.log('Push notifications disabled');
-                return;
-            }
-            
-            if (!('Notification' in window)) {
-                console.log('Notifications not supported');
-                return;
-            }
-            
-            if (Notification.permission !== 'granted') {
-                console.log('Permission not granted');
-                return;
-            }
+            if (!notificationSettings.pushEnabled) return;
+            if (!('Notification' in window)) return;
+            if (Notification.permission !== 'granted') return;
             
             try {
                 const title = notification.title || 'Validade Constru - Retirada';
                 const body = notification.body || notification.text || 'Nova atualizacao';
                 
-                console.log('Creating notification:', title, body);
+                const imageType = notification.notificationType || 'activated';
+                const iconUrl = createNotificationImage(imageType);
                 
                 const notif = new Notification(title, {
                     body: body,
-                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚚</text></svg>',
-                    badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚚</text></svg>',
+                    icon: iconUrl,
                     tag: 'retirada-' + (notification.id || Date.now()),
                     requireInteraction: false,
                     silent: false
@@ -5708,9 +5784,7 @@
                 
                 setTimeout(function() {
                     notif.close();
-                }, 5000);
-                
-                console.log('Notification created successfully');
+                }, 8000);
             } catch (e) {
                 console.error('Error creating notification:', e);
             }
