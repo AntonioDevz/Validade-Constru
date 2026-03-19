@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Validade Constru</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#001882">
+    <meta name="theme-color" content="#1E40AF">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -448,6 +448,293 @@
             align-items: center;
             gap: 8px;
         }
+
+        /* Notification Styles */
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #EF4444;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            animation: pulse 2s infinite;
+        }
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        .notification-btn:hover {
+            background: var(--bg);
+        }
+        .notification-modal-content {
+            max-height: 85vh;
+        }
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .notification-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .notification-stat {
+            background: var(--bg);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .notification-stat:hover {
+            background: #E5E7EB;
+        }
+        .notification-stat.active {
+            background: var(--primary);
+            color: white;
+        }
+        .notification-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .notification-stat-label {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+        .notification-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .notification-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: var(--bg);
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+        .notification-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        .notification-item {
+            display: flex;
+            gap: 12px;
+            padding: 14px;
+            background: var(--bg);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+        .notification-item:hover {
+            background: #E5E7EB;
+        }
+        .notification-item.unread {
+            border-left-color: var(--primary);
+            background: #EFF6FF;
+        }
+        .notification-item.warning {
+            border-left-color: var(--yellow);
+        }
+        .notification-item.danger {
+            border-left-color: var(--red);
+        }
+        .notification-item.success {
+            border-left-color: var(--green);
+        }
+        .notification-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .notification-icon.warning { background: #FEF3C7; }
+        .notification-icon.danger { background: #FEE2E2; }
+        .notification-icon.success { background: #DCFCE7; }
+        .notification-icon.info { background: #DBEAFE; }
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .notification-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .notification-tag {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .notification-tag.validade { background: #FEF3C7; color: #92400E; }
+        .notification-tag.estoque { background: #DBEAFE; color: #1E40AF; }
+        .notification-tag.retirada { background: #EDE9FE; color: #5B21B6; }
+        .notification-text {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+        .notification-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+        .notification-empty {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-light);
+        }
+        .notification-settings {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 12px;
+            margin-top: 16px;
+        }
+        .notification-setting {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notification-setting-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .notification-setting-desc {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: #D1D5DB;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .toggle-switch.active {
+            background: var(--green);
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        .toggle-switch.active::after {
+            left: 25px;
+        }
+        .notification-summary {
+            background: linear-gradient(135deg, var(--primary) 0%, #3B82F6 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        .notification-summary-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .notification-summary-items {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .notification-summary-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        /* Retirada Summary Styles */
+        .retirada-summary {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(135deg, var(--primary) 0%, #3B82F6 100%);
+            border-radius: 16px;
+            padding: 20px 16px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .retirada-summary-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .retirada-summary-icon {
+            font-size: 24px;
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .retirada-summary-info {
+            text-align: left;
+        }
+        .retirada-summary-value {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .retirada-summary-label {
+            font-size: 11px;
+            opacity: 0.85;
+        }
+        
+        /* Simplified notification item */
+        .notification-item.retirada-created { border-left-color: var(--primary); }
+        .notification-item.retirada-partial { border-left-color: var(--yellow); }
+        .notification-item.retirada-complete { border-left-color: var(--green); }
+        .notification-tag.retirada-created { background: #DBEAFE; color: #1E40AF; }
+        .notification-tag.retirada-partial { background: #FEF3C7; color: #92400E; }
+        .notification-tag.retirada-complete { background: #DCFCE7; color: #166534; }
     </style>
 </head>
 <body>
@@ -483,6 +770,10 @@
             <div class="header-content">
                 <div><h1 id="pageTitle">Dashboard</h1><p>Validade Constru</p></div>
                 <div class="user-info">
+                    <button class="notification-btn" onclick="openNotificationModal()" id="notificationBtn">
+                        🚚
+                        <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                    </button>
                     <div class="user-avatar" id="userAvatar" onclick="toggleUserMenu()" style="cursor: pointer;">U</div>
                     <button class="logout-btn" onclick="doLogout()">Sair</button>
                 </div>
@@ -525,6 +816,80 @@
                 <div style="display: flex; gap: 8px;">
                     <button class="btn" onclick="confirmExcelImport()">✅ Importar Produtos</button>
                     <button class="btn btn-outline" onclick="closeExcelImportModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Modal -->
+        <div id="notificationModal" class="modal">
+            <div class="modal-content notification-modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">🚚 Notificacoes de Retirada</div>
+                    <button class="close-btn" onclick="closeNotificationModal()">&times;</button>
+                </div>
+                
+                <!-- Retirada Summary -->
+                <div class="retirada-summary" id="retiradaSummary">
+                    <div class="retirada-summary-item">
+                        <div class="retirada-summary-icon">📋</div>
+                        <div class="retirada-summary-info">
+                            <div class="retirada-summary-value" id="pendingRetiradasCount">0</div>
+                            <div class="retirada-summary-label">Pendentes</div>
+                        </div>
+                    </div>
+                    <div class="retirada-summary-item">
+                        <div class="retirada-summary-icon">✅</div>
+                        <div class="retirada-summary-info">
+                            <div class="retirada-summary-value" id="completedRetiradasCount">0</div>
+                            <div class="retirada-summary-label">Concluidas</div>
+                        </div>
+                    </div>
+                    <div class="retirada-summary-item">
+                        <div class="retirada-summary-icon">📦</div>
+                        <div class="retirada-summary-info">
+                            <div class="retirada-summary-value" id="totalProductsCount">0</div>
+                            <div class="retirada-summary-label">Produtos</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="notificationList"></div>
+                
+                <!-- Settings -->
+                <div class="notification-settings">
+                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 8px;">Preferencias</div>
+                    <div class="notification-setting">
+                        <div>
+                            <div class="notification-setting-label">Notificacoes Push</div>
+                            <div class="notification-setting-desc">Receba alertas mesmo com app fechado</div>
+                        </div>
+                        <div class="toggle-switch" id="pushToggle" onclick="togglePushNotifications()"></div>
+                    </div>
+                    <div class="notification-setting">
+                        <div>
+                            <div class="notification-setting-label">Notificar Retiradas Criadas</div>
+                            <div class="notification-setting-desc">Ao cadastrar nova retirada</div>
+                        </div>
+                        <div class="toggle-switch active" id="retiradaCreatedToggle" onclick="toggleRetiradaNotification('created')"></div>
+                    </div>
+                    <div class="notification-setting">
+                        <div>
+                            <div class="notification-setting-label">Notificar Retiradas Parciais</div>
+                            <div class="notification-setting-desc">Produtos restantes apos retirada</div>
+                        </div>
+                        <div class="toggle-switch active" id="retiradaPartialToggle" onclick="toggleRetiradaNotification('partial')"></div>
+                    </div>
+                    <div class="notification-setting">
+                        <div>
+                            <div class="notification-setting-label">Notificar Retiradas Completas</div>
+                            <div class="notification-setting-desc">Todos os itens foram retirados</div>
+                        </div>
+                        <div class="toggle-switch active" id="retiradaCompleteToggle" onclick="toggleRetiradaNotification('complete')"></div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <button class="btn btn-outline" onclick="markAllNotificationsRead()" style="flex: 1; font-size: 12px; padding: 10px;">Marcar lidas</button>
+                        <button class="btn btn-outline" onclick="clearAllNotifications()" style="flex: 1; font-size: 12px; padding: 10px; border-color: var(--red); color: var(--red);">Limpar tudo</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1573,6 +1938,9 @@
             renderBudgetHistory();
             
             alert('Orcamento salvo com sucesso!');
+            
+            if (typeof notifyBudgetSaved === 'function') notifyBudgetSaved(clientName, total);
+            
             editingBudgetId = null;
             clearBudgetForm();
         }
@@ -3777,6 +4145,10 @@
             closeExcelImportModal();
             toggleUserMenu();
             
+            if (typeof notifyStockImported === 'function') {
+                notifyStockImported(imported);
+            }
+            
             alert(`Importação concluída!\n✅ Novos produtos: ${imported}\n🔄 Atualizados: ${updated}`);
         }
         
@@ -4149,6 +4521,7 @@
                         min_estoque_alerta: 10 
                     }; 
                     produtos.push(prod); 
+                    if (typeof notifyProductAdded === 'function') notifyProductAdded(prod);
                 } else { 
                     prod.quantidade = qtdEst; 
                     prod.categoria = cat;
@@ -4610,6 +4983,8 @@
             
             saveUserData();
             clearRetiradaForm();
+            
+            if (typeof notifyRetiradaCreated === 'function') notifyRetiradaCreated(retirada);
             renderRetiradasList();
             renderProducts();
             renderDashboard();
@@ -4739,6 +5114,7 @@
                 product.quantidade_retirada = retirado + 1;
                 saveUserData();
                 renderRetiradasList();
+                checkAndNotifyRetiradaStatus(retirada);
             }
         }
         
@@ -4757,6 +5133,21 @@
             
             saveUserData();
             renderRetiradasList();
+            
+            checkAndNotifyRetiradaStatus(retirada);
+        }
+        
+        function checkAndNotifyRetiradaStatus(retirada) {
+            const totalSolicitado = retirada.produtos.reduce((s, p) => s + (p.quantidade_solicitada || p.quantidade), 0);
+            const totalRetirado = retirada.produtos.reduce((s, p) => s + (p.quantidade_retirada || 0), 0);
+            const restantes = totalSolicitado - totalRetirado;
+            
+            if (restantes === 0) {
+                if (typeof notifyRetiradaCompleted === 'function') notifyRetiradaCompleted(retirada);
+            } else {
+                const produtosRetirados = retirada.produtos.filter(p => (p.quantidade_retirada || 0) > 0).length;
+                if (typeof notifyRetiradaPartial === 'function') notifyRetiradaPartial(retirada, produtosRetirados, restantes);
+            }
         }
         
         function completeRetirada(retiradaId) {
@@ -4771,6 +5162,8 @@
             saveUserData();
             renderRetiradasList();
             alert('Retirada marcada como completa!');
+            
+            checkAndNotifyRetiradaStatus(retirada);
         }
         
         function filterRetiradasByName(search) {
@@ -4910,10 +5303,546 @@
             }
         });
 
+        // ==================== NOTIFICATION SYSTEM ====================
+        let notifications = [];
+        let notificationSettings = {
+            pushEnabled: false,
+            retiradaCreatedEnabled: true,
+            retiradaPartialEnabled: true,
+            retiradaCompleteEnabled: true
+        };
+
+        function loadNotificationSettings() {
+            const settings = localStorage.getItem('notificationSettings_' + currentUser);
+            if (settings) {
+                try {
+                    const parsed = JSON.parse(settings);
+                    notificationSettings = { 
+                        pushEnabled: false,
+                        retiradaCreatedEnabled: true,
+                        retiradaPartialEnabled: true,
+                        retiradaCompleteEnabled: true,
+                        ...parsed 
+                    };
+                } catch (e) {
+                    console.error('Error parsing notification settings:', e);
+                }
+            }
+            updateNotificationToggles();
+        }
+
+        function saveNotificationSettings() {
+            localStorage.setItem('notificationSettings_' + currentUser, JSON.stringify(notificationSettings));
+        }
+
+        function updateNotificationToggles() {
+            const pushToggle = document.getElementById('pushToggle');
+            const createdToggle = document.getElementById('retiradaCreatedToggle');
+            const partialToggle = document.getElementById('retiradaPartialToggle');
+            const completeToggle = document.getElementById('retiradaCompleteToggle');
+            
+            if (pushToggle) pushToggle.classList.toggle('active', notificationSettings.pushEnabled);
+            if (createdToggle) createdToggle.classList.toggle('active', notificationSettings.retiradaCreatedEnabled);
+            if (partialToggle) partialToggle.classList.toggle('active', notificationSettings.retiradaPartialEnabled);
+            if (completeToggle) completeToggle.classList.toggle('active', notificationSettings.retiradaCompleteEnabled);
+        }
+
+        function toggleRetiradaNotification(type) {
+            if (type === 'created') {
+                notificationSettings.retiradaCreatedEnabled = !notificationSettings.retiradaCreatedEnabled;
+            } else if (type === 'partial') {
+                notificationSettings.retiradaPartialEnabled = !notificationSettings.retiradaPartialEnabled;
+            } else if (type === 'complete') {
+                notificationSettings.retiradaCompleteEnabled = !notificationSettings.retiradaCompleteEnabled;
+            }
+            saveNotificationSettings();
+            updateNotificationToggles();
+        }
+
+        function loadNotifications() {
+            const stored = localStorage.getItem('notifications_' + currentUser);
+            if (stored) {
+                notifications = JSON.parse(stored);
+            }
+        }
+
+        function saveNotifications() {
+            localStorage.setItem('notifications_' + currentUser, JSON.stringify(notifications));
+        }
+
+        function addNotification(type, title, text, icon, priority, data) {
+            const notificationKey = type + '_' + (data?.retiradaId || Date.now());
+            
+            if (notificationSettings['notified_' + notificationKey]) {
+                return null;
+            }
+            
+            const notification = {
+                id: Date.now(),
+                type: type,
+                title: title,
+                text: text,
+                icon: icon,
+                priority: priority || 'info',
+                read: false,
+                createdAt: new Date().toISOString(),
+                data: data || {}
+            };
+            
+            notifications.unshift(notification);
+            if (notifications.length > 100) {
+                notifications = notifications.slice(0, 100);
+            }
+            
+            notificationSettings['notified_' + notificationKey] = true;
+            
+            saveNotifications();
+            saveNotificationSettings();
+            updateNotificationBadge();
+            updateRetiradaSummary();
+            
+            showBrowserNotification({
+                title: data?.pushTitle || title,
+                body: data?.pushBody || text,
+                id: notification.id
+            });
+            
+            return notification;
+        }
+
+        function updateNotificationBadge() {
+            const badge = document.getElementById('notificationBadge');
+            const unread = notifications.filter(n => !n.read && n.type === 'retirada').length;
+            if (badge) {
+                badge.textContent = unread > 9 ? '9+' : unread;
+                badge.style.display = unread > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function getUnreadCount() {
+            return notifications.filter(n => !n.read && n.type === 'retirada').length;
+        }
+
+        function getNotificationsByType(type) {
+            if (type === 'all') return notifications.filter(n => n.type === 'retirada');
+            return notifications.filter(n => n.type === type);
+        }
+
+        function markAsRead(id) {
+            const notification = notifications.find(n => n.id === id);
+            if (notification) {
+                notification.read = true;
+                saveNotifications();
+                updateNotificationBadge();
+            }
+        }
+
+        function markAllNotificationsRead() {
+            notifications.forEach(n => {
+                if (n.type === 'retirada') n.read = true;
+            });
+            saveNotifications();
+            updateNotificationBadge();
+            updateRetiradaSummary();
+            renderNotificationList();
+        }
+
+        function openNotificationModal() {
+            document.getElementById('notificationModal').classList.add('show');
+            updateRetiradaSummary();
+            renderNotificationList();
+        }
+
+        function closeNotificationModal() {
+            document.getElementById('notificationModal').classList.remove('show');
+        }
+
+        function clearAllNotifications() {
+            if (!confirm('Tem certeza que deseja limpar todas as notificacoes?')) return;
+            notifications = notifications.filter(n => n.type !== 'retirada');
+            saveNotifications();
+            updateNotificationBadge();
+            updateRetiradaSummary();
+            renderNotificationList();
+        }
+
+        function openNotificationModal() {
+            document.getElementById('notificationModal').classList.add('show');
+            updateRetiradaSummary();
+            renderNotificationList();
+        }
+
+        function closeNotificationModal() {
+            document.getElementById('notificationModal').classList.remove('show');
+        }
+
+        function setNotificationTab(type, btn) {
+            document.querySelectorAll('.notification-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            renderNotificationList(type);
+        }
+
+        function updateNotificationStats() {
+            const stats = document.getElementById('notificationStats');
+            const summary = document.getElementById('notificationSummaryItems');
+            
+            if (!stats) return;
+            
+            const total = notifications.length;
+            const unread = notifications.filter(n => !n.read).length;
+            const validadeCount = notifications.filter(n => n.type === 'validade').length;
+            const estoqueCount = notifications.filter(n => n.type === 'estoque').length;
+            const retiradaCount = notifications.filter(n => n.type === 'retirada').length;
+            
+            stats.innerHTML = `
+                <div class="notification-stat ${unread > 0 ? 'active' : ''}" onclick="setTabAndClose('all')">
+                    <div class="notification-stat-value">${unread}</div>
+                    <div class="notification-stat-label">Nao lidas</div>
+                </div>
+                <div class="notification-stat" onclick="setTabAndClose('validade')">
+                    <div class="notification-stat-value">${validadeCount}</div>
+                    <div class="notification-stat-label">Validade</div>
+                </div>
+                <div class="notification-stat" onclick="setTabAndClose('retirada')">
+                    <div class="notification-stat-value">${retiradaCount}</div>
+                    <div class="notification-stat-label">Retiradas</div>
+                </div>
+            `;
+            
+            if (summary) {
+                summary.innerHTML = `
+                    <div class="notification-summary-item"><span>📋</span> ${total} total</div>
+                    <div class="notification-summary-item"><span>⚠️</span> ${validadeCount + estoqueCount} alertas</div>
+                    <div class="notification-summary-item"><span>🚚</span> ${retiradaCount} pendentes</div>
+                `;
+            }
+        }
+
+        function setTabAndClose(type) {
+            closeNotificationModal();
+            if (type === 'all' || type === 'validade' || type === 'estoque') {
+                showTab('stock', document.querySelectorAll('.tab')[2]);
+            } else if (type === 'retirada') {
+                showTab('retirada', document.querySelectorAll('.tab')[6]);
+            }
+        }
+
+        function renderNotificationList(type = 'all') {
+            const list = document.getElementById('notificationList');
+            const filtered = getNotificationsByType('retirada');
+            
+            if (filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="notification-empty">
+                        <div style="font-size: 48px; margin-bottom: 12px;">🚚</div>
+                        <div style="font-weight: 600;">Nenhuma notificacao</div>
+                        <div style="font-size: 12px; margin-top: 4px;">Cadastre uma retirada para comecar!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = filtered.map(n => {
+                const time = formatNotificationTime(n.createdAt);
+                const priorityClass = n.priority || 'retirada-created';
+                
+                return `
+                    <div class="notification-item ${n.read ? '' : 'unread'} ${priorityClass}" onclick="handleRetiradaNotificationClick(${n.id})">
+                        <div class="notification-icon ${priorityClass}">${n.icon}</div>
+                        <div class="notification-content">
+                            <div class="notification-title">${n.title}</div>
+                            <div class="notification-text">${n.text}</div>
+                            <div class="notification-time">${time}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function formatNotificationTime(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'Agora';
+            if (minutes < 60) return `${minutes}min atras`;
+            if (hours < 24) return `${hours}h atras`;
+            if (days < 7) return `${days} dia(s)`;
+            return date.toLocaleDateString('pt-BR');
+        }
+
+        function handleNotificationClick(id, type) {
+            markAsRead(id);
+            closeNotificationModal();
+            
+            if (type === 'retirada') {
+                showTab('retirada', document.querySelectorAll('.tab')[6]);
+            }
+        }
+
+        function handleRetiradaNotificationClick(id) {
+            markAsRead(id);
+            closeNotificationModal();
+            showTab('retirada', document.querySelectorAll('.tab')[6]);
+        }
+
+        function togglePushNotifications() {
+            if (notificationSettings.pushEnabled) {
+                notificationSettings.pushEnabled = false;
+                saveNotificationSettings();
+                updateNotificationToggles();
+                alert('Notificacoes push desativadas.');
+            } else {
+                requestPushPermission();
+            }
+        }
+
+        function requestPushPermission() {
+            if (!('Notification' in window)) {
+                alert('Este navegador nao suporta notificacoes push.\nTente usar Chrome, Firefox ou Edge.');
+                return;
+            }
+            
+            if (Notification.permission === 'denied') {
+                alert('Notificacoes bloqueadas pelo navegador.\nPor favor, habilite as notificacoes nas configuracoes do site.');
+                return;
+            }
+            
+            if (Notification.permission === 'granted') {
+                notificationSettings.pushEnabled = true;
+                saveNotificationSettings();
+                updateNotificationToggles();
+                alert('Notificacoes ja estavam ativadas!');
+                return;
+            }
+            
+            Notification.requestPermission().then(permission => {
+                console.log('Permission result:', permission);
+                
+                if (permission === 'granted') {
+                    notificationSettings.pushEnabled = true;
+                    saveNotificationSettings();
+                    updateNotificationToggles();
+                    showTestNotification();
+                } else if (permission === 'denied') {
+                    notificationSettings.pushEnabled = false;
+                    saveNotificationSettings();
+                    updateNotificationToggles();
+                    alert('Permissao negada. As notificacoes nao funcionarao.');
+                } else {
+                    alert('Voce fechou o pedido de permissao. Clique novamente para tentar.');
+                }
+            }).catch(function(error) {
+                console.error('Error requesting permission:', error);
+                alert('Erro ao solicitar permissao: ' + error.message);
+            });
+        }
+
+        function showTestNotification() {
+            if (Notification.permission === 'granted') {
+                setTimeout(function() {
+                    new Notification('Validade Constru', {
+                        body: 'Notificacoes push ativadas com sucesso!',
+                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚚</text></svg>',
+                        tag: 'test-notification'
+                    });
+                }, 500);
+            }
+        }
+
+        function showBrowserNotification(notification) {
+            console.log('showBrowserNotification called', notification);
+            console.log('pushEnabled:', notificationSettings.pushEnabled);
+            console.log('permission:', Notification.permission);
+            
+            if (!notificationSettings.pushEnabled) {
+                console.log('Push notifications disabled');
+                return;
+            }
+            
+            if (!('Notification' in window)) {
+                console.log('Notifications not supported');
+                return;
+            }
+            
+            if (Notification.permission !== 'granted') {
+                console.log('Permission not granted');
+                return;
+            }
+            
+            try {
+                const title = notification.title || 'Validade Constru - Retirada';
+                const body = notification.body || notification.text || 'Nova atualizacao';
+                
+                console.log('Creating notification:', title, body);
+                
+                const notif = new Notification(title, {
+                    body: body,
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚚</text></svg>',
+                    badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🚚</text></svg>',
+                    tag: 'retirada-' + (notification.id || Date.now()),
+                    requireInteraction: false,
+                    silent: false
+                });
+                
+                notif.onclick = function() {
+                    window.focus();
+                    notif.close();
+                };
+                
+                setTimeout(function() {
+                    notif.close();
+                }, 5000);
+                
+                console.log('Notification created successfully');
+            } catch (e) {
+                console.error('Error creating notification:', e);
+            }
+        }
+
+        // ============================================
+        // NOTIFICATION SYSTEM - RETIRADA FOCUSED
+        // ============================================
+
+        function getRetiradaStats() {
+            if (!retiradas) return { pendentes: 0, concluidas: 0, totalProdutos: 0 };
+            
+            let pendentes = 0;
+            let concluidas = 0;
+            let totalProdutos = 0;
+            
+            retiradas.forEach(r => {
+                const totalSolicitado = r.produtos.reduce((s, p) => s + (p.quantidade_solicitada || p.quantidade), 0);
+                const totalRetirado = r.produtos.reduce((s, p) => s + (p.quantidade_retirada || 0), 0);
+                const restante = totalSolicitado - totalRetirado;
+                
+                totalProdutos += totalSolicitado;
+                
+                if (restante > 0) {
+                    pendentes++;
+                } else {
+                    concluidas++;
+                }
+            });
+            
+            return { pendentes, concluidas, totalProdutos };
+        }
+
+        function updateRetiradaSummary() {
+            const stats = getRetiradaStats();
+            const pendingEl = document.getElementById('pendingRetiradasCount');
+            const completedEl = document.getElementById('completedRetiradasCount');
+            const totalEl = document.getElementById('totalProductsCount');
+            
+            if (pendingEl) pendingEl.textContent = stats.pendentes;
+            if (completedEl) completedEl.textContent = stats.concluidas;
+            if (totalEl) totalEl.textContent = stats.totalProdutos;
+        }
+
+        function notifyRetiradaCreated(retirada) {
+            if (!notificationSettings.retiradaCreatedEnabled) return;
+            
+            const totalProdutos = retirada.produtos.reduce((s, p) => s + (p.quantidade_solicitada || p.quantidade), 0);
+            const produtosList = retirada.produtos.slice(0, 3).map(p => p.nome).join(', ');
+            const moreText = retirada.produtos.length > 3 ? ` e mais ${retirada.produtos.length - 3}` : '';
+            
+            addNotification(
+                'retirada',
+                'Nova Retirada: ' + retirada.cliente,
+                totalProdutos + ' produto(s) para retirada: ' + produtosList + moreText,
+                '🚚',
+                'retirada-created',
+                { 
+                    retiradaId: retirada.id, 
+                    cliente: retirada.cliente,
+                    totalProdutos: totalProdutos,
+                    produtos: retirada.produtos.map(p => ({ nome: p.nome, quantidade: p.quantidade_solicitada || p.quantidade })),
+                    pushTitle: 'Nova Retirada Registrada!',
+                    pushBody: retirada.cliente + ' - ' + totalProdutos + ' produto(s) aguardando retirada'
+                }
+            );
+        }
+
+        function notifyRetiradaPartial(retirada, countRetirados, produtosRestantes) {
+            if (!notificationSettings.retiradaPartialEnabled) return;
+            
+            const produtosRetiradosList = retirada.produtos
+                .filter(p => (p.quantidade_retirada || 0) > 0)
+                .slice(0, 3)
+                .map(p => p.nome)
+                .join(', ');
+            
+            addNotification(
+                'retirada',
+                'Retirada Parcial: ' + retirada.cliente,
+                countRetirados + ' produto(s) removidos. Restam: ' + produtosRestantes + ' item(s)',
+                '📦',
+                'retirada-partial',
+                { 
+                    retiradaId: retirada.id, 
+                    cliente: retirada.cliente,
+                    countRetirados: countRetirados,
+                    produtosRestantes: produtosRestantes,
+                    pushTitle: 'Retirada Parcial - ' + retirada.cliente,
+                    pushBody: countRetirados + ' produto(s) removidos. Restam: ' + produtosRestantes + ' item(s)'
+                }
+            );
+        }
+
+        function notifyRetiradaCompleted(retirada) {
+            if (!notificationSettings.retiradaCompleteEnabled) return;
+            
+            const totalProdutos = retirada.produtos.reduce((s, p) => s + (p.quantidade_solicitada || p.quantidade), 0);
+            
+            addNotification(
+                'retirada',
+                'Retirada Completa: ' + retirada.cliente,
+                'Todos os ' + totalProdutos + ' produto(s) foram retirados!',
+                '✅',
+                'retirada-complete',
+                { 
+                    retiradaId: retirada.id, 
+                    cliente: retirada.cliente,
+                    totalProdutos: totalProdutos,
+                    pushTitle: 'Retirada Concluida!',
+                    pushBody: retirada.cliente + ' - Todos os produtos foram retirados.'
+                }
+            );
+        }
+
+        function runNotificationChecks() {
+            if (!currentUser) return;
+            loadNotificationSettings();
+            updateNotificationBadge();
+            updateRetiradaSummary();
+        }
+
+        setInterval(runNotificationChecks, 60000);
+
         // Init
-        window.onload = function() { const u = getCurrentUser(); if (u) { loadUserData(); showApp(); } };
+        window.onload = function() { 
+            const u = getCurrentUser(); 
+            if (u) { 
+                loadUserData(); 
+                loadNotificationSettings();
+                loadNotifications();
+                showApp(); 
+                updateNotificationBadge();
+                updateRetiradaSummary();
+                
+                if (notificationSettings.pushEnabled && Notification.permission !== 'granted') {
+                    notificationSettings.pushEnabled = false;
+                    saveNotificationSettings();
+                    updateNotificationToggles();
+                }
+                
+                setTimeout(runNotificationChecks, 3000);
+            } 
+        };
     </script>
 </body>
 </html>
-
 
