@@ -42,13 +42,16 @@
         .logout-btn { background: none; border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 12px; color: var(--text-light); cursor: pointer; }
         
         .tabs { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); display: flex; border-top: 1px solid var(--border); z-index: 100; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 20px rgba(0,0,0,0.1); overflow-x: auto; -webkit-overflow-scrolling: touch; justify-content: space-around; }
-        .tab { flex: 1; max-width: 70px; text-align: center; padding: 10px 4px; color: var(--text-light); cursor: pointer; background: none; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; transition: all 0.2s ease; position: relative; }
-        .tab::after { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%) scaleX(0); width: 24px; height: 3px; background: var(--primary); border-radius: 0 0 3px 3px; transition: transform 0.2s ease; }
-        .tab:active { background: var(--bg); transform: scale(0.95); }
+        .tab { flex: 1; min-width: 56px; max-width: 90px; text-align: center; padding: 8px 2px 6px; color: var(--text-light); cursor: pointer; background: none; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+        .tab::after { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%) scaleX(0); width: 32px; height: 3px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 0 0 4px 4px; transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab:active { transform: scale(0.92); }
         .tab.active { color: var(--primary); }
         .tab.active::after { transform: translateX(-50%) scaleX(1); }
-        .tab-icon { width: 24px; height: 24px; }
-        .tab-icon svg { width: 100%; height: 100%; }
+        .tab.active .tab-icon { background: linear-gradient(135deg, rgba(30, 64, 175, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%); border-radius: 12px; padding: 4px; }
+        .tab-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; transition: all 0.25s ease; }
+        .tab-icon svg { width: 100%; height: 100%; fill: currentColor; }
+        .tab-label { font-size: 10px; font-weight: 500; letter-spacing: 0.3px; opacity: 0.7; transition: all 0.25s ease; }
+        .tab.active .tab-label { opacity: 1; font-weight: 600; }
         
         .content { padding: 16px; padding-bottom: calc(16px + 90px); min-height: calc(100vh - 60px); }
         
@@ -460,23 +463,6 @@
         }
 
         /* Notification Styles */
-        .notification-badge {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            background: #EF4444;
-            color: white;
-            font-size: 10px;
-            font-weight: 700;
-            min-width: 18px;
-            height: 18px;
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 4px;
-            animation: pulse 2s infinite;
-        }
         .notification-btn {
             position: relative;
             background: none;
@@ -633,7 +619,6 @@
             padding: 16px;
             background: var(--bg);
             border-radius: 12px;
-            margin-top: 16px;
         }
         .notification-setting {
             display: flex;
@@ -745,9 +730,58 @@
         .notification-tag.retirada-created { background: #DBEAFE; color: #1E40AF; }
         .notification-tag.retirada-partial { background: #FEF3C7; color: #92400E; }
         .notification-tag.retirada-complete { background: #DCFCE7; color: #166534; }
+        
+        /* Toast Notification - In-App Alert System */
+        .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 90%; max-width: 400px; }
+        .toast { background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); overflow: hidden; animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-bottom: 12px; }
+        .toast-header { display: flex; align-items: center; gap: 12px; padding: 16px; border-bottom: 1px solid #E5E7EB; }
+        .toast-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .toast-icon.alert { background: linear-gradient(135deg, #FEE2E2, #FECACA); }
+        .toast-icon.warning { background: linear-gradient(135deg, #FEF3C7, #FDE68A); }
+        .toast-icon.info { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); }
+        .toast-icon.success { background: linear-gradient(135deg, #DCFCE7, #BBF7D0); }
+        .toast-icon svg { width: 24px; height: 24px; }
+        .toast-content { flex: 1; }
+        .toast-title { font-weight: 700; font-size: 15px; color: #1F2937; margin-bottom: 2px; }
+        .toast-subtitle { font-size: 12px; color: #6B7280; }
+        .toast-close { background: none; border: none; font-size: 20px; color: #9CA3AF; cursor: pointer; padding: 4px; line-height: 1; }
+        .toast-close:hover { color: #6B7280; }
+        .toast-body { padding: 12px 16px 16px; }
+        .toast-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+        .toast-item:last-child { margin-bottom: 0; }
+        .toast-item:hover { transform: translateX(4px); }
+        .toast-item.danger { background: #FEF2F2; }
+        .toast-item.warning { background: #FFFBEB; }
+        .toast-item.info { background: #EFF6FF; }
+        .toast-item-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .toast-item.danger .toast-item-icon { background: #FEE2E2; }
+        .toast-item.warning .toast-item-icon { background: #FEF3C7; }
+        .toast-item.info .toast-item-icon { background: #DBEAFE; }
+        .toast-item-icon svg { width: 16px; height: 16px; }
+        .toast-item-text { flex: 1; font-size: 13px; color: #374151; }
+        .toast-item-count { font-weight: 700; font-size: 14px; color: #1F2937; }
+        .toast-actions { display: flex; gap: 8px; padding: 0 16px 16px; }
+        .toast-btn { flex: 1; padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+        .toast-btn.primary { background: #1E40AF; color: white; }
+        .toast-btn.primary:hover { background: #1E3A8A; }
+        .toast-btn.secondary { background: #F3F4F6; color: #374151; }
+        .toast-btn.secondary:hover { background: #E5E7EB; }
+        .toast-fadeout { animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 1; transform: translateX(-50%) translateY(0); }
+            to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
     </style>
 </head>
 <body>
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
+    
     <!-- Auth Screen -->
     <div id="authScreen" class="auth-screen">
         <div class="auth-card">
@@ -781,17 +815,11 @@
                 <div><h1 id="pageTitle">Dashboard</h1><p>Validade Constru</p></div>
                 <div class="user-info">
                     <button class="notification-btn" onclick="openNotificationModal()" id="notificationBtn">
-                        🚚
-                        <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                        <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor"><path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.06,8.28,66.73,16,80Z"/></svg>
                     </button>
                     <div class="user-avatar" id="userAvatar" onclick="toggleUserMenu()" style="cursor: pointer;">U</div>
                     <button class="logout-btn" onclick="doLogout()">Sair</button>
                 </div>
-            </div>
-        </div>
-        <div class="header">
-            <div class="header-content">
-                <div><h1 id="pageTitle">Dashboard</h1><p>Validade Constru</p></div>
             </div>
         </div>
         
@@ -819,43 +847,53 @@
                 <div style="padding: 8px 0;">
                     <div style="padding: 14px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer;" onclick="openAccountData()" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='transparent'">
                         <div style="width: 40px; height: 40px; background: #DBEAFE; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <svg width="20" height="20" viewBox="0 0 256 256" fill="#1E40AF"><path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"/></svg>
                         </div>
                         <div style="flex: 1;">
                             <div style="font-weight: 600; font-size: 15px;">Dados da Conta</div>
                             <div style="font-size: 12px; color: var(--text-light);">Nome, usuario, senha</div>
                         </div>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 256 256" fill="none" stroke="var(--text-light)" stroke-width="16"><polyline points="96 176 144 176 144 96"/><polyline points="96 112 176 112"/></svg>
                     </div>
                     <div style="padding: 14px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer;" onclick="openImportMenu()" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='transparent'">
                         <div style="width: 40px; height: 40px; background: #DCFCE7; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <svg width="20" height="20" viewBox="0 0 256 256" fill="#166534"><path d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0Zm-112-8a8,8,0,0,0,8-8V74.34l26.34,26.35a8,8,0,0,0,11.32-11.32l-40-40a8,8,0,0,0-11.32,0l-40,40a8,8,0,0,0,11.32,11.32L112,74.34V136A8,8,0,0,0,112,144Z"/></svg>
                         </div>
                         <div style="flex: 1;">
                             <div style="font-weight: 600; font-size: 15px;">Importar Produtos</div>
                             <div style="font-size: 12px; color: var(--text-light);">Excel (.xlsx, .csv) ou JSON</div>
                         </div>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 256 256" fill="none" stroke="var(--text-light)" stroke-width="16"><polyline points="96 176 144 176 144 96"/><polyline points="96 112 176 112"/></svg>
                     </div>
                     <div style="padding: 14px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer;" onclick="exportAllData()" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='transparent'">
                         <div style="width: 40px; height: 40px; background: #EDE9FE; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B21B6" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <svg width="20" height="20" viewBox="0 0 256 256" fill="#5B21B6"><path d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,132.69V40a8,8,0,0,0-16,0v92.69L93.66,106.34a8,8,0,0,0-11.32,11.32Z"/></svg>
                         </div>
                         <div style="flex: 1;">
                             <div style="font-weight: 600; font-size: 15px;">Exportar Dados</div>
                             <div style="font-size: 12px; color: var(--text-light);">Backup em JSON</div>
                         </div>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 256 256" fill="none" stroke="var(--text-light)" stroke-width="16"><polyline points="96 176 144 176 144 96"/><polyline points="96 112 176 112"/></svg>
                     </div>
                     <div style="padding: 14px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer;" onclick="openPointsHistory()" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='transparent'">
                         <div style="width: 40px; height: 40px; background: #FEF3C7; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg width="20" height="20" viewBox="0 0 256 256" fill="#92400E"><path d="M239.2,97.29a16,16,0,0,0-13.81-11L166.5,82.29,140,28.71A16,16,0,0,0,116,24H48A16,16,0,0,0,32.51,40l19.6,39.2-39.7,57.92a16,16,0,0,0,3,20.8L60.12,191.6a16,16,0,0,0,20.8,3l53.71-35.2L185,229.71a15.89,15.89,0,0,0,7.51,2.08,15.81,15.81,0,0,0,5.68-1A16,16,0,0,0,208,209l44-80a16,16,0,0,0-12.8-25.7Z"/></svg>
                         </div>
                         <div style="flex: 1;">
                             <div style="font-weight: 600; font-size: 15px;">Historico de Pontos</div>
                             <div style="font-size: 12px; color: var(--text-light);">Minhas missoes e pontos</div>
                         </div>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 256 256" fill="none" stroke="var(--text-light)" stroke-width="16"><polyline points="96 176 144 176 144 96"/><polyline points="96 112 176 112"/></svg>
+                    </div>
+                    <div style="padding: 14px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer;" onclick="openNotificationSettings()" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='transparent'">
+                        <div style="width: 40px; height: 40px; background: #FEE2E2; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="20" height="20" viewBox="0 0 256 256" fill="#EF4444"><path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06Z"/></svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 15px;">Config. Notificacoes</div>
+                            <div style="font-size: 12px; color: var(--text-light);">Alertas e preferencias</div>
+                        </div>
+                        <svg width="20" height="20" viewBox="0 0 256 256" fill="none" stroke="var(--text-light)" stroke-width="16"><polyline points="96 176 144 176 144 96"/><polyline points="96 112 176 112"/></svg>
                     </div>
                 </div>
                 <div style="padding: 16px 20px; border-top: 1px solid var(--border);">
@@ -868,7 +906,7 @@
         <div id="accountModal" class="modal">
             <div class="modal-content" style="padding: 20px;">
                 <div class="modal-header">
-                    <div class="modal-title">👤 Dados da Conta</div>
+                    <div class="modal-title"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"/></svg> Dados da Conta</div>
                     <button class="close-btn" onclick="closeAccountModal()">&times;</button>
                 </div>
                 <div class="form-group">
@@ -901,7 +939,7 @@
         <div id="importModal" class="modal">
             <div class="modal-content" style="padding: 20px;">
                 <div class="modal-header">
-                    <div class="modal-title">📥 Importar Produtos</div>
+                    <div class="modal-title"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0Zm-112-8a8,8,0,0,0,8-8V74.34l26.34,26.35a8,8,0,0,0,11.32-11.32l-40-40a8,8,0,0,0-11.32,0l-40,40a8,8,0,0,0,11.32,11.32L112,74.34V136A8,8,0,0,0,112,144Z"/></svg> Importar Produtos</div>
                     <button class="close-btn" onclick="closeImportModal()">&times;</button>
                 </div>
                 <p style="margin-bottom: 16px; color: var(--text-light); font-size: 13px;">Escolha o formato do arquivo:</p>
@@ -934,7 +972,7 @@
         <div id="pointsHistoryModal" class="modal">
             <div class="modal-content" style="padding: 20px; max-height: 80vh;">
                 <div class="modal-header">
-                    <div class="modal-title">🏆 Historico de Pontos</div>
+                    <div class="modal-title"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M239.2,97.29a16,16,0,0,0-13.81-11L166.5,82.29,140,28.71A16,16,0,0,0,116,24H48A16,16,0,0,0,32.51,40l19.6,39.2-39.7,57.92a16,16,0,0,0,3,20.8L60.12,191.6a16,16,0,0,0,20.8,3l53.71-35.2L185,229.71a15.89,15.89,0,0,0,7.51,2.08,15.81,15.81,0,0,0,5.68-1A16,16,0,0,0,208,209l44-80a16,16,0,0,0-12.8-25.7ZM164.39,112l-44,28.8a8,8,0,0,0-3.26,9.44L128.16,184H80l-9.6-19.2a8,8,0,0,0-12.8,0L48,184H40a8,8,0,0,0,0,16h8.8a8,8,0,0,0,7.16-4.24L64,178.6l36.16,50.56L68.8,204.8a8,8,0,0,0,0,9.6l11.2,22.4a8,8,0,0,0,13.76,0l36.16-50.56L152,214.4a8,8,0,0,0,13.76-5.6V144a8,8,0,0,0-13.78-5.6ZM216,99.2,195.2,112,216,124.8,234.8,112Z"/></svg> Historico de Pontos</div>
                     <button class="close-btn" onclick="closePointsHistory()">&times;</button>
                 </div>
                 <div style="background: linear-gradient(135deg, #92400E 0%, #B45309 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 16px; text-align: center;">
@@ -964,7 +1002,7 @@
                     <div id="excelImportPreview"></div>
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn" onclick="confirmExcelImport()">✅ Importar Produtos</button>
+                    <button class="btn" onclick="confirmExcelImport()"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></svg> Importar Produtos</button>
                     <button class="btn btn-outline" onclick="closeExcelImportModal()">Cancelar</button>
                 </div>
             </div>
@@ -974,28 +1012,28 @@
         <div id="notificationModal" class="modal">
             <div class="modal-content notification-modal-content">
                 <div class="modal-header">
-                    <div class="modal-title">🚚 Notificacoes de Retirada</div>
+                    <div class="modal-title"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.06,8.28,66.73,16,80Z"/></svg> Resumo de Retiradas</div>
                     <button class="close-btn" onclick="closeNotificationModal()">&times;</button>
                 </div>
                 
                 <!-- Retirada Summary -->
-                <div class="retirada-summary" id="retiradaSummary">
+                <div class="retirada-summary" id="retiradaSummary" style="margin-bottom: 16px;">
                     <div class="retirada-summary-item">
-                        <div class="retirada-summary-icon">📋</div>
+                        <div class="retirada-summary-icon"><svg width="24" height="24" viewBox="0 0 256 256" fill="currentColor"><path d="M200,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V40A16,16,0,0,0,200,24Zm0,192H56V40H200ZM184,96a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,96Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,128Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,160Z"/></svg></div>
                         <div class="retirada-summary-info">
                             <div class="retirada-summary-value" id="pendingRetiradasCount">0</div>
                             <div class="retirada-summary-label">Pendentes</div>
                         </div>
                     </div>
                     <div class="retirada-summary-item">
-                        <div class="retirada-summary-icon">✅</div>
+                        <div class="retirada-summary-icon"><svg width="24" height="24" viewBox="0 0 256 256" fill="currentColor"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></svg></div>
                         <div class="retirada-summary-info">
                             <div class="retirada-summary-value" id="completedRetiradasCount">0</div>
                             <div class="retirada-summary-label">Concluidas</div>
                         </div>
                     </div>
                     <div class="retirada-summary-item">
-                        <div class="retirada-summary-icon">📦</div>
+                        <div class="retirada-summary-icon"><svg width="24" height="24" viewBox="0 0 256 256" fill="currentColor"><path d="M243.31,85,170.63,12.33a16,16,0,0,0-22.63,0L36.69,123.56a15.91,15.91,0,0,0-5.66,11.31V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V134.87a15.91,15.91,0,0,0-5.66-11.31L243.31,107.31A16,16,0,0,0,243.31,85ZM208,208H48V135l80-80L219,146.28V208Zm32-32H16V134.87a.37.37,0,0,1,0-.16L86.05,64,32,57.68V48L223.6,57.6,232,64V80H208a16,16,0,0,0-16,16v32a16,16,0,0,0,16,16h32a16,16,0,0,0,16-16V96A16,16,0,0,0,240,80Z"/></svg></div>
                         <div class="retirada-summary-info">
                             <div class="retirada-summary-value" id="totalProductsCount">0</div>
                             <div class="retirada-summary-label">Produtos</div>
@@ -1004,17 +1042,18 @@
                 </div>
                 
                 <div id="notificationList"></div>
+            </div>
+        </div>
+        
+        <!-- Notification Settings Modal -->
+        <div id="notificationSettingsModal" class="modal">
+            <div class="modal-content" style="padding: 20px;">
+                <div class="modal-header">
+                    <div class="modal-title"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.06,8.28,66.73,16,80Z"/></svg> Config. Notificacoes</div>
+                    <button class="close-btn" onclick="closeNotificationSettings()">&times;</button>
+                </div>
                 
-                <!-- Settings -->
                 <div class="notification-settings">
-                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 8px;">Preferencias</div>
-                    <div class="notification-setting">
-                        <div>
-                            <div class="notification-setting-label">Notificacoes Push</div>
-                            <div class="notification-setting-desc">Receba alertas mesmo com app fechado</div>
-                        </div>
-                        <div class="toggle-switch" id="pushToggle" onclick="togglePushNotifications()"></div>
-                    </div>
                     <div class="notification-setting">
                         <div>
                             <div class="notification-setting-label">Notificar Retiradas Criadas</div>
@@ -1036,11 +1075,20 @@
                         </div>
                         <div class="toggle-switch active" id="retiradaCompleteToggle" onclick="toggleRetiradaNotification('complete')"></div>
                     </div>
-                    <div style="display: flex; gap: 8px; margin-top: 8px;">
-                        <button class="btn btn-outline" onclick="markAllNotificationsRead()" style="flex: 1; font-size: 12px; padding: 10px;">Marcar lidas</button>
-                        <button class="btn btn-outline" onclick="clearAllNotifications()" style="flex: 1; font-size: 12px; padding: 10px; border-color: var(--red); color: var(--red);">Limpar tudo</button>
-                    </div>
                 </div>
+                
+                <button class="btn" onclick="closeNotificationSettings()" style="margin-top: 16px;">Fechar</button>
+            </div>
+        </div>
+        
+        <!-- Mission Detail Modal -->
+        <div id="missionDetailModal" class="modal">
+            <div class="modal-content" style="padding: 20px; max-width: 500px; max-height: 85vh; overflow-y: auto;">
+                <div class="modal-header">
+                    <div class="modal-title"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 8px;"><path d="M221.81,84.63l-48-32A8,8,0,0,0,160,56V88a8,8,0,0,0,3.2,6.4l48,32a8,8,0,0,0,11.2-4.8v-8a8,8,0,0,0-.6-2.87ZM160,76.94V80l32,21.33V60.27ZM144,80a8,8,0,0,0-16,0V168a8,8,0,0,0,16,0Zm-48,0a8,8,0,0,0-16,0V128a8,8,0,0,0,16,0Zm-16,0a8,8,0,0,0-16,0v80a8,8,0,0,0,16,0Zm176,40a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h8a8,8,0,0,1,8,8Z"/></svg> Missao</div>
+                    <button class="close-btn" onclick="closeMissionDetail()">&times;</button>
+                </div>
+                <div id="missionDetailContent"></div>
             </div>
         </div>
         
@@ -1096,14 +1144,14 @@
             <div class="card-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
                 <div style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <div style="width: 40px; height: 40px; background: #FEE2E2; border-radius: 10px; display: flex; align-items: center; justify-content: center;">📦</div>
+                        <div style="width: 40px; height: 40px; background: #FEE2E2; border-radius: 10px; display: flex; align-items: center; justify-content: center;"><svg width="20" height="20" viewBox="0 0 256 256" fill="#EF4444"><path d="M243.31,85,170.63,12.33a16,16,0,0,0-22.63,0L36.69,123.56a15.91,15.91,0,0,0-5.66,11.31V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V134.87a15.91,15.91,0,0,0-5.66-11.31L243.31,107.31A16,16,0,0,0,243.31,85ZM208,208H48V135l80-80L219,146.28V208Zm32-32H16V134.87a.37.37,0,0,1,0-.16L86.05,64,32,57.68V48L223.6,57.6,232,64V80H208a16,16,0,0,0-16,16v32a16,16,0,0,0,16,16h32a16,16,0,0,0,16-16V96A16,16,0,0,0,240,80Z"/></svg></div>
                         <div style="font-size: 12px; color: var(--text-light);">Total Produtos</div>
                     </div>
                     <div style="font-size: 28px; font-weight: 700; color: #1E40AF;" id="totalProdutos">0</div>
                 </div>
                 <div style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <div style="width: 40px; height: 40px; background: #DCFCE7; border-radius: 10px; display: flex; align-items: center; justify-content: center;">✅</div>
+                        <div style="width: 40px; height: 40px; background: #DCFCE7; border-radius: 10px; display: flex; align-items: center; justify-content: center;"><svg width="20" height="20" viewBox="0 0 256 256" fill="#22C55E"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></svg></div>
                         <div style="font-size: 12px; color: var(--text-light);">Em Estoque</div>
                     </div>
                     <div style="font-size: 28px; font-weight: 700; color: #22C55E;" id="totalEstoque">0</div>
@@ -1112,20 +1160,20 @@
             
             <!-- Validity Status -->
             <div class="card" style="margin-bottom: 16px;">
-                <div class="section-title">📊 Status de Validade</div>
+                <div class="section-title"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M224,200H56v-8H224Zm0-40H56v-8H224Zm0-40H56v-8H224ZM248,56V168a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V56a16,16,0,0,1,16-16h64A16,16,0,0,1,248,56ZM232,168V56H176V80H168a8,8,0,0,0,0,16h8v56H168a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0V96h16v8a8,8,0,0,0,16,0V72h16v80a16,16,0,0,1-16,16Z"/></svg> Status de Validade</div>
                 <div style="display: flex; justify-content: space-around; text-align: center; padding: 16px 0;">
                     <div>
-                        <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #FEE2E2, #FECACA); border-radius: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 24px;">⚠️</div>
+                        <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #FEE2E2, #FECACA); border-radius: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;"><svg width="26" height="26" viewBox="0 0 256 256" fill="#EF4444"><path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM120,104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm8,88a12,12,0,1,1,12-12A12,12,0,0,1,128,192Z"/></svg></div>
                         <div style="font-size: 24px; font-weight: 700; color: #EF4444;" id="statVencidos">0</div>
                         <div style="font-size: 11px; color: var(--text-light);">Vencidos</div>
                     </div>
                     <div>
-                        <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border-radius: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 24px;">⏰</div>
+                        <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border-radius: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;"><svg width="26" height="26" viewBox="0 0 256 256" fill="#F59E0B"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm64-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,192,128Z"/></svg></div>
                         <div style="font-size: 24px; font-weight: 700; color: #F59E0B;" id="statAlerta">0</div>
                         <div style="font-size: 11px; color: var(--text-light);">Em Alerta</div>
                     </div>
                     <div>
-                        <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #DCFCE7, #BBF7D0); border-radius: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 24px;">✅</div>
+                        <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #DCFCE7, #BBF7D0); border-radius: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;"><svg width="26" height="26" viewBox="0 0 256 256" fill="#22C55E"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></svg></div>
                         <div style="font-size: 24px; font-weight: 700; color: #22C55E;" id="statOk">0</div>
                         <div style="font-size: 11px; color: var(--text-light);">No Prazo</div>
                     </div>
@@ -1134,20 +1182,20 @@
             
             <!-- Stock Alerts -->
             <div class="card" style="margin-bottom: 16px;">
-                <div class="section-title">🔴 Estoque Baixo</div>
+                <div class="section-title"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM120,104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm8,88a12,12,0,1,1,12-12A12,12,0,0,1,128,192Z"/></svg> Estoque Baixo</div>
                 <div id="stockAlerts"></div>
             </div>
             
             <!-- Category Chart -->
             <div class="card">
-                <div class="section-title">📈 Produtos por Categoria</div>
+                <div class="section-title"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M232,208a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V48a8,8,0,0,1,16,0v94.37L90.73,98a8,8,0,0,1,10.07-.38l58.81,44.11L218.73,90a8,8,0,1,1,10.54,12l-64,56a8,8,0,0,1-10.07.38L96.33,114.29,40,163.63V200H224A8,8,0,0,1,232,208Z"/></svg> Produtos por Categoria</div>
                 <div class="bar-chart" id="chart"></div>
             </div>
             
             <!-- Quick Actions -->
             <div style="display: flex; gap: 12px; margin-top: 16px;">
-                <button class="btn" onclick="showTab('stock', document.querySelectorAll('.tab')[2])" style="flex: 1;">📦 Ver Estoque</button>
-                <button class="btn btn-outline" onclick="showTab('dailylist', document.querySelectorAll('.tab')[3])" style="flex: 1;">📝 Lista</button>
+                <button class="btn" onclick="showTab('stock', document.querySelectorAll('.tab')[2])" style="flex: 1;"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M243.31,85,170.63,12.33a16,16,0,0,0-22.63,0L36.69,123.56a15.91,15.91,0,0,0-5.66,11.31V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V134.87a15.91,15.91,0,0,0-5.66-11.31L243.31,107.31A16,16,0,0,0,243.31,85ZM208,208H48V135l80-80L219,146.28V208Zm32-32H16V134.87a.37.37,0,0,1,0-.16L86.05,64,32,57.68V48L223.6,57.6,232,64V80H208a16,16,0,0,0-16,16v32a16,16,0,0,0,16,16h32a16,16,0,0,0,16-16V96A16,16,0,0,0,240,80Z"/></svg> Ver Estoque</button>
+                <button class="btn btn-outline" onclick="showTab('dailylist', document.querySelectorAll('.tab')[3])" style="flex: 1;"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M200,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V40A16,16,0,0,0,200,24Zm0,192H56V40H200ZM184,96a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,96Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,128Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,160Z"/></svg> Lista</button>
             </div>
         </div>
 
@@ -1156,7 +1204,7 @@
             <div style="background: linear-gradient(135deg, var(--purple) 0%, #A78BFA 100%); color: white; border-radius: 16px; padding: 16px; margin-bottom: 16px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <h3 style="font-size: 18px; margin-bottom: 4px;">🎯 Missões Diárias</h3>
+                        <h3 style="font-size: 18px; margin-bottom: 4px;"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M221.81,84.63l-48-32A8,8,0,0,0,160,56V88a8,8,0,0,0,3.2,6.4l48,32a8,8,0,0,0,11.2-4.8v-8a8,8,0,0,0-.6-2.87ZM160,76.94V80l32,21.33V60.27ZM144,80a8,8,0,0,0-16,0V168a8,8,0,0,0,16,0Zm-48,0a8,8,0,0,0-16,0V128a8,8,0,0,0,16,0Zm-16,0a8,8,0,0,0-16,0v80a8,8,0,0,0,16,0Zm176,40a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h8a8,8,0,0,1,8,8Z"/></svg> Missões Diárias</h3>
                         <p style="font-size: 13px; opacity: 0.9;">Complete as tarefas e ganhe pontos!</p>
                     </div>
                     <div style="text-align: center; background: rgba(255,255,255,0.2); padding: 12px 16px; border-radius: 12px;">
@@ -1180,7 +1228,7 @@
                         ⚠️ Para usar a câmera, o app precisa estar em <strong>HTTPS</strong> (site seguro).<br>
                         Se não funcionar, use a opção de digitar manualmente.
                     </div>
-                    <button class="btn" onclick="startScanner()">📷 Iniciar Scanner</button>
+                    <button class="btn" onclick="startScanner()"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z"/></svg> Iniciar Scanner</button>
                     <div style="margin-top: 12px; color: var(--primary); font-size: 14px; cursor: pointer; text-decoration: underline;" onclick="showManualInput()">Ou digitar manualmente</div>
                 </div>
             </div>
@@ -1193,7 +1241,7 @@
                 <div class="card"><div class="section-title">Digitar Código</div>
                 <div class="form-group"><label class="form-label">Código EAN</label><input type="text" class="input" id="manualEan" placeholder="7891234567890"></div>
                 <button class="btn" onclick="searchManualCode()">Buscar Produto</button>
-                <div style="margin-top: 12px; color: var(--primary); font-size: 14px; cursor: pointer; text-decoration: underline;" onclick="showScannerStart()">📷 Escanear código</div></div>
+                <div style="margin-top: 12px; color: var(--primary); font-size: 14px; cursor: pointer; text-decoration: underline;" onclick="showScannerStart()"><svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 4px;"><path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z"/></svg> Escanear código</div></div>
             </div>
         </div>
 
@@ -1217,28 +1265,28 @@
                 <div class="section-title">Escolha o Tipo de Exportação</div>
                 <div class="export-options">
                     <div class="export-option selected" id="exportValidade" onclick="selectExportType('validade')">
-                        <div class="export-option-icon">📅</div>
+                        <div class="export-option-icon"><svg width="28" height="28" viewBox="0 0 256 256" fill="currentColor"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-68-76a12,12,0,1,1-12-12A12,12,0,0,1,140,132Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,132Zm-88,40a12,12,0,1,1-12-12A12,12,0,0,1,96,172Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,140,172Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,172Z"/></svg></div>
                         <div class="export-option-title">Validade</div>
                         <div class="export-option-desc">Controle de datas</div>
                     </div>
                     <div class="export-option" id="exportEstoque" onclick="selectExportType('estoque')">
-                        <div class="export-option-icon">📦</div>
+                        <div class="export-option-icon"><svg width="28" height="28" viewBox="0 0 256 256" fill="currentColor"><path d="M243.31,85,170.63,12.33a16,16,0,0,0-22.63,0L36.69,123.56a15.91,15.91,0,0,0-5.66,11.31V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V134.87a15.91,15.91,0,0,0-5.66-11.31L243.31,107.31A16,16,0,0,0,243.31,85ZM208,208H48V135l80-80L219,146.28V208Zm32-32H16V134.87a.37.37,0,0,1,0-.16L86.05,64,32,57.68V48L223.6,57.6,232,64V80H208a16,16,0,0,0-16,16v32a16,16,0,0,0,16,16h32a16,16,0,0,0,16-16V96A16,16,0,0,0,240,80Z"/></svg></div>
                         <div class="export-option-title">Estoque</div>
                         <div class="export-option-desc">Produtos que estão acabando</div>
                     </div>
                 </div>
-                <button class="btn" onclick="exportData()" id="exportButton">📥 Baixar Planilha</button>
-                <button class="btn btn-outline" onclick="document.getElementById('importValidadeFile').click()" style="margin-top: 8px;">📤 Importar Validade (CSV)</button>
+                <button class="btn" onclick="exportData()" id="exportButton"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,132.69V40a8,8,0,0,0-16,0v92.69L93.66,106.34a8,8,0,0,0-11.32,11.32Z"/></svg> Baixar Planilha</button>
+                <button class="btn btn-outline" onclick="document.getElementById('importValidadeFile').click()" style="margin-top: 8px;"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0Zm-112-8a8,8,0,0,0,8-8V74.34l26.34,26.35a8,8,0,0,0,11.32-11.32l-40-40a8,8,0,0,0-11.32,0l-40,40a8,8,0,0,0,11.32,11.32L112,74.34V136A8,8,0,0,0,112,144Z"/></svg> Importar Validade (CSV)</button>
                 <input type="file" id="importValidadeFile" accept=".csv" onchange="importValidadeCSV(this)" style="display: none;">
             </div>
             <div class="card"><div class="section-title">Preview</div><div id="exportPreview"></div></div>
             
             <!-- Backup Section -->
             <div class="card">
-                <div class="section-title">💾 Backup GitHub</div>
+                <div class="section-title"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M209.66,122.34a8,8,0,0,1,0,11.32l-82.05,82a56.21,56.21,0,0,1-79.22,0l-82.77-82.77a8,8,0,0,1,11.32-11.32L56,132.69l75.58-75.65a40,40,0,0,1,56.58,0ZM136,80h16v48a8,8,0,0,1-16,0Zm0,64h24v16H128a8,8,0,0,1-8-8V132a8,8,0,0,1,8-8h48v16Z"/></svg> Backup GitHub</div>
                 <p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;">Exporte seus dados como JSON e salve no GitHub para usar em outro dispositivo.</p>
-                <button class="btn btn-outline" onclick="exportBackup()" style="margin-bottom: 8px;">📤 Exportar Dados (JSON)</button>
-                <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">📥 Importar Dados</button>
+                <button class="btn btn-outline" onclick="exportBackup()" style="margin-bottom: 8px;"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0Zm-112-8a8,8,0,0,0,8-8V74.34l26.34,26.35a8,8,0,0,0,11.32-11.32l-40-40a8,8,0,0,0-11.32,0l-40,40a8,8,0,0,0,11.32,11.32L112,74.34V136A8,8,0,0,0,112,144Z"/></svg> Exportar Dados (JSON)</button>
+                <button class="btn btn-outline" onclick="document.getElementById('importFile').click()"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0Zm-112-8a8,8,0,0,0,8-8V74.34l26.34,26.35a8,8,0,0,0,11.32-11.32l-40-40a8,8,0,0,0-11.32,0l-40,40a8,8,0,0,0,11.32,11.32L112,74.34V136A8,8,0,0,0,112,144Z"/></svg> Importar Dados</button>
                 <input type="file" id="importFile" accept=".json" onchange="importBackup(this)" style="display: none;">
             </div>
         </div>
@@ -1247,84 +1295,51 @@
         <div class="tabs">
             <button class="tab active" onclick="showTab('dashboard', this)">
                 <span class="tab-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7" rx="1"/>
-                        <rect x="14" y="3" width="7" height="7" rx="1"/>
-                        <rect x="3" y="14" width="7" height="7" rx="1"/>
-                        <rect x="14" y="14" width="7" height="7" rx="1"/>
-                    </svg>
+                    <svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,16V158.75l-26.07-26.06a16,16,0,0,0-22.63,0l-20,20-44-44a16,16,0,0,0-22.62,0L40,149.37V56ZM40,172l52-52,80,80H40Zm176,28H194.63l-36-36,20-20L216,181.38V200ZM144,100a12,12,0,1,1,12,12A12,12,0,0,1,144,100Z"/></svg>
                 </span>
+                <span class="tab-label">Início</span>
             </button>
             <button class="tab" onclick="showTab('scanner', this)">
                 <span class="tab-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
-                        <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
-                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
-                        <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
-                        <line x1="7" y1="12" x2="17" y2="12"/>
-                    </svg>
+                    <svg viewBox="0 0 256 256" fill="currentColor"><path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM32,64H224V80H32ZM224,192H32V96H224v96Zm-16-24a8,8,0,0,1-8,8H56a8,8,0,0,1,0-16H200A8,8,0,0,1,208,168Zm-16-24a8,8,0,0,1-8,8H56a8,8,0,0,1,0-16H184A8,8,0,0,1,192,144Zm0-32a8,8,0,0,1-8,8H56a8,8,0,0,1,0-16H184A8,8,0,0,1,192,112Z"/></svg>
                 </span>
+                <span class="tab-label">Scanner</span>
             </button>
             <button class="tab" onclick="showTab('stock', this)">
                 <span class="tab-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                        <line x1="12" y1="22.08" x2="12" y2="12"/>
-                    </svg>
+                    <svg viewBox="0 0 256 256" fill="currentColor"><path d="M243.31,85,170.63,12.33a16,16,0,0,0-22.63,0L36.69,123.56a15.91,15.91,0,0,0-5.66,11.31V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V134.87a15.91,15.91,0,0,0-5.66-11.31L243.31,107.31A16,16,0,0,0,243.31,85ZM208,208H48V135l80-80L219,146.28V208Zm32-32H16V134.87a.37.37,0,0,1,0-.16L86.05,64,32,57.68V48L223.6,57.6,232,64V80H208a16,16,0,0,0-16,16v32a16,16,0,0,0,16,16h32a16,16,0,0,0,16-16V96A16,16,0,0,0,240,80Z"/></svg>
                 </span>
+                <span class="tab-label">Estoque</span>
             </button>
             <button class="tab" onclick="showTab('dailylist', this)">
                 <span class="tab-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="8" y1="6" x2="21" y2="6"/>
-                        <line x1="8" y1="12" x2="21" y2="12"/>
-                        <line x1="8" y1="18" x2="21" y2="18"/>
-                        <line x1="3" y1="6" x2="3.01" y2="6"/>
-                        <line x1="3" y1="12" x2="3.01" y2="12"/>
-                        <line x1="3" y1="18" x2="3.01" y2="18"/>
-                    </svg>
+                    <svg viewBox="0 0 256 256" fill="currentColor"><path d="M200,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V40A16,16,0,0,0,200,24Zm0,192H56V40H200ZM184,96a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,96Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,128Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,160Z"/></svg>
                 </span>
+                <span class="tab-label">Diário</span>
             </button>
             <button class="tab" onclick="showTab('budget', this)">
                 <span class="tab-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="16" y1="13" x2="8" y2="13"/>
-                        <line x1="16" y1="17" x2="8" y2="17"/>
-                        <polyline points="10 9 9 9 8 9"/>
-                    </svg>
+                    <svg viewBox="0 0 256 256" fill="currentColor"><path d="M184,89.57V84c0-25.08-37.83-44-88-44S8,58.92,8,84v40c0,20.89,26.25,37.49,64,42.46V172c0,25.08,37.83,44,88,44s88-18.92,88-44V132C248,111.3,222.58,94.68,184,89.57ZM232,132c0,13.22-30.79,28-72,28-3.73,0-7.43-.13-11.08-.37C170.49,151.77,184,139,184,124V105.74C213.87,110.19,232,122.27,232,132Zm-64-48c41.21,0,72,14.78,72,28s-30.79,28-72,28S96,113.22,96,100,126.79,84,168,84ZM24,124V116.55l.75-.2C37.3,113.48,56.19,108,72,108c3.37,0,6.69.14,10,.37v16.12C50.36,120.33,24,107.39,24,124Zm64,48c0,13.22-30.79,28-72,28V172c15.7,0,32.72-6.56,51.25-16.34A121.92,121.92,0,0,0,88,172Zm80,0c-41.21,0-72-14.78-72-28s30.79-28,72-28S248,122.78,248,136,217.21,172,168,172Z"/></svg>
                 </span>
+                <span class="tab-label">Orçamento</span>
             </button>
             <button class="tab" onclick="showTab('export', this)">
                 <span class="tab-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
+                    <svg viewBox="0 0 256 256" fill="currentColor"><path d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,132.69V40a8,8,0,0,0-16,0v92.69L93.66,106.34a8,8,0,0,0-11.32,11.32Z"/></svg>
                 </span>
+                <span class="tab-label">Importar</span>
             </button>
             <button class="tab" onclick="showTab('retirada', this)">
                 <span class="tab-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="1" y="3" width="15" height="13"/>
-                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-                        <circle cx="5.5" cy="18.5" r="2.5"/>
-                        <circle cx="18.5" cy="18.5" r="2.5"/>
-                    </svg>
+                    <svg viewBox="0 0 256 256" fill="currentColor"><path d="M255.43,117l-14-35A15.93,15.93,0,0,0,226.58,72H192V64a8,8,0,0,0-8-8H32A16,16,0,0,0,16,72V184a16,16,0,0,0,16,16H49a32,32,0,0,0,62,0h50a32,32,0,0,0,62,0h17a16,16,0,0,0,16-16V120A7.94,7.94,0,0,0,255.43,117ZM192,88h34.58l9.6,24H192ZM32,72H176v64H32ZM80,208a16,16,0,1,1,16-16A16,16,0,0,1,80,208Zm81-24H95a32,32,0,0,0-62,0H16V152H49a32.06,32.06,0,0,0,31-25.63L102.35,80H176v32a8,8,0,0,0,8,8h34.58L240,146.41V184Zm48,24a16,16,0,1,1,16-16A16,16,0,0,1,209,208Zm47-24H223a32.06,32.06,0,0,0,31-25.63L246.35,112H240a8,8,0,0,0-8-8H194.63l-10.66-26.67L163.31,80H112L105.79,72h54.79a8,8,0,0,0,0-16H32a0,0,0,0,0,0,0V72a8,8,0,0,0,16,0V80H98.21L83.59,120H32v32H55a32,32,0,0,0,62,0h50a32,32,0,0,0,62,0h17v8H176a8,8,0,0,0,0,16h50a0,0,0,0,0,0,0V184A15.94,15.94,0,0,0,256,184Z"/></svg>
                 </span>
+                <span class="tab-label">Retirada</span>
             </button>
             <button class="tab" onclick="showTab('missions', this)">
                 <span class="tab-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <circle cx="12" cy="12" r="6"/>
-                        <circle cx="12" cy="12" r="2"/>
-                    </svg>
+                    <svg viewBox="0 0 256 256" fill="currentColor"><path d="M239.2,97.29a16,16,0,0,0-13.81-11L166.5,82.29,140,28.71A16,16,0,0,0,116,24H48A16,16,0,0,0,32.51,40l19.6,39.2-39.7,57.92a16,16,0,0,0,3,20.8L60.12,191.6a16,16,0,0,0,20.8,3l53.71-35.2L185,229.71a15.89,15.89,0,0,0,7.51,2.08,15.81,15.81,0,0,0,5.68-1A16,16,0,0,0,208,209l44-80a16,16,0,0,0-12.8-25.7ZM164.39,112l-44,28.8a8,8,0,0,0-3.26,9.44L128.16,184H80l-9.6-19.2a8,8,0,0,0-12.8,0L48,184H40a8,8,0,0,0,0,16h8.8a8,8,0,0,0,7.16-4.24L64,178.6l36.16,50.56L68.8,204.8a8,8,0,0,0,0,9.6l11.2,22.4a8,8,0,0,0,13.76,0l36.16-50.56L152,214.4a8,8,0,0,0,13.76-5.6V144a8,8,0,0,0-13.78-5.6ZM216,99.2,195.2,112,216,124.8,234.8,112Z"/></svg>
                 </span>
+                <span class="tab-label">Desafios</span>
             </button>
         </div>
     </div>
@@ -1334,9 +1349,9 @@
         <div class="daily-list-page">
             <!-- Header Actions -->
             <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-                <button class="btn btn-small btn-outline" onclick="selectAllLowStock()">⚠️ Estoque Baixo</button>
-                <button class="btn btn-small btn-outline" onclick="selectRecentProducts()">🕐 Recentes</button>
-                <button class="btn btn-small btn-outline" onclick="clearDailyList()">🗑️ Limpar</button>
+                <button class="btn btn-small btn-outline" onclick="selectAllLowStock()"><svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM120,104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm8,88a12,12,0,1,1,12-12A12,12,0,0,1,128,192Z"/></svg> Estoque Baixo</button>
+                <button class="btn btn-small btn-outline" onclick="selectRecentProducts()"><svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm64-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,192,128Z"/></svg> Recentes</button>
+                <button class="btn btn-small btn-outline" onclick="clearDailyList()"><svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"/></svg> Limpar</button>
             </div>
             
             <!-- Search -->
@@ -1375,7 +1390,7 @@
         <div class="retirada-container">
             <!-- Nova Retirada -->
             <div class="card">
-                <div class="retirada-section-title">🚚 Nova Retirada</div>
+                <div class="retirada-section-title"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M255.43,117l-14-35A15.93,15.93,0,0,0,226.58,72H192V64a8,8,0,0,0-8-8H32A16,16,0,0,0,16,72V184a16,16,0,0,0,16,16H49a32,32,0,0,0,62,0h50a32,32,0,0,0,62,0h17a16,16,0,0,0,16-16V120A7.94,7.94,0,0,0,255.43,117ZM192,88h34.58l9.6,24H192ZM32,72H176v64H32ZM80,208a16,16,0,1,1,16-16A16,16,0,0,1,80,208Zm81-24H95a32,32,0,0,0-62,0H16V152H49a32.06,32.06,0,0,0,31-25.63L102.35,80H176v32a8,8,0,0,0,8,8h34.58L240,146.41V184Zm48,24a16,16,0,1,1,16-16A16,16,0,0,1,209,208Zm47-24H223a32.06,32.06,0,0,0,31-25.63L246.35,112H240a8,8,0,0,0-8-8H194.63l-10.66-26.67L163.31,80H112L105.79,72h54.79a8,8,0,0,0,0-16H32a0,0,0,0,0,0,0V72a8,8,0,0,0,16,0V80H98.21L83.59,120H32v32H55a32,32,0,0,0,62,0h50a32,32,0,0,0,62,0h17v8H176a8,8,0,0,0,0,16h50a0,0,0,0,0,0,0V184A15.94,15.94,0,0,0,256,184Z"/></svg> Nova Retirada</div>
                 
                 <div class="form-group">
                     <label class="form-label">Nome Completo do Cliente *</label>
@@ -1406,12 +1421,12 @@
                     <div class="empty" style="padding: 20px;">Nenhum produto selecionado</div>
                 </div>
                 
-                <button class="btn" onclick="saveRetirada()">💾 Salvar Retirada</button>
+                <button class="btn" onclick="saveRetirada()"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M219.31,72,184,36.69A15.86,15.86,0,0,0,172.69,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V83.31A15.86,15.86,0,0,0,219.31,72ZM168,208H88V152h80Zm40,0H184V152a16,16,0,0,0-16-16H88a16,16,0,0,0-16,16v56H48V48H172.69L208,83.31ZM160,72a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h56A8,8,0,0,1,160,72Z"/></svg> Salvar Retirada</button>
             </div>
             
             <!-- Lista de Retiradas -->
             <div class="card">
-                <div class="retirada-section-title">📋 Retiradas Registradas</div>
+                <div class="retirada-section-title"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M200,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V40A16,16,0,0,0,200,24Zm0,192H56V40H200ZM184,96a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,96Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,128Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,160Z"/></svg> Retiradas Registradas</div>
                 
                 <div class="retirada-search-box" style="position: relative;">
                     <input type="text" class="input" id="retiradaSearchClients" placeholder="🔍 Buscar cliente pelo nome..." oninput="filterRetiradasByName(this.value)" style="margin-bottom: 0; padding-right: 40px;">
@@ -1427,7 +1442,7 @@
     <div id="budget" class="content tab-content hidden">
         <!-- Header com Empresa e Documento -->
         <div class="card" style="margin-bottom: 12px;">
-            <div class="section-title">📋 Orcamento / Pedido</div>
+            <div class="section-title"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M200,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V40A16,16,0,0,0,200,24Zm0,192H56V40H200ZM184,96a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,96Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,128Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,160Z"/></svg> Orcamento / Pedido</div>
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
                     <div style="flex: 1; min-width: 150px;">
@@ -1545,8 +1560,8 @@
                     </div>
                 </div>
                 <div class="budget-actions">
-                    <button class="btn" onclick="saveBudget()">💾 Salvar</button>
-                    <button class="btn btn-outline" onclick="openSpreadsheetEditor()">📋 Editar</button>
+                <button class="btn" onclick="saveBudget()"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M219.31,72,184,36.69A15.86,15.86,0,0,0,172.69,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V83.31A15.86,15.86,0,0,0,219.31,72ZM168,208H88V152h80Zm40,0H184V152a16,16,0,0,0-16-16H88a16,16,0,0,0-16,16v56H48V48H172.69L208,83.31ZM160,72a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h56A8,8,0,0,1,160,72Z"/></svg> Salvar</button>
+                <button class="btn btn-outline" onclick="openSpreadsheetEditor()"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor"><path d="M200,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V40A16,16,0,0,0,200,24Zm0,192H56V40H200ZM184,96a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,96Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,128Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,160Z"/></svg> Editar</button>
                     <button class="btn btn-outline" onclick="printBudget()">🖨️ Imprimir</button>
                     <button class="btn btn-outline" onclick="exportBudgetAsPDF()">📄 PDF</button>
                 </div>
@@ -1607,7 +1622,7 @@
     <div id="clientModal" class="modal">
         <div class="modal-content" style="max-width: 450px;">
             <div class="modal-header">
-                <div class="modal-title">👤 Gerenciar Clientes</div>
+                <div class="modal-title"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"/></svg> Gerenciar Clientes</div>
                 <button class="close-btn" onclick="closeClientModal()">&times;</button>
             </div>
             <div id="clientList" style="max-height: 200px; overflow-y: auto; margin-bottom: 16px;"></div>
@@ -1640,10 +1655,10 @@
     <div id="spreadsheetModal" class="modal" style="padding-top: 10px; align-items: flex-start;">
         <div class="modal-content" style="max-width: 98%; width: 900px; max-height: 95vh; display: flex; flex-direction: column; margin: auto; border-radius: 12px;">
             <div class="modal-header" style="background: linear-gradient(135deg, #001882 0%, #0030A0 100%); color: white; border-radius: 12px 12px 0 0; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
-                <div class="modal-title" style="color: white; font-size: 16px;">📋 Editar Planilha</div>
+                <div class="modal-title" style="color: white; font-size: 16px;"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M200,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V40A16,16,0,0,0,200,24Zm0,192H56V40H200ZM184,96a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,96Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,128Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,160Z"/></svg> Editar Planilha</div>
                 <div style="display: flex; gap: 8px;">
                     <button onclick="loadTemplate()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px;">📂 Carregar</button>
-                    <button onclick="saveAsTemplate()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px;">💾 Salvar</button>
+                    <button onclick="saveAsTemplate()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px;"><svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M219.31,72,184,36.69A15.86,15.86,0,0,0,172.69,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V83.31A15.86,15.86,0,0,0,219.31,72ZM168,208H88V152h80Zm40,0H184V152a16,16,0,0,0-16-16H88a16,16,0,0,0-16,16v56H48V48H172.69L208,83.31ZM160,72a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h56A8,8,0,0,1,160,72Z"/></svg> Salvar</button>
                     <button class="close-btn" onclick="closeSpreadsheetEditor()" style="color: white; font-size: 28px; line-height: 1;">&times;</button>
                 </div>
             </div>
@@ -1783,7 +1798,7 @@
             </div>
             <div class="form-group"><label class="form-label">Marca</label><input type="text" class="input" id="produtoMarca" placeholder="Ex: Suvinil"></div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                <div class="form-group"><label class="form-label">💰 Preço Compra (R$)</label><input type="number" class="input" id="produtoPrecoCompra" placeholder="0,00" step="0.01" min="0"></div>
+                <div class="form-group"><label class="form-label"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 4px;"><path d="M184,89.57V84c0-25.08-37.83-44-88-44S8,58.92,8,84v40c0,20.89,26.25,37.49,64,42.46V172c0,25.08,37.83,44,88,44s88-18.92,88-44V132C248,111.3,222.58,94.68,184,89.57ZM232,132c0,13.22-30.79,28-72,28-3.73,0-7.43-.13-11.08-.37C170.49,151.77,184,139,184,124V105.74C213.87,110.19,232,122.27,232,132Zm-64-48c41.21,0,72,14.78,72,28s-30.79,28-72,28S96,113.22,96,100,126.79,84,168,84Z"/></svg> Preço Compra (R$)</label><input type="number" class="input" id="produtoPrecoCompra" placeholder="0,00" step="0.01" min="0"></div>
                 <div class="form-group"><label class="form-label">💵 Preço Venda (R$)</label><input type="number" class="input" id="produtoPrecoVenda" placeholder="0,00" step="0.01" min="0"></div>
             </div>
             <div class="form-group"><label class="form-label">Quantidade em Estoque</label><input type="number" class="input" id="produtoQuantidade" value="10"></div>
@@ -1935,6 +1950,7 @@
             loadBudgetHistory();
             loadCompanies();
             loadClients();
+            checkAndShowAlerts();
         }
         
         function loadUserData() {
@@ -1945,6 +1961,168 @@
                 missoes = user.missoes || generateInitialMissions();
                 retiradas = user.retiradas || [];
             }
+        }
+        
+        function checkAndShowAlerts() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const alertDays = 30;
+            const alertDate = new Date(today);
+            alertDate.setDate(alertDate.getDate() + alertDays);
+            
+            let vencidosCount = 0;
+            let alertaCount = 0;
+            let baixaEstoqueCount = 0;
+            let pendentesRetirada = 0;
+            
+            lotes.forEach(lote => {
+                if (lote.status !== 'disponivel') return;
+                const validade = new Date(lote.dataValidade);
+                if (validade < today) {
+                    vencidosCount++;
+                } else if (validade <= alertDate) {
+                    alertaCount++;
+                }
+            });
+            
+            produtos.forEach(p => {
+                if (p.quantidade > 0 && p.quantidade <= 5) {
+                    baixaEstoqueCount++;
+                }
+            });
+            
+            if (retiradas.length > 0) {
+                pendentesRetirada = retiradas.filter(r => {
+                    const total = r.produtos.reduce((sum, pr) => sum + pr.quantidade, 0);
+                    const entregue = r.produtos.reduce((sum, pr) => sum + (pr.quantidadeEntregue || 0), 0);
+                    return total > entregue;
+                }).length;
+            }
+            
+            const totalAlerts = vencidosCount + alertaCount + baixaEstoqueCount + pendentesRetirada;
+            if (totalAlerts === 0) return;
+            
+            let toastType = 'warning';
+            let iconSvg = `<svg viewBox="0 0 256 256" fill="#F59E0B"><path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM120,104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm8,88a12,12,0,1,1,12-12A12,12,0,0,1,128,192Z"/></svg>`;
+            
+            if (vencidosCount > 0) {
+                toastType = 'alert';
+                iconSvg = `<svg viewBox="0 0 256 256" fill="#EF4444"><path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM120,104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm8,88a12,12,0,1,1,12-12A12,12,0,0,1,128,192Z"/></svg>`;
+            }
+             
+            const items = [];
+            let defaultAction = "showTab('stock', document.querySelectorAll('.tab')[2])";
+            let defaultButtonText = 'Ver detalhes';
+             
+            if (vencidosCount > 0) {
+                items.push({
+                    type: 'danger',
+                    icon: `<svg viewBox="0 0 256 256" fill="#EF4444"><path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM120,104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm8,88a12,12,0,1,1,12-12A12,12,0,0,1,128,192Z"/></svg>`,
+                    text: 'Produtos vencidos',
+                    count: vencidosCount,
+                    action: 'stock'
+                });
+            }
+             
+            if (alertaCount > 0) {
+                items.push({
+                    type: 'warning',
+                    icon: `<svg viewBox="0 0 256 256" fill="#F59E0B"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm64-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,192,128Z"/></svg>`,
+                    text: 'Próximos do vencimento',
+                    count: alertaCount,
+                    action: 'stock'
+                });
+            }
+             
+            if (baixaEstoqueCount > 0) {
+                items.push({
+                    type: 'info',
+                    icon: `<svg viewBox="0 0 256 256" fill="#3B82F6"><path d="M243.31,85,170.63,12.33a16,16,0,0,0-22.63,0L36.69,123.56a15.91,15.91,0,0,0-5.66,11.31V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V134.87a15.91,15.91,0,0,0-5.66-11.31L243.31,107.31A16,16,0,0,0,243.31,85ZM208,208H48V135l80-80L219,146.28V208Zm32-32H16V134.87a.37.37,0,0,1,0-.16L86.05,64,32,57.68V48L223.6,57.6,232,64V80H208a16,16,0,0,0-16,16v32a16,16,0,0,0,16,16h32a16,16,0,0,0,16-16V96A16,16,0,0,0,240,80Z"/></svg>`,
+                    text: 'Estoque baixo',
+                    count: baixaEstoqueCount,
+                    action: 'dailylist'
+                });
+                if (vencidosCount === 0 && alertaCount === 0) {
+                    defaultAction = 'dailylist';
+                    defaultButtonText = 'Ver estoque baixo';
+                }
+            }
+             
+            if (pendentesRetirada > 0) {
+                items.push({
+                    type: 'info',
+                    icon: `<svg viewBox="0 0 256 256" fill="#3B82F6"><path d="M255.43,117l-14-35A15.93,15.93,0,0,0,226.58,72H192V64a8,8,0,0,0-8-8H32A16,16,0,0,0,16,72V184a16,16,0,0,0,16,16H49a32,32,0,0,0,62,0h50a32,32,0,0,0,62,0h17a16,16,0,0,0,16-16V120A7.94,7.94,0,0,0,255.43,117Z"/></svg>`,
+                    text: 'Retiradas pendentes',
+                    count: pendentesRetirada,
+                    action: 'retirada'
+                });
+                if (vencidosCount === 0 && alertaCount === 0 && baixaEstoqueCount === 0) {
+                    defaultAction = 'retirada';
+                    defaultButtonText = 'Ver retiradas';
+                }
+            }
+             
+            const itemsHtml = items.map(item => 
+                `<div class="toast-item ${item.type}" onclick="toastNavigate('${item.action}')">
+                    <div class="toast-item-icon">${item.icon}</div>
+                    <div class="toast-item-text">${item.text}</div>
+                    <div class="toast-item-count">${item.count}</div>
+                </div>`
+            ).join('');
+            
+            const toastHtml = `
+                <div class="toast" id="alertToast">
+                    <div class="toast-header">
+                        <div class="toast-icon ${toastType}">${iconSvg}</div>
+                        <div class="toast-content">
+                            <div class="toast-title">${totalAlerts} alerta(s) encontrado(s)</div>
+                            <div class="toast-subtitle">Resumo dos alertas ao entrar no app</div>
+                        </div>
+                        <button class="toast-close" onclick="dismissToast()">&times;</button>
+                    </div>
+                    <div class="toast-body">
+                        ${itemsHtml}
+                    </div>
+                    <div class="toast-actions">
+                        <button class="toast-btn secondary" onclick="dismissToast()">Fechar</button>
+                        <button class="toast-btn primary" onclick="toastNavigate('${defaultAction}')">${defaultButtonText}</button>
+                    </div>
+                </div>
+            `;
+            
+            const container = document.getElementById('toastContainer');
+            container.innerHTML = toastHtml;
+            
+            setTimeout(() => { dismissToast(); }, 15000);
+        }
+        
+        function dismissToast() {
+            const toast = document.getElementById('alertToast');
+            if (toast) {
+                toast.classList.add('toast-fadeout');
+                setTimeout(() => { toast.remove(); }, 300);
+            }
+        }
+        
+        function toastNavigate(action) {
+            dismissToast();
+            setTimeout(() => {
+                const tabs = document.querySelectorAll('.tab');
+                switch(action) {
+                    case 'stock':
+                        showTab('stock', tabs[2]);
+                        break;
+                    case 'dailylist':
+                        selectAllLowStock();
+                        showTab('dailylist', tabs[3]);
+                        break;
+                    case 'retirada':
+                        showTab('retirada', tabs[6]);
+                        break;
+                    default:
+                        showTab('stock', tabs[2]);
+                }
+            }, 350);
         }
         
         function saveUserData() {
@@ -1984,17 +2162,23 @@
         }
         
         function generateDailyMissions() {
+            const categories = ['Tintas', 'Cimento', 'Argamassa', 'Rejunte', 'Massa Corrida', 'Verniz', 'Escalas', 'Canos', 'Conexoes', 'Fios'];
+            const randomCat = categories[Math.floor(Math.random() * categories.length)];
+            
             const types = [
-                { titulo: 'Verificar produtos vencidos', descricao: 'Revise os produtos', tipo: 'vencidos', meta: 3, pontos: 10 },
-                { titulo: 'Atualizar Tintas', descricao: 'Conte as tintas', tipo: 'categoria', categoria: 'Tintas', meta: 1, pontos: 15 },
-                { titulo: 'Escanear produtos', descricao: 'Use o scanner', tipo: 'scanner', meta: 5, pontos: 20 },
-                { titulo: 'Verificar Cimento', descricao: 'Revise o cimento', tipo: 'categoria', categoria: 'Cimento', meta: 1, pontos: 15 },
-                { titulo: 'Exportar relatório', descricao: 'Exporte uma planilha', tipo: 'export', meta: 1, pontos: 10 },
+                { titulo: 'Verificar produtos vencidos', descricao: 'Revise 3 produtos vencidos', tipo: 'vencidos', meta: 3, pontos: 10 },
+                { titulo: 'Verificar proximos do vencimento', descricao: 'Revise produtos que vao vencer em breve', tipo: 'proximos', meta: 3, pontos: 10 },
+                { titulo: 'Atualizar estoque de ' + randomCat, descricao: 'Conte e atualize a quantidade de ' + randomCat, tipo: 'categoria', categoria: randomCat, meta: 1, pontos: 15 },
+                { titulo: 'Verificar estoque baixo', descricao: 'Revise produtos com estoque abaixo de 5', tipo: 'estoque_baixo', meta: 3, pontos: 10 },
+                { titulo: 'Escanear produtos', descricao: 'Use o scanner para verificar 5 produtos', tipo: 'scanner', meta: 5, pontos: 20 },
+                { titulo: 'Verificar Cimento', descricao: 'Revise todos os tipos de cimento', tipo: 'categoria', categoria: 'Cimento', meta: 1, pontos: 15 },
+                { titulo: 'Exportar relatorio', descricao: 'Exporte uma planilha do sistema', tipo: 'export', meta: 1, pontos: 10 },
+                { titulo: 'Atualizar Tintas', descricao: 'Conte e atualize o estoque de tintas', tipo: 'categoria', categoria: 'Tintas', meta: 1, pontos: 15 },
             ];
             missoes = types.sort(() => 0.5 - Math.random()).slice(0, 3).map((m, i) => ({ ...m, id: Date.now() + i, atual: 0, completa: false }));
             saveUserData();
             renderMissions();
-            alert('Novas missões geradas!');
+            alert('Novas missoes geradas!');
         }
         
         function renderMissions() {
@@ -2008,9 +2192,278 @@
             missoes.forEach(m => {
                 const cls = m.completa ? 'completed' : '';
                 const checkCls = m.completa ? 'completed' : '';
-                html += `<div class="mission-card"><div class="mission-header"><span class="mission-title">${m.titulo}</span><span class="badge ${m.completa ? 'green' : 'purple'}">${m.completa ? '✓' : m.pontos + ' pts'}</span></div><p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;">${m.descricao}</p><div class="mission-item ${cls}"><div class="mission-item-info"><div class="mission-item-name">${m.titulo}</div><div class="mission-item-detail">Progresso: ${m.atual}/${m.meta}</div></div><div class="mission-check ${checkCls}" onclick="toggleMission(${m.id})">${m.completa ? '✓' : ''}</div></div></div>`;
+                html += `<div class="mission-card" onclick="openMissionDetail(${m.id})" style="cursor: pointer;"><div class="mission-header"><span class="mission-title">${m.titulo}</span><span class="badge ${m.completa ? 'green' : 'purple'}">${m.completa ? '✓' : m.pontos + ' pts'}</span></div><p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;">${m.descricao}</p><div class="mission-item ${cls}"><div class="mission-item-info"><div class="mission-item-name">${m.titulo}</div><div class="mission-item-detail">Progresso: ${m.atual}/${m.meta}</div></div><div class="mission-check ${checkCls}" onclick="event.stopPropagation(); toggleMission(${m.id})">${m.completa ? '✓' : ''}</div></div></div>`;
             });
             document.getElementById('missionsList').innerHTML = html;
+        }
+        
+        function openMissionDetail(id) {
+            const m = missoes.find(x => x.id === id);
+            if (!m) return;
+            
+            let productsHtml = '';
+            let bonusHtml = '';
+            const products = getProductsForMission(m);
+            
+            productsHtml = products.map(p => {
+                let statusClass = '';
+                let statusText = '';
+                const daysUntilExpiry = getDaysUntilExpiry(p.validade);
+                
+                if (daysUntilExpiry < 0) {
+                    statusClass = 'style="color: #EF4444;"';
+                    statusText = 'Vencido ha ' + Math.abs(daysUntilExpiry) + ' dias';
+                } else if (daysUntilExpiry <= 30) {
+                    statusClass = 'style="color: #F59E0B;"';
+                    statusText = 'Vence em ' + daysUntilExpiry + ' dias';
+                } else {
+                    statusText = 'Valido por ' + daysUntilExpiry + ' dias';
+                }
+                
+                const isScannable = m.tipo === 'scanner' || m.tipo === 'vencidos' || m.tipo === 'proximos' || m.tipo === 'categoria' || m.tipo === 'estoque_baixo';
+                
+                return `
+                    <div onclick="${isScannable ? `openMissionProductEdit(${p.id}, ${m.id})` : ''}" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg); border-radius: 8px; margin-bottom: 8px; cursor: ${isScannable ? 'pointer' : 'default'}; transition: all 0.2s; ${isScannable ? 'border: 1px solid var(--border);' : ''}" ${isScannable ? 'onmouseover="this.style.borderColor=\'var(--primary)\'; this.style.background=\'#EEF2FF\';" onmouseout="this.style.borderColor=\'var(--border)\'; this.style.background=\'var(--bg)\';"' : ''}>
+                        <div>
+                            <div style="font-weight: 500; font-size: 14px;">${p.nome}</div>
+                            <div style="font-size: 12px; color: var(--text-light);">${p.categoria || ''} ${p.marca ? '• ' + p.marca : ''}</div>
+                            <div style="font-size: 11px; color: var(--text-light);">Val: ${formatDate(p.validade)}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 600; font-size: 14px;" ${statusClass}>${statusText}</div>
+                            <div style="font-size: 12px; color: var(--text-light);">Estoque: ${p.quantidade || 0}</div>
+                            ${isScannable ? '<div style="font-size: 11px; color: var(--primary); margin-top: 4px;">Clique para escanear</div>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            if (!m.completa && products.length > 0) {
+                const bonusPontos = Math.floor(m.pontos * 0.5);
+                bonusHtml = `
+                    <div style="margin-top: 16px; padding: 16px; background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-radius: 12px; text-align: center;">
+                        <div style="font-size: 14px; font-weight: 600; color: #92400E; margin-bottom: 8px;">Verifique mais produtos e ganhe um extra!</div>
+                        <div style="font-size: 12px; color: #B45309; margin-bottom: 12px;">+${bonusPontos} pontos de bonus</div>
+                        <button class="btn" onclick="claimMissionBonus(${m.id})" style="background: #F59E0B; color: white; font-size: 13px; padding: 8px 16px;">
+                            <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 4px;"><path d="M243.31,136,149.32,42a16,16,0,0,0-22.63,0L21.37,136a16,16,0,0,0,11.32,27.32L48,148.69V216a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V148.69l15.31,14.63a16,16,0,0,0,11.31,4.69h0a16,16,0,0,0,11.31-27.32ZM208,216H48V152h64a8,8,0,0,0,0-16H48v-8l96-96,32,32H160a8,8,0,0,0,0,16h48Z"/></svg> Verificar Todos
+                        </button>
+                    </div>
+                `;
+            }
+            
+            const scannerButton = m.tipo === 'scanner' ? `
+                <div style="margin-bottom: 16px;">
+                    <button class="btn" onclick="goToScannerFromMission(${m.id})" style="width: 100%; background: linear-gradient(135deg, var(--purple), #A78BFA); color: white;">
+                        <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 6px;"><path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z"/></svg>
+                        Escanear Produtos
+                    </button>
+                    <div style="font-size: 12px; color: var(--text-light); text-align: center; margin-top: 8px;">
+                        Escaneie ${m.meta - m.atual} produto(s) para completar a missao
+                    </div>
+                </div>
+            ` : '';
+            
+            const modalContent = document.getElementById('missionDetailContent');
+            modalContent.innerHTML = `
+                <div style="background: linear-gradient(135deg, var(--purple) 0%, #A78BFA 100%); color: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; text-align: center;">
+                    <div style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">${m.titulo}</div>
+                    <div style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">${m.pontos} pts</div>
+                    <div style="font-size: 13px; opacity: 0.9;">${m.descricao}</div>
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: 600; font-size: 14px;">Progresso</span>
+                        <span style="color: var(--text-light); font-size: 13px;">${m.atual}/${m.meta}</span>
+                    </div>
+                    <div class="mission-progress-bar" style="height: 12px;">
+                        <div class="mission-progress-fill" style="width: ${Math.round((m.atual / m.meta) * 100)}%"></div>
+                    </div>
+                </div>
+                
+                ${scannerButton}
+                
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 12px;">Produtos para verificar:</div>
+                    ${products.length > 0 ? productsHtml : '<div style="text-align: center; padding: 30px; color: var(--text-light);">Nenhum produto encontrado para esta missao</div>'}
+                </div>
+                
+                ${bonusHtml}
+                
+                <div style="margin-top: 16px;">
+                    ${m.completa ? 
+                        '<div style="text-align: center; padding: 16px; background: #DCFCE7; border-radius: 12px; color: #16A34A; font-weight: 600;">Missao Completa!</div>' :
+                        `<button class="btn" onclick="completeMissionItem(${m.id})" style="width: 100%;">Marcar como Verificado</button>`
+                    }
+                </div>
+            `;
+            
+            document.getElementById('missionDetailModal').classList.add('show');
+        }
+        
+        function closeMissionDetail() {
+            document.getElementById('missionDetailModal').classList.remove('show');
+        }
+        
+        function goToScannerFromMission(missionId) {
+            closeMissionDetail();
+            const m = missoes.find(x => x.id === missionId);
+            if (m) {
+                currentMissionId = missionId;
+            }
+            setTimeout(() => {
+                const tabs = document.querySelectorAll('.tab');
+                showTab('scanner', tabs[1]);
+            }, 100);
+        }
+        
+        function getProductsForMission(m) {
+            const allProducts = getAllProducts();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            switch(m.tipo) {
+                case 'vencidos':
+                    return allProducts.filter(p => {
+                        if (!p.validade) return false;
+                        const expiry = new Date(p.validade);
+                        return expiry < today;
+                    }).slice(0, m.meta);
+                    
+                case 'proximos':
+                    return allProducts.filter(p => {
+                        if (!p.validade) return false;
+                        const expiry = new Date(p.validade);
+                        const daysUntil = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+                        return daysUntil > 0 && daysUntil <= 30;
+                    }).slice(0, m.meta);
+                    
+                case 'categoria':
+                    return allProducts.filter(p => p.categoria === m.categoria).slice(0, m.meta);
+                    
+                case 'estoque_baixo':
+                    return allProducts.filter(p => (p.quantidade || 0) <= 5).slice(0, m.meta);
+                    
+                case 'scanner':
+                    return allProducts.slice(0, 10);
+                    
+                case 'retiradas':
+                    return [];
+                    
+                default:
+                    return allProducts.slice(0, m.meta);
+            }
+        }
+        
+        function getDaysUntilExpiry(dateStr) {
+            if (!dateStr) return 999;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const expiry = new Date(dateStr);
+            return Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+        }
+        
+        function completeMissionItem(id) {
+            const m = missoes.find(x => x.id === id);
+            if (!m) return;
+            
+            m.atual = Math.min(m.atual + 1, m.meta);
+            
+            if (m.atual >= m.meta && !m.completa) {
+                m.completa = true;
+                addPoints(m.pontos, m.titulo);
+            }
+            
+            saveUserData();
+            renderMissions();
+            closeMissionDetail();
+            
+            if (m.completa) {
+                showPointsAnimation(m.pontos);
+            }
+        }
+        
+        function claimMissionBonus(id) {
+            const m = missoes.find(x => x.id === id);
+            if (!m || m.completa) return;
+            
+            const bonusPontos = Math.floor(m.pontos * 0.5);
+            addPoints(bonusPontos, m.titulo + ' - Extra', true);
+            
+            m.atual = Math.min(m.atual + 1, m.meta);
+            if (m.atual >= m.meta && !m.completa) {
+                m.completa = true;
+            }
+            
+            saveUserData();
+            renderMissions();
+            closeMissionDetail();
+            
+            showPointsAnimation(bonusPontos);
+        }
+        
+        let currentMissionProductId = null;
+        let currentMissionId = null;
+        
+        function openMissionProductEdit(productId, missionId) {
+            currentMissionProductId = productId;
+            currentMissionId = missionId;
+            
+            const product = produtos.find(p => p.id === productId);
+            const mission = missoes.find(m => m.id === missionId);
+            if (!product) return;
+            
+            closeMissionDetail();
+            
+            setTimeout(() => {
+                editingProductId = productId;
+                scannedCode = product.ean_code;
+                
+                let missionIndicator = '';
+                if (mission) {
+                    missionIndicator = `<div id="missionIndicator" style="background: linear-gradient(135deg, var(--purple), #A78BFA); color: white; padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; text-align: center; font-size: 13px;">
+                        <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 4px;"><path d="M221.81,84.63l-48-32A8,8,0,0,0,160,56V88a8,8,0,0,0,3.2,6.4l48,32a8,8,0,0,0,11.2-4.8v-8a8,8,0,0,0-.6-2.87ZM160,76.94V80l32,21.33V60.27ZM144,80a8,8,0,0,0-16,0V168a8,8,0,0,0,16,0Zm-48,0a8,8,0,0,0-16,0V128a8,8,0,0,0,16,0Zm-16,0a8,8,0,0,0-16,0v80a8,8,0,0,0,16,0Zm176,40a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h8a8,8,0,0,1,8,8Z"/></svg>
+                        Missao: ${mission.titulo} (${mission.atual}/${mission.meta})
+                    </div>`;
+                }
+                
+                document.getElementById('modalTitle').innerText = 'Atualizar Produto (Missao)';
+                document.getElementById('produtoNome').value = product.nome || '';
+                document.getElementById('produtoEan').value = product.ean_code || '';
+                document.getElementById('produtoMarca').value = product.marca || '';
+                document.getElementById('produtoQuantidade').value = product.quantidade || 10;
+                document.getElementById('produtoPrecoCompra').value = product.preco_compra || '';
+                document.getElementById('produtoPrecoVenda').value = product.preco_venda || '';
+                
+                const cat = product.categoria || 'Tintas';
+                document.querySelectorAll('#categoryGrid .category-chip').forEach(e => {
+                    e.classList.toggle('active', e.innerText === cat);
+                });
+                
+                let lot = lotes.find(l => l.produto_id === productId);
+                if (!lot) lot = lotes.find(l => l.produto && l.produto.id === productId);
+                if (lot) {
+                    document.getElementById('loteQuantidade').value = lot.quantidade || 1;
+                    document.getElementById('loteDataValidade').value = lot.data_validade || '';
+                } else {
+                    document.getElementById('loteQuantidade').value = '1';
+                    document.getElementById('loteDataValidade').value = '';
+                }
+                
+                if (product.ean_code) {
+                    document.getElementById('scannedInfo').classList.remove('hidden');
+                    document.getElementById('scannedProductName').textContent = product.nome;
+                }
+                
+                if (missionIndicator) {
+                    const header = document.querySelector('#addModal .modal-header');
+                    const existingIndicator = document.getElementById('missionIndicator');
+                    if (existingIndicator) existingIndicator.remove();
+                    header.insertAdjacentHTML('afterend', missionIndicator);
+                }
+                
+                document.getElementById('addModal').classList.add('show');
+            }, 100);
         }
         
         // Budget Functions
@@ -3470,7 +3923,7 @@
             renderMissions();
         }
         
-        function addPoints(pontos, missao) {
+        function addPoints(pontos, missao, isBonus = false) {
             const user = getCurrentUser();
             if (!user) return;
             
@@ -3479,7 +3932,7 @@
             if (!user.pontosHistory) user.pontosHistory = [];
             user.pontosHistory.unshift({
                 pontos: pontos,
-                missao: missao,
+                missao: isBonus ? missao + ' (Extra)' : missao,
                 data: new Date().toLocaleDateString('pt-BR')
             });
             
@@ -3490,6 +3943,53 @@
             saveUsers();
             
             showPointsAnimation(pontos);
+            
+            if (!isBonus) {
+                checkRankingUp();
+            }
+        }
+        
+        function checkRankingUp() {
+            const user = getCurrentUser();
+            if (!user) return;
+            
+            const today = new Date().toDateString();
+            const concluidasHoje = missoes.filter(m => m.completa).length;
+            
+            if (!user.missoesCompletadasRanking) {
+                user.missoesCompletadasRanking = 0;
+            }
+            
+            user.missoesCompletadasRanking++;
+            
+            if (user.missoesCompletadasRanking >= 3) {
+                const currentRank = calculateUserRank(user.pontos);
+                const ranks = [0, 50, 150, 350, 700, 1200, 2000, 3500, 6000, 10000];
+                const rankNames = ['Novato', 'Iniciante', 'Aprendiz', 'Companheiro', 'Especialista', 'Expert', 'Mestre', 'GM', 'Lendario', 'Mythic'];
+                
+                if (currentRank < 10) {
+                    const newRank = currentRank + 1;
+                    const bonusPontos = Math.floor(ranks[newRank] * 0.1);
+                    
+                    user.pontos += bonusPontos;
+                    saveUsers();
+                    
+                    setTimeout(() => {
+                        alert(`Subiu de nivel! Voce agora e ${rankNames[newRank - 1]}!\n+${bonusPontos} pontos de bonus!`);
+                        updateUserMenu();
+                    }, 500);
+                }
+                
+                user.missoesCompletadasRanking = 0;
+                saveUsers();
+            } else {
+                saveUsers();
+            }
+        }
+        
+        function getRankName(rank) {
+            const rankNames = ['Novato', 'Iniciante', 'Aprendiz', 'Companheiro', 'Especialista', 'Expert', 'Mestre', 'GM', 'Lendario', 'Mythic'];
+            return rankNames[rank - 1] || 'Novato';
         }
         
         function showPointsAnimation(pontos) {
@@ -3770,7 +4270,7 @@
                             <div style="font-size: 12px; opacity: 0.9;">Clique nos produtos para selecionar/remover</div>
                         </div>
                         <div style="text-align: right;">
-                            <button class="btn btn-small" onclick="exportDailyListAsImage()" style="background: white; color: var(--primary);">🖼️ Exportar</button>
+                <button class="btn btn-small" onclick="exportDailyListAsImage()" style="background: white; color: var(--primary);"><svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,16V158.75l-26.07-26.06a16,16,0,0,0-22.63,0l-20,20-44-44a16,16,0,0,0-22.62,0L40,149.37V56ZM40,172l52-52,80,80H40Zm176,28H194.63l-36-36,20-20L216,181.38V200ZM144,100a12,12,0,1,1,12,12A12,12,0,0,1,144,100Z"/></svg> Exportar</button>
                         </div>
                     </div>
                 `;
@@ -4158,14 +4658,23 @@
                     if (headerMap.skipRow) continue;
                 }
                 
-                const qtdResult = processQuantity(values, headerMap ? headerMap.quantidade : -1, values.length > 5 ? 5 : -1);
+                const qtdResult = processQuantity(values, headerMap ? headerMap.quantidade : -1, values.length > 2 ? 2 : -1);
+                
+                function getLastNonEmptyValue(arr, startIndex) {
+                    for (let i = arr.length - 1; i >= startIndex; i--) {
+                        if (arr[i] && arr[i].toString().trim().length > 0) {
+                            return arr[i];
+                        }
+                    }
+                    return null;
+                }
                 
                 const product = {
                     nome: headerMap ? values[headerMap.nome] || values[0] : values[0],
                     marca: headerMap && headerMap.marca >= 0 ? values[headerMap.marca] || '' : (values.length > 1 ? values[1] || '' : ''),
-                    precoCompra: headerMap && headerMap.precoCompra >= 0 ? parsePrice(values[headerMap.precoCompra]) : (values.length > 2 ? parsePrice(values[2]) : 0),
-                    precoVenda: headerMap && headerMap.precoVenda >= 0 ? parsePrice(values[headerMap.precoVenda]) : (values.length > 3 ? parsePrice(values[3]) : 0),
-                    ean_code: headerMap && headerMap.ean >= 0 ? values[headerMap.ean].replace(/\D/g, '') : (values.length > 4 ? values[4].replace(/\D/g, '') : ''),
+                    precoCompra: headerMap && headerMap.precoCompra >= 0 ? parsePrice(values[headerMap.precoCompra]) : parsePrice(getLastNonEmptyValue(values, 3) || values[2]),
+                    precoVenda: headerMap && headerMap.precoVenda >= 0 ? parsePrice(values[headerMap.precoVenda]) : 0,
+                    ean_code: headerMap && headerMap.ean >= 0 ? values[headerMap.ean].replace(/\D/g, '') : (values.length > 1 ? values[1].replace(/\D/g, '') : ''),
                     quantidade: qtdResult.quantidade,
                     _quantidadeOriginal: qtdResult.original,
                     categoria: headerMap && headerMap.categoria >= 0 ? values[headerMap.categoria] || '' : ''
@@ -4233,9 +4742,16 @@
         
         function parseQuantity(value) {
             if (!value) return { quantidade: 0, original: 0 };
-            value = value.toString().trim();
-            let num = parseInt(value.replace(/\D/g, '')) || 0;
+            let strValue = value.toString().trim();
+            
+            const hasNegativeSign = strValue.includes('-') || strValue.includes('(');
+            
+            let num = parseInt(strValue.replace(/\D/g, '')) || 0;
             const original = num;
+            
+            if (hasNegativeSign && num > 0) {
+                num = 0;
+            }
             
             if (num >= 1000 && num % 100 === 0 && num <= 999999) {
                 num = Math.round(num / 10);
@@ -4351,14 +4867,23 @@
                     if (headerMap.skipRow) continue;
                 }
                 
-                const qtdResult = processQuantity(values, headerMap ? headerMap.quantidade : -1, -1);
+                const qtdResult = processQuantity(values, headerMap ? headerMap.quantidade : -1, values.length > 2 ? 2 : -1);
+                
+                function getLastNonEmptyValue(arr, startIndex) {
+                    for (let i = arr.length - 1; i >= startIndex; i--) {
+                        if (arr[i] && arr[i].toString().trim().length > 0) {
+                            return arr[i];
+                        }
+                    }
+                    return null;
+                }
                 
                 const product = {
                     nome: headerMap && headerMap.nome >= 0 ? values[headerMap.nome] : values[0],
                     marca: headerMap && headerMap.marca >= 0 ? values[headerMap.marca] : (values.length > 1 ? values[1] : ''),
-                    precoCompra: headerMap && headerMap.precoCompra >= 0 ? parsePrice(values[headerMap.precoCompra]) : (values.length > 2 ? parsePrice(values[2]) : 0),
-                    precoVenda: headerMap && headerMap.precoVenda >= 0 ? parsePrice(values[headerMap.precoVenda]) : (values.length > 3 ? parsePrice(values[3]) : 0),
-                    ean_code: headerMap && headerMap.ean >= 0 ? values[headerMap.ean].replace(/\D/g, '') : (values.length > 4 ? values[4].replace(/\D/g, '') : ''),
+                    precoCompra: headerMap && headerMap.precoCompra >= 0 ? parsePrice(values[headerMap.precoCompra]) : parsePrice(getLastNonEmptyValue(values, 3) || values[2]),
+                    precoVenda: headerMap && headerMap.precoVenda >= 0 ? parsePrice(values[headerMap.precoVenda]) : 0,
+                    ean_code: headerMap && headerMap.ean >= 0 ? values[headerMap.ean].replace(/\D/g, '') : (values.length > 1 ? values[1].replace(/\D/g, '') : ''),
                     quantidade: qtdResult.quantidade,
                     _quantidadeOriginal: qtdResult.original,
                     categoria: headerMap && headerMap.categoria >= 0 ? values[headerMap.categoria] : ''
@@ -4876,7 +5401,17 @@
             renderExport();
         }
         
-        function closeModal() { document.getElementById('addModal').classList.remove('show'); scannedCode = null; editingProductId = null; renderProducts(); renderDailyList(); }
+        function closeModal() { 
+            const existingIndicator = document.getElementById('missionIndicator');
+            if (existingIndicator) existingIndicator.remove();
+            document.getElementById('addModal').classList.remove('show'); 
+            scannedCode = null; 
+            editingProductId = null; 
+            currentMissionProductId = null;
+            currentMissionId = null;
+            renderProducts(); 
+            renderDailyList(); 
+        }
         
         function setCategory(cat, btn) { document.querySelectorAll('#categoryGrid .category-chip').forEach(e => e.classList.remove('active')); btn.classList.add('active'); }
         
@@ -4954,10 +5489,42 @@
             }
             
             saveUserData();
+            
+            if (currentMissionProductId && currentMissionId) {
+                incrementMissionProgress(currentMissionId);
+                currentMissionProductId = null;
+                currentMissionId = null;
+            }
+            
             closeModal();
             renderProducts();
             renderDashboard();
             renderExport();
+        }
+        
+        function incrementMissionProgress(missionId) {
+            const m = missoes.find(x => x.id === missionId);
+            if (!m || m.completa) return;
+            
+            m.atual = Math.min(m.atual + 1, m.meta);
+            
+            if (m.atual >= m.meta && !m.completa) {
+                m.completa = true;
+                addPoints(m.pontos, m.titulo);
+            }
+            
+            saveUserData();
+            renderMissions();
+            
+            if (m.completa) {
+                setTimeout(() => {
+                    showPointsAnimation(m.pontos);
+                }, 300);
+            } else {
+                setTimeout(() => {
+                    alert('Progresso da missao atualizado: ' + m.atual + '/' + m.meta);
+                }, 300);
+            }
         }
         
         function deleteLote(id) { if (confirm('Excluir este lote?')) { lotes = lotes.filter(l => l.id !== id); saveUserData(); renderStock(); renderDashboard(); renderExport(); } }
@@ -5042,6 +5609,27 @@
         function handleScannedCode(code) {
             scannedCode = code;
             const prod = produtos.find(p => p.ean_code === code);
+            
+            const scannerMission = missoes.find(m => m.tipo === 'scanner' && !m.completa);
+            if (scannerMission && prod) {
+                currentMissionProductId = prod.id;
+                currentMissionId = scannerMission.id;
+            } else {
+                currentMissionProductId = null;
+                currentMissionId = null;
+            }
+            
+            let missionIndicator = '';
+            if (currentMissionId) {
+                const m = missoes.find(x => x.id === currentMissionId);
+                if (m) {
+                    missionIndicator = `<div style="background: linear-gradient(135deg, var(--purple), #A78BFA); color: white; padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; text-align: center; font-size: 13px;">
+                        <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" style="vertical-align: middle; margin-right: 4px;"><path d="M221.81,84.63l-48-32A8,8,0,0,0,160,56V88a8,8,0,0,0,3.2,6.4l48,32a8,8,0,0,0,11.2-4.8v-8a8,8,0,0,0-.6-2.87ZM160,76.94V80l32,21.33V60.27ZM144,80a8,8,0,0,0-16,0V168a8,8,0,0,0,16,0Zm-48,0a8,8,0,0,0-16,0V128a8,8,0,0,0,16,0Zm-16,0a8,8,0,0,0-16,0v80a8,8,0,0,0,16,0Zm176,40a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h8a8,8,0,0,1,8,8Z"/></svg>
+                        Missao: ${m.titulo} (${m.atual}/${m.meta})
+                    </div>`;
+                }
+            }
+            
             if (prod) {
                 document.getElementById('modalTitle').innerText = 'Adicionar Lote';
                 document.getElementById('scannedInfo').classList.remove('hidden');
@@ -5063,6 +5651,14 @@
                 document.getElementById('produtoPrecoCompra').value = '';
                 document.getElementById('produtoPrecoVenda').value = '';
             }
+            
+            if (missionIndicator) {
+                const header = document.querySelector('#addModal .modal-header');
+                const existingIndicator = document.getElementById('missionIndicator');
+                if (existingIndicator) existingIndicator.remove();
+                header.insertAdjacentHTML('afterend', missionIndicator);
+            }
+            
             const t = new Date(); t.setDate(t.getDate() + 30);
             document.getElementById('loteDataValidade').value = t.toISOString().split('T')[0];
             document.getElementById('addModal').classList.add('show');
@@ -5559,495 +6155,8 @@
             }
         });
 
-        // ==================== NOTIFICATION SYSTEM ====================
-        let notifications = [];
-        let notificationSettings = {
-            pushEnabled: false,
-            retiradaCreatedEnabled: true,
-            retiradaPartialEnabled: true,
-            retiradaCompleteEnabled: true
-        };
-
-        function getCurrentUserKey() {
-            const user = getCurrentUser();
-            return user ? (user.username || user.name || 'default') : 'default';
-        }
-
-        function loadNotificationSettings() {
-            const userKey = getCurrentUserKey();
-            const settings = localStorage.getItem('notificationSettings_' + userKey);
-            if (settings) {
-                try {
-                    const parsed = JSON.parse(settings);
-                    notificationSettings = { 
-                        pushEnabled: false,
-                        retiradaCreatedEnabled: true,
-                        retiradaPartialEnabled: true,
-                        retiradaCompleteEnabled: true,
-                        ...parsed 
-                    };
-                } catch (e) {
-                    console.error('Error parsing notification settings:', e);
-                }
-            }
-            updateNotificationToggles();
-        }
-
-        function saveNotificationSettings() {
-            const userKey = getCurrentUserKey();
-            localStorage.setItem('notificationSettings_' + userKey, JSON.stringify(notificationSettings));
-        }
-
-        function updateNotificationToggles() {
-            const pushToggle = document.getElementById('pushToggle');
-            const createdToggle = document.getElementById('retiradaCreatedToggle');
-            const partialToggle = document.getElementById('retiradaPartialToggle');
-            const completeToggle = document.getElementById('retiradaCompleteToggle');
-            
-            if (pushToggle) pushToggle.classList.toggle('active', notificationSettings.pushEnabled);
-            if (createdToggle) createdToggle.classList.toggle('active', notificationSettings.retiradaCreatedEnabled);
-            if (partialToggle) partialToggle.classList.toggle('active', notificationSettings.retiradaPartialEnabled);
-            if (completeToggle) completeToggle.classList.toggle('active', notificationSettings.retiradaCompleteEnabled);
-        }
-
-        function toggleRetiradaNotification(type) {
-            if (type === 'created') {
-                notificationSettings.retiradaCreatedEnabled = !notificationSettings.retiradaCreatedEnabled;
-            } else if (type === 'partial') {
-                notificationSettings.retiradaPartialEnabled = !notificationSettings.retiradaPartialEnabled;
-            } else if (type === 'complete') {
-                notificationSettings.retiradaCompleteEnabled = !notificationSettings.retiradaCompleteEnabled;
-            }
-            saveNotificationSettings();
-            updateNotificationToggles();
-        }
-
-        function loadNotifications() {
-            const userKey = getCurrentUserKey();
-            const stored = localStorage.getItem('notifications_' + userKey);
-            if (stored) {
-                try {
-                    notifications = JSON.parse(stored);
-                } catch (e) {
-                    notifications = [];
-                }
-            }
-        }
-
-        function saveNotifications() {
-            const userKey = getCurrentUserKey();
-            localStorage.setItem('notifications_' + userKey, JSON.stringify(notifications));
-        }
-
-        function addNotification(type, title, text, icon, priority, data) {
-            const notificationKey = type + '_' + (data?.retiradaId || Date.now());
-            
-            if (notificationSettings['notified_' + notificationKey]) {
-                return null;
-            }
-            
-            let notificationType = 'activated';
-            if (type === 'retirada') {
-                if (priority === 'retirada-created') notificationType = 'created';
-                else if (priority === 'retirada-partial') notificationType = 'partial';
-                else if (priority === 'retirada-complete') notificationType = 'complete';
-            }
-            
-            const notification = {
-                id: Date.now(),
-                type: type,
-                title: title,
-                text: text,
-                icon: icon,
-                priority: priority || 'info',
-                read: false,
-                createdAt: new Date().toISOString(),
-                data: data || {},
-                notificationType: notificationType
-            };
-            
-            notifications.unshift(notification);
-            if (notifications.length > 100) {
-                notifications = notifications.slice(0, 100);
-            }
-            
-            notificationSettings['notified_' + notificationKey] = true;
-            
-            saveNotifications();
-            saveNotificationSettings();
-            updateNotificationBadge();
-            updateRetiradaSummary();
-            
-            showBrowserNotification({
-                title: data?.pushTitle || title,
-                body: data?.pushBody || text,
-                id: notification.id,
-                notificationType: notificationType
-            });
-            
-            return notification;
-        }
-
-        function updateNotificationBadge() {
-            const badge = document.getElementById('notificationBadge');
-            const unread = notifications.filter(n => !n.read && n.type === 'retirada').length;
-            if (badge) {
-                badge.textContent = unread > 9 ? '9+' : unread;
-                badge.style.display = unread > 0 ? 'flex' : 'none';
-            }
-        }
-
-        function getUnreadCount() {
-            return notifications.filter(n => !n.read && n.type === 'retirada').length;
-        }
-
-        function getNotificationsByType(type) {
-            if (type === 'all') return notifications.filter(n => n.type === 'retirada');
-            return notifications.filter(n => n.type === type);
-        }
-
-        function markAsRead(id) {
-            const notification = notifications.find(n => n.id === id);
-            if (notification) {
-                notification.read = true;
-                saveNotifications();
-                updateNotificationBadge();
-            }
-        }
-
-        function markAllNotificationsRead() {
-            notifications.forEach(n => {
-                if (n.type === 'retirada') n.read = true;
-            });
-            saveNotifications();
-            updateNotificationBadge();
-            updateRetiradaSummary();
-            renderNotificationList();
-        }
-
-        function openNotificationModal() {
-            document.getElementById('notificationModal').classList.add('show');
-            updateRetiradaSummary();
-            renderNotificationList();
-        }
-
-        function closeNotificationModal() {
-            document.getElementById('notificationModal').classList.remove('show');
-        }
-
-        function clearAllNotifications() {
-            if (!confirm('Tem certeza que deseja limpar todas as notificacoes?')) return;
-            notifications = notifications.filter(n => n.type !== 'retirada');
-            saveNotifications();
-            updateNotificationBadge();
-            updateRetiradaSummary();
-            renderNotificationList();
-        }
-
-        function openNotificationModal() {
-            document.getElementById('notificationModal').classList.add('show');
-            updateRetiradaSummary();
-            renderNotificationList();
-        }
-
-        function closeNotificationModal() {
-            document.getElementById('notificationModal').classList.remove('show');
-        }
-
-        function setNotificationTab(type, btn) {
-            document.querySelectorAll('.notification-tab').forEach(t => t.classList.remove('active'));
-            btn.classList.add('active');
-            renderNotificationList(type);
-        }
-
-        function updateNotificationStats() {
-            const stats = document.getElementById('notificationStats');
-            const summary = document.getElementById('notificationSummaryItems');
-            
-            if (!stats) return;
-            
-            const total = notifications.length;
-            const unread = notifications.filter(n => !n.read).length;
-            const validadeCount = notifications.filter(n => n.type === 'validade').length;
-            const estoqueCount = notifications.filter(n => n.type === 'estoque').length;
-            const retiradaCount = notifications.filter(n => n.type === 'retirada').length;
-            
-            stats.innerHTML = `
-                <div class="notification-stat ${unread > 0 ? 'active' : ''}" onclick="setTabAndClose('all')">
-                    <div class="notification-stat-value">${unread}</div>
-                    <div class="notification-stat-label">Nao lidas</div>
-                </div>
-                <div class="notification-stat" onclick="setTabAndClose('validade')">
-                    <div class="notification-stat-value">${validadeCount}</div>
-                    <div class="notification-stat-label">Validade</div>
-                </div>
-                <div class="notification-stat" onclick="setTabAndClose('retirada')">
-                    <div class="notification-stat-value">${retiradaCount}</div>
-                    <div class="notification-stat-label">Retiradas</div>
-                </div>
-            `;
-            
-            if (summary) {
-                summary.innerHTML = `
-                    <div class="notification-summary-item"><span>📋</span> ${total} total</div>
-                    <div class="notification-summary-item"><span>⚠️</span> ${validadeCount + estoqueCount} alertas</div>
-                    <div class="notification-summary-item"><span>🚚</span> ${retiradaCount} pendentes</div>
-                `;
-            }
-        }
-
-        function setTabAndClose(type) {
-            closeNotificationModal();
-            if (type === 'all' || type === 'validade' || type === 'estoque') {
-                showTab('stock', document.querySelectorAll('.tab')[2]);
-            } else if (type === 'retirada') {
-                showTab('retirada', document.querySelectorAll('.tab')[6]);
-            }
-        }
-
-        function renderNotificationList(type = 'all') {
-            const list = document.getElementById('notificationList');
-            const filtered = getNotificationsByType('retirada');
-            
-            if (filtered.length === 0) {
-                list.innerHTML = `
-                    <div class="notification-empty">
-                        <div style="font-size: 48px; margin-bottom: 12px;">🚚</div>
-                        <div style="font-weight: 600;">Nenhuma notificacao</div>
-                        <div style="font-size: 12px; margin-top: 4px;">Cadastre uma retirada para comecar!</div>
-                    </div>
-                `;
-                return;
-            }
-
-            list.innerHTML = filtered.map(n => {
-                const time = formatNotificationTime(n.createdAt);
-                const priorityClass = n.priority || 'retirada-created';
-                
-                return `
-                    <div class="notification-item ${n.read ? '' : 'unread'} ${priorityClass}" onclick="handleRetiradaNotificationClick(${n.id})">
-                        <div class="notification-icon ${priorityClass}">${n.icon}</div>
-                        <div class="notification-content">
-                            <div class="notification-title">${n.title}</div>
-                            <div class="notification-text">${n.text}</div>
-                            <div class="notification-time">${time}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function formatNotificationTime(dateStr) {
-            const date = new Date(dateStr);
-            const now = new Date();
-            const diff = now - date;
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(diff / 3600000);
-            const days = Math.floor(diff / 86400000);
-            
-            if (minutes < 1) return 'Agora';
-            if (minutes < 60) return `${minutes}min atras`;
-            if (hours < 24) return `${hours}h atras`;
-            if (days < 7) return `${days} dia(s)`;
-            return date.toLocaleDateString('pt-BR');
-        }
-
-        function handleNotificationClick(id, type) {
-            markAsRead(id);
-            closeNotificationModal();
-            
-            if (type === 'retirada') {
-                showTab('retirada', document.querySelectorAll('.tab')[6]);
-            }
-        }
-
-        function handleRetiradaNotificationClick(id) {
-            markAsRead(id);
-            closeNotificationModal();
-            showTab('retirada', document.querySelectorAll('.tab')[6]);
-        }
-
-        function togglePushNotifications() {
-            if (notificationSettings.pushEnabled) {
-                notificationSettings.pushEnabled = false;
-                saveNotificationSettings();
-                updateNotificationToggles();
-                alert('Notificacoes push desativadas.');
-            } else {
-                requestPushPermission();
-            }
-        }
-
-        function requestPushPermission() {
-            if (!('Notification' in window)) {
-                alert('Este navegador nao suporta notificacoes push.\nTente usar Chrome, Firefox ou Edge.');
-                return;
-            }
-            
-            if (Notification.permission === 'denied') {
-                alert('Notificacoes bloqueadas pelo navegador.\nPor favor, habilite as notificacoes nas configuracoes do site.');
-                return;
-            }
-            
-            if (Notification.permission === 'granted') {
-                notificationSettings.pushEnabled = true;
-                saveNotificationSettings();
-                updateNotificationToggles();
-                alert('Notificacoes ja estavam ativadas!');
-                return;
-            }
-            
-            Notification.requestPermission().then(permission => {
-                console.log('Permission result:', permission);
-                
-                if (permission === 'granted') {
-                    notificationSettings.pushEnabled = true;
-                    saveNotificationSettings();
-                    updateNotificationToggles();
-                    showTestNotification();
-                } else if (permission === 'denied') {
-                    notificationSettings.pushEnabled = false;
-                    saveNotificationSettings();
-                    updateNotificationToggles();
-                    alert('Permissao negada. As notificacoes nao funcionarao.');
-                } else {
-                    alert('Voce fechou o pedido de permissao. Clique novamente para tentar.');
-                }
-            }).catch(function(error) {
-                console.error('Error requesting permission:', error);
-                alert('Erro ao solicitar permissao: ' + error.message);
-            });
-        }
-
-        function showTestNotification() {
-            if (Notification.permission === 'granted') {
-                setTimeout(function() {
-                    const iconUrl = createNotificationImage('activated');
-                    new Notification('Validade Constru', {
-                        body: 'Notificacoes push ativadas com sucesso!',
-                        icon: iconUrl,
-                        tag: 'test-notification'
-                    });
-                }, 500);
-            }
-        }
-
-        function createNotificationImage(type) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 192;
-            canvas.height = 192;
-            const ctx = canvas.getContext('2d');
-            
-            let bgColor, icon, subtitle;
-            
-            switch(type) {
-                case 'created':
-                    bgColor = '#1E40AF';
-                    icon = '🚚';
-                    subtitle = 'NOVA RETIRADA';
-                    break;
-                case 'partial':
-                    bgColor = '#F59E0B';
-                    icon = '📦';
-                    subtitle = 'RETIRADA PARCIAL';
-                    break;
-                case 'complete':
-                    bgColor = '#22C55E';
-                    icon = '✅';
-                    subtitle = 'RETIRADA COMPLETA';
-                    break;
-                case 'activated':
-                default:
-                    bgColor = '#6C4CF1';
-                    icon = '🔔';
-                    subtitle = 'NOTIFICACOES';
-                    break;
-            }
-            
-            const gradient = ctx.createLinearGradient(0, 0, 192, 192);
-            gradient.addColorStop(0, bgColor);
-            gradient.addColorStop(1, shadeColor(bgColor, -20));
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 192, 192);
-            
-            ctx.fillStyle = 'rgba(255,255,255,0.08)';
-            ctx.beginPath();
-            ctx.arc(160, 160, 60, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.fillStyle = 'rgba(255,255,255,0.05)';
-            ctx.beginPath();
-            ctx.arc(30, 30, 45, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.fillStyle = 'rgba(0,0,0,0.1)';
-            ctx.fillRect(0, 140, 192, 52);
-            
-            ctx.fillStyle = '#FFFFFF';
-            ctx.font = 'bold 22px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(subtitle, 96, 155);
-            
-            ctx.font = '80px Arial';
-            ctx.fillText(icon, 96, 75);
-            
-            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(6, 6, 180, 180);
-            
-            return canvas.toDataURL('image/png');
-        }
-
-        function shadeColor(color, percent) {
-            const num = parseInt(color.replace('#', ''), 16);
-            const amt = Math.round(2.55 * percent);
-            const R = (num >> 16) + amt;
-            const G = (num >> 8 & 0x00FF) + amt;
-            const B = (num & 0x0000FF) + amt;
-            return '#' + (0x1000000 + 
-                (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + 
-                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + 
-                (B < 255 ? B < 1 ? 0 : B : 255)
-            ).toString(16).slice(1);
-        }
-
-        function showBrowserNotification(notification) {
-            if (!notificationSettings.pushEnabled) return;
-            if (!('Notification' in window)) return;
-            if (Notification.permission !== 'granted') return;
-            
-            try {
-                const title = notification.title || 'Validade Constru - Retirada';
-                const body = notification.body || notification.text || 'Nova atualizacao';
-                
-                const imageType = notification.notificationType || 'activated';
-                const iconUrl = createNotificationImage(imageType);
-                
-                const notif = new Notification(title, {
-                    body: body,
-                    icon: iconUrl,
-                    tag: 'retirada-' + (notification.id || Date.now()),
-                    requireInteraction: false,
-                    silent: false
-                });
-                
-                notif.onclick = function() {
-                    window.focus();
-                    notif.close();
-                };
-                
-                setTimeout(function() {
-                    notif.close();
-                }, 8000);
-            } catch (e) {
-                console.error('Error creating notification:', e);
-            }
-        }
-
         // ============================================
-        // NOTIFICATION SYSTEM - RETIRADA FOCUSED
+        // RETIRADA STATS
         // ============================================
 
         function getRetiradaStats() {
@@ -6086,103 +6195,131 @@
         }
 
         function notifyRetiradaCreated(retirada) {
-            if (!notificationSettings.retiradaCreatedEnabled) return;
-            
-            const totalProdutos = retirada.produtos.reduce((s, p) => s + (p.quantidade_solicitada || p.quantidade), 0);
-            const produtosList = retirada.produtos.slice(0, 3).map(p => p.nome).join(', ');
-            const moreText = retirada.produtos.length > 3 ? ` e mais ${retirada.produtos.length - 3}` : '';
-            
-            addNotification(
-                'retirada',
-                'Nova Retirada: ' + retirada.cliente,
-                totalProdutos + ' produto(s) para retirada: ' + produtosList + moreText,
-                '🚚',
-                'retirada-created',
-                { 
-                    retiradaId: retirada.id, 
-                    cliente: retirada.cliente,
-                    totalProdutos: totalProdutos,
-                    produtos: retirada.produtos.map(p => ({ nome: p.nome, quantidade: p.quantidade_solicitada || p.quantidade })),
-                    pushTitle: 'Nova Retirada Registrada!',
-                    pushBody: retirada.cliente + ' - ' + totalProdutos + ' produto(s) aguardando retirada'
-                }
-            );
-        }
-
-        function notifyRetiradaPartial(retirada, countRetirados, produtosRestantes) {
-            if (!notificationSettings.retiradaPartialEnabled) return;
-            
-            const produtosRetiradosList = retirada.produtos
-                .filter(p => (p.quantidade_retirada || 0) > 0)
-                .slice(0, 3)
-                .map(p => p.nome)
-                .join(', ');
-            
-            addNotification(
-                'retirada',
-                'Retirada Parcial: ' + retirada.cliente,
-                countRetirados + ' produto(s) removidos. Restam: ' + produtosRestantes + ' item(s)',
-                '📦',
-                'retirada-partial',
-                { 
-                    retiradaId: retirada.id, 
-                    cliente: retirada.cliente,
-                    countRetirados: countRetirados,
-                    produtosRestantes: produtosRestantes,
-                    pushTitle: 'Retirada Parcial - ' + retirada.cliente,
-                    pushBody: countRetirados + ' produto(s) removidos. Restam: ' + produtosRestantes + ' item(s)'
-                }
-            );
-        }
-
-        function notifyRetiradaCompleted(retirada) {
-            if (!notificationSettings.retiradaCompleteEnabled) return;
-            
-            const totalProdutos = retirada.produtos.reduce((s, p) => s + (p.quantidade_solicitada || p.quantidade), 0);
-            
-            addNotification(
-                'retirada',
-                'Retirada Completa: ' + retirada.cliente,
-                'Todos os ' + totalProdutos + ' produto(s) foram retirados!',
-                '✅',
-                'retirada-complete',
-                { 
-                    retiradaId: retirada.id, 
-                    cliente: retirada.cliente,
-                    totalProdutos: totalProdutos,
-                    pushTitle: 'Retirada Concluida!',
-                    pushBody: retirada.cliente + ' - Todos os produtos foram retirados.'
-                }
-            );
-        }
-
-        function runNotificationChecks() {
-            if (!getCurrentUser()) return;
-            loadNotificationSettings();
-            updateNotificationBadge();
             updateRetiradaSummary();
         }
 
-        setInterval(runNotificationChecks, 60000);
+        function notifyRetiradaPartial(retirada, countRetirados, produtosRestantes) {
+            updateRetiradaSummary();
+        }
+
+        function notifyRetiradaCompleted(retirada) {
+            updateRetiradaSummary();
+        }
+
+        function openNotificationModal() {
+            updateRetiradaSummary();
+            renderRetiradaListInModal();
+            document.getElementById('notificationModal').classList.add('show');
+        }
+
+        function closeNotificationModal() {
+            document.getElementById('notificationModal').classList.remove('show');
+        }
+
+        function renderRetiradaListInModal() {
+            const list = document.getElementById('notificationList');
+            
+            if (!retiradas || retiradas.length === 0) {
+                list.innerHTML = `
+                    <div class="notification-empty" style="padding: 32px 16px; text-align: center;">
+                        <div style="font-size: 48px; margin-bottom: 12px;"><svg width="48" height="48" viewBox="0 0 256 256" fill="#9CA3AF"><path d="M255.43,117l-14-35A15.93,15.93,0,0,0,226.58,72H192V64a8,8,0,0,0-8-8H32A16,16,0,0,0,16,72V184a16,16,0,0,0,16,16H49a32,32,0,0,0,62,0h50a32,32,0,0,0,62,0h17a16,16,0,0,0,16-16V120A7.94,7.94,0,0,0,255.43,117Z"/></svg></div>
+                        <div style="font-weight: 600; color: #374151;">Nenhuma retirada registrada</div>
+                        <div style="font-size: 12px; color: #6B7280; margin-top: 4px;">Cadastre uma retirada na aba Retirada</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const sortedRetiradas = [...retiradas].sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            list.innerHTML = sortedRetiradas.map(r => {
+                const dataFormatada = new Date(r.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                const totalSolicitado = r.produtos.reduce((sum, p) => sum + (p.quantidade_solicitada || p.quantidade), 0);
+                const totalRetirado = r.produtos.reduce((sum, p) => sum + (p.quantidade_retirada || 0), 0);
+                const totalRestante = totalSolicitado - totalRetirado;
+                const isComplete = totalRestante === 0;
+                
+                return `
+                    <div class="notification-item ${isComplete ? 'retirada-complete' : 'retirada-created'}" style="cursor: pointer;" onclick="closeNotificationModal(); showTab('retirada', document.querySelectorAll('.tab')[6]);">
+                        <div class="notification-icon ${isComplete ? 'success' : 'info'}">
+                            ${isComplete ? '<svg width="22" height="22" viewBox="0 0 256 256" fill="#22C55E"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></svg>' : '<svg width="22" height="22" viewBox="0 0 256 256" fill="#1E40AF"><path d="M255.43,117l-14-35A15.93,15.93,0,0,0,226.58,72H192V64a8,8,0,0,0-8-8H32A16,16,0,0,0,16,72V184a16,16,0,0,0,16,16H49a32,32,0,0,0,62,0h50a32,32,0,0,0,62,0h17a16,16,0,0,0,16-16V120A7.94,7.94,0,0,0,255.43,117Z"/></svg>'}
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">${r.cliente}</div>
+                            <div class="notification-text">${r.produtos.length} produto(s) - ${dataFormatada}</div>
+                            <div class="notification-time">${isComplete ? 'Completa' : 'Restam: ' + totalRestante + ' un'}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Notification Settings
+        let notificationSettings = {
+            retiradaCreatedEnabled: true,
+            retiradaPartialEnabled: true,
+            retiradaCompleteEnabled: true
+        };
+
+        function loadNotificationSettings() {
+            const user = getCurrentUser();
+            if (!user) return;
+            const key = user.username || user.name || 'default';
+            const stored = localStorage.getItem('notifSettings_' + key);
+            if (stored) {
+                try {
+                    notificationSettings = JSON.parse(stored);
+                } catch (e) {}
+            }
+            updateNotificationToggles();
+        }
+
+        function saveNotificationSettings() {
+            const user = getCurrentUser();
+            if (!user) return;
+            const key = user.username || user.name || 'default';
+            localStorage.setItem('notifSettings_' + key, JSON.stringify(notificationSettings));
+        }
+
+        function updateNotificationToggles() {
+            const createdToggle = document.getElementById('retiradaCreatedToggle');
+            const partialToggle = document.getElementById('retiradaPartialToggle');
+            const completeToggle = document.getElementById('retiradaCompleteToggle');
+            
+            if (createdToggle) createdToggle.classList.toggle('active', notificationSettings.retiradaCreatedEnabled);
+            if (partialToggle) partialToggle.classList.toggle('active', notificationSettings.retiradaPartialEnabled);
+            if (completeToggle) completeToggle.classList.toggle('active', notificationSettings.retiradaCompleteEnabled);
+        }
+
+        function toggleRetiradaNotification(type) {
+            if (type === 'created') {
+                notificationSettings.retiradaCreatedEnabled = !notificationSettings.retiradaCreatedEnabled;
+            } else if (type === 'partial') {
+                notificationSettings.retiradaPartialEnabled = !notificationSettings.retiradaPartialEnabled;
+            } else if (type === 'complete') {
+                notificationSettings.retiradaCompleteEnabled = !notificationSettings.retiradaCompleteEnabled;
+            }
+            saveNotificationSettings();
+            updateNotificationToggles();
+        }
+
+        function openNotificationSettings() {
+            loadNotificationSettings();
+            document.getElementById('notificationSettingsModal').classList.add('show');
+        }
+
+        function closeNotificationSettings() {
+            document.getElementById('notificationSettingsModal').classList.remove('show');
+        }
 
         // Init
         window.onload = function() { 
             const u = getCurrentUser(); 
             if (u) { 
-                loadUserData(); 
+                loadUserData();
                 loadNotificationSettings();
-                loadNotifications();
-                showApp(); 
-                updateNotificationBadge();
+                showApp();
                 updateRetiradaSummary();
-                
-                if (notificationSettings.pushEnabled && Notification.permission !== 'granted') {
-                    notificationSettings.pushEnabled = false;
-                    saveNotificationSettings();
-                    updateNotificationToggles();
-                }
-                
-                setTimeout(runNotificationChecks, 3000);
             } 
         };
     </script>

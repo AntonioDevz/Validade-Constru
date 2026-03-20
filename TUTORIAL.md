@@ -31,7 +31,7 @@ O app possui 8 abas principais no menu inferior:
 | 📋 | Orçamento | Criar orçamentos |
 | 📥 | Exportar | Exportar dados |
 | 🚚 | Retirada | Sistema de retiradas |
-| 🎯 | Missões | Tarefas gamificadas |
+| 🎯 | Missões | Tarefas gamificadas com ranking |
 
 ---
 
@@ -65,6 +65,12 @@ Escaneie códigos de barras para adicionar ou buscar produtos.
 3. Aponte o código de barras para o quadrado na tela
 4. O app busca automaticamente o produto
 
+### Durante uma Missão:
+Quando você está fazendo uma missão de scanner:
+- O modal mostra um **indicador roxo** com o progresso da missão
+- Ao escanear um produto, o progresso é atualizado automaticamente
+- Você pode continuar escaneando até completar a meta
+
 ### O que acontece:
 - **Produto encontrado**: Mostra os dados para edição
 - **Produto não encontrado**: Abre formulário para cadastrar novo
@@ -73,6 +79,7 @@ Escaneie códigos de barras para adicionar ou buscar produtos.
 - Cadastro rápido de novos produtos
 - Atualização de lotes existentes
 - Leitura de código de barras (EAN-13, UPC-A, etc.)
+- Integração com sistema de missões
 
 ---
 
@@ -163,7 +170,7 @@ Crie orçamentos e cotações para seus clientes.
 
 ## 📥 Exportar
 
-Exporte os dados do seu estoque paraplanilha.
+Exporte os dados do seu estoque para planilha.
 
 ### Tipos de Exportação:
 
@@ -183,11 +190,15 @@ Exporte os dados do seu estoque paraplanilha.
 3. Clique em **"Exportar para CSV"**
 4. O arquivo será baixado automaticamente
 
+### Backup Completo:
+- **Exportar Dados (JSON)**: Backup completo de todos os dados
+- **Importar Dados**: Restaura dados de um backup anterior
+
 ---
 
 ## 🚚 Retirada (Sistema de Notificações)
 
-Gerencie retiradas de produtos pelos clientes com notificações push.
+Gerencie retiradas de produtos pelos clientes.
 
 ### Criar Nova Retirada:
 1. Clique na aba **"Retirada"**
@@ -218,9 +229,7 @@ Gerencie retiradas de produtos pelos clientes com notificações push.
 - ❌ Cancelar item
 - 🗑️ Excluir retirada
 
-### Sistema de Notificações Push:
-
-O app envia notificações push do navegador para manter você informado:
+### Sistema de Notificações:
 
 #### Tipos de Notificação:
 
@@ -231,73 +240,91 @@ O app envia notificações push do navegador para manter você informado:
 | ✅ **Retirada Completa** | Ao finalizar | "Todos os produtos foram retirados!" |
 
 #### Ativar Notificações:
-1. Clique no ícone 🔔 no canto superior
+1. Clique no ícone de sino no menu do perfil
 2. Ative o toggle **"Notificações Push"**
 3. Permita quando o navegador pedir
-
-#### Configurações de Notificação:
-- Ativar/desativar cada tipo individualmente
-- Todas as notificações são salvas no histórico
-- Badge mostra quantidade de não lidas
 
 ---
 
 ## 🎯 Missões
 
-Sistema gamificado de tarefas para organizar o estoque.
-
-### Missões Disponíveis:
-- Verificar produtos vencidos
-- Atualizar estoque de categorias
-- Escanear novos produtos
-- Exportar relatórios
-- Revisar retiradas pendentes
+Sistema gamificado de tarefas para organizar o estoque com ranking!
 
 ### Como Funciona:
-1. Complete as missões do dia
-2. Ganhe pontos por completude
-3. Acompanhe seu progresso
-4. Gere novas missões a qualquer momento
+1. Complete as missões do dia para ganhar pontos
+2. Clique em uma missão para ver os detalhes
+3. Escaneie ou atualize produtos relacionados
+4. A cada 3 missões concluídas, você sobe de nível!
+
+### Missões Disponíveis:
+| Missão | Descrição | Meta |
+|--------|-----------|------|
+| Verificar produtos vencidos | Revise produtos vencidos | 3 |
+| Verificar próximos do vencimento | Revise produtos próximos do prazo | 3 |
+| Atualizar estoque de categoria | Conte produtos de uma categoria | 1 |
+| Verificar estoque baixo | Revise produtos com estoque baixo | 3 |
+| Escanear produtos | Use o scanner para verificar | 5 |
+| Exportar relatório | Exporte uma planilha | 1 |
+
+### Abrindo uma Missão:
+1. Clique no **card da missão** na aba Missões
+2. Veja os **produtos relacionados** à missão
+3. Clique em um produto para **atualizá-lo/escaneá-lo**
+4. O progresso é atualizado automaticamente!
+
+### Sistema de Ranking:
+A cada 3 missões concluídas, você **sobe 1 nível**:
+
+| Nível | Título | Pontos |
+|-------|--------|--------|
+| 1 | Novato | 0+ |
+| 2 | Iniciante | 50+ |
+| 3 | Aprendiz | 150+ |
+| 4 | Companheiro | 350+ |
+| 5 | Especialista | 700+ |
+| 6 | Expert | 1200+ |
+| 7 | Mestre | 2000+ |
+| 8 | GM | 3500+ |
+| 9 | Lendário | 6000+ |
+| 10 | Mythic | 10000+ |
+
+### Bônus Extra:
+Após completar uma missão:
+- Você pode **"Verificar mais produtos"**
+- Ganhe **50% dos pontos** como bônus extra!
 
 ### Progresso:
-- Barra de progresso visual
-- Total de missões concluídas
+- Barra de progresso visual em cada missão
+- Total de pontos no header
 - Ranking pessoal de produtividade
+- Indicador de nível no perfil do usuário
 
 ---
 
-## 🔔 Notificações
+## 🔔 Notificações de Entrada
 
-Central de notificações do aplicativo.
+Ao abrir o app, você pode ver um **toast notification** com:
+- Resumo de alertas do dia
+- Produtos vencidos
+- Próximos do vencimento
+- Estoque baixo
+- Retiradas pendentes
 
-### Acessar:
-- Clique no ícone 🔔 no cabeçalho
-- Mostra resumo das retiradas pendentes
-- Lista todas as notificações
-
-### Tipos de Notificação:
-- **Retiradas Criadas**: Novos cadastros de retirada
-- **Retiradas Parciais**: Atualizações de produtos removidos
-- **Retiradas Completas**: Finalização de retiradas
-
-### Configurações:
-- Push do navegador (on/off)
-- Notificações de retirada criada (on/off)
-- Notificações de retirada parcial (on/off)
-- Notificações de retirada completa (on/off)
+Clique em "Ver detalhes" para ir diretamente à página relevante.
 
 ---
 
-## ⚙️ Configurações
+## 👤 Menu do Perfil
 
-Acesse pelo menu do usuário (canto superior direito):
+Acesse pelo ícone de avatar no canto superior direito:
 
-- 👤 **Perfil**: Ver dados da conta
-- 📱 **Tema**: Escolher aparência
-- 🔔 **Notificações**: Configurar alertas
-- 📤 **Exportar Dados**: Backup completo
-- 🗑️ **Limpar Dados**: Resetar aplicativo
-- 🚪 **Sair**: Desconectar conta
+- **👤 Perfil**: Ver dados da conta
+- **🎯 Minhas Missões e Pontos**: Ver histórico de pontos
+- **🔔 Config. Notificações**: Configurar alertas de entrada
+- **📤 Exportar Dados**: Backup completo
+- **📥 Importar Dados**: Restaurar backup
+- **🗑️ Limpar Dados**: Resetar aplicativo
+- **🚪 Sair**: Desconectar conta
 
 ---
 
@@ -333,11 +360,12 @@ Todos os dados são salvos localmente no navegador:
 - **Lotes**: Datas de validade e quantidades
 - **Retiradas**: Histórico de retiradas
 - **Orçamentos**: Cotações salvas
-- **Configurações**: Preferências do usuário
+- **Missões**: Tarefas diárias e progresso
+- **Ranking**: Pontos e nível do usuário
 
 ### Backup:
 - Dados são salvos em localStorage
-- Para backup, exporte os dados pela aba "Exportar"
+- Para backup, exporte os dados pelo menu do perfil
 - Em caso de limpeza do navegador, os dados serão perdidos
 
 ---
@@ -348,19 +376,28 @@ Todos os dados são salvos localmente no navegador:
 R: Use o Scanner para escanear ou vá em Estoque > + Novo Produto
 
 **P: Como saber quais produtos estão acabando?**
-R:Veja no Dashboard os alertas de estoque baixo
+R: Veja no Dashboard os alertas de estoque baixo
 
 **P: Como exporto minha lista de produtos?**
-R:Acesse a aba "Exportar" e escolha o tipo de exportação
+R: Acesse a aba "Exportar" e escolha o tipo de exportação
+
+**P: Como funciona o sistema de ranking?**
+R: Complete missões diárias para ganhar pontos. A cada 3 missões concluídas, você sobe 1 nível!
+
+**P: Posso ganhar pontos extras?**
+R: Sim! Após completar uma missão, você pode verificar mais produtos para ganhar 50% dos pontos como bônus.
+
+**P: Como o progresso das missões funciona?**
+R: Clique em uma missão para ver os produtos relacionados. Ao escanear ou atualizar um produto, o progresso é incrementado automaticamente.
 
 **P: As notificações funcionam offline?**
-R:As push precisam de internet para chegar, mas os dados ficam salvos offline
+R: Os dados ficam salvos offline, mas notificações push precisam de internet para chegar.
 
 **P: Posso ter múltiplas contas?**
-R:Sim, cada usuário tem seus próprios dados separados
+R: Sim, cada usuário tem seus próprios dados separados.
 
 **P: Como recupero meus dados?**
-R:Use a função de exportar dados nas configurações
+R: Use a função de exportar dados no menu do perfil.
 
 ---
 
@@ -373,5 +410,5 @@ Para dúvidas ou problemas:
 
 ---
 
-**Versão**: 1.0.0  
-**Última atualização**: 2026-03-19
+**Versão**: 2.0.0  
+**Última atualização**: 2026-03-20

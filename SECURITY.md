@@ -4,7 +4,7 @@
 
 Se você encontrar uma vulnerabilidade de segurança, por favor:
 1. **NÃO** crie uma issue pública
-2. Envie um email para: AntonioDevz
+2. Envie um email para: security@example.com
 3. Descreva a vulnerabilidade em detalhes
 4. Aguarde resposta em até 48 horas
 
@@ -64,4 +64,4 @@ Para questões de segurança: **security@example.com**
 
 ---
 
-Última atualização: 2026-03-19
+Última atualização: 2026-03-20
