@@ -5292,8 +5292,14 @@
         function selectSuggestion(nome) {
             const searchInput = document.getElementById('searchInput');
             searchInput.value = nome;
+            const found = produtos.find(p => p.nome === nome);
             document.getElementById('searchSuggestions').style.display = 'none';
-            renderProducts();
+            if (found) {
+                // Open edit dialog for the selected product to allow quick updates
+                editProduct(found.id);
+            } else {
+                renderProducts();
+            }
         }
         
         document.addEventListener('click', function(e) {
@@ -6325,4 +6331,3 @@
     </script>
 </body>
 </html>
-
