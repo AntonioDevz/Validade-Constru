@@ -6055,15 +6055,7 @@
         function stopScanner() { isScanning = false; if (stream) stream.getTracks().forEach(t => t.stop()); document.getElementById('scannerRunning').classList.add('hidden'); document.getElementById('scannerStart').classList.remove('hidden'); }
         function showManualInput() { document.getElementById('scannerStart').classList.add('hidden'); document.getElementById('scannerRunning').classList.add('hidden'); document.getElementById('manualInput').classList.remove('hidden'); }
         function showScannerStart() { document.getElementById('manualInput').classList.add('hidden'); document.getElementById('scannerRunning').classList.add('hidden'); document.getElementById('scannerStart').classList.remove('hidden'); }
-        function searchManualCode() { 
-            const ean = document.getElementById('manualEan').value.trim(); 
-            if (!ean) { alert('Digite um código'); return; } 
-            if (eanScannerCallback) {
-                handleEanScannedCode(ean);
-            } else {
-                handleScannedCode(ean); 
-            }
-        }
+        function searchManualCode() { const ean = document.getElementById('manualEan').value.trim(); if (!ean) { alert('Digite um código'); return; } handleScannedCode(ean); }
         
         function handleScannedCode(code) {
             scannedCode = code;
@@ -6126,18 +6118,17 @@
         let eanScannerCallback = null;
         
         function openEanScanner() {
-            eanScannerCallback = (code) => {
-                document.getElementById('produtoEan').value = code;
-                showTab('add');
-                setTimeout(() => {
-                    document.getElementById('addModal').classList.add('show');
-                }, 100);
-            };
+            closeModal();
             
-            showTab('scanner');
             setTimeout(() => {
+                eanScannerCallback = (code) => {
+                    document.getElementById('produtoEan').value = code;
+                    document.getElementById('addModal').classList.add('show');
+                };
+                
+                document.getElementById('scannerModal').classList.add('show');
                 startScanner();
-            }, 300);
+            }, 150);
         }
         
         function handleEanScannedCode(code) {
@@ -6146,6 +6137,7 @@
                 eanScannerCallback = null;
             }
             stopScanner();
+            document.getElementById('scannerModal').classList.remove('show');
         }
   
         // Chat Bot
