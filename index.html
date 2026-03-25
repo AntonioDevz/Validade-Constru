@@ -7475,7 +7475,24 @@
                 tipo: 'devedores_validade_constru',
                 versao: '1.0',
                 dataExportacao: new Date().toISOString(),
-                devedores: devedores
+                totalDevedores: devedores.length,
+                devedores: devedores.map(d => ({
+                    nome: d.nome || '',
+                    telefone: d.telefone || '',
+                    valor: d.valor || 0,
+                    obs: d.obs || '',
+                    pago: d.pago || false,
+                    data: d.data || new Date().toISOString(),
+                    dataPagamento: d.dataPagamento || null,
+                    produtos: (d.produtos || []).map(p => ({
+                        produto_id: p.produto_id || null,
+                        nome: p.nome || '',
+                        categoria: p.categoria || '',
+                        marca: p.marca || '',
+                        quantidade: p.quantidade || 1,
+                        preco_unitario: p.preco_unitario || 0
+                    }))
+                }))
             };
             
             const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -7484,7 +7501,7 @@
             link.download = `devedores_backup_${new Date().toISOString().split('T')[0]}.json`;
             link.click();
             
-            alert(`${devedores.length} devedor(es) exportado(s) com sucesso!`);
+            alert(`${devedores.length} devedor(es) exportado(s) com sucesso!\n\nDados exportados:\n- Nome do cliente\n- Telefone\n- Valor total\n- Observacao\n- Status de pagamento\n- Lista de produtos\n- Data de registro`);
         }
 
         // Import Devedores
@@ -7508,8 +7525,8 @@
                     
                     data.devedores.forEach((d, index) => {
                         const existingIndex = devedores.findIndex(existing => 
-                            existing.clientName?.toLowerCase() === d.clientName?.toLowerCase() && 
-                            existing.clientPhone === d.clientPhone
+                            existing.nome?.toLowerCase() === (d.nome || '').toLowerCase() && 
+                            existing.telefone === (d.telefone || '')
                         );
                         
                         if (existingIndex >= 0) {
@@ -7517,13 +7534,21 @@
                         } else {
                             const newDevedor = {
                                 id: Date.now() + index,
-                                clientName: d.clientName || 'Cliente Importado',
-                                clientPhone: d.clientPhone || '',
+                                nome: d.nome || 'Cliente Importado',
+                                telefone: d.telefone || '',
                                 valor: parseFloat(d.valor) || 0,
                                 obs: d.obs || '',
-                                products: d.products || [],
                                 pago: d.pago || false,
-                                date: d.date || new Date().toISOString()
+                                data: d.data || new Date().toISOString(),
+                                dataPagamento: d.dataPagamento || null,
+                                produtos: (d.produtos || []).map(p => ({
+                                    produto_id: p.produto_id || null,
+                                    nome: p.nome || '',
+                                    categoria: p.categoria || '',
+                                    marca: p.marca || '',
+                                    quantidade: p.quantidade || 1,
+                                    preco_unitario: p.preco_unitario || 0
+                                }))
                             };
                             devedores.push(newDevedor);
                             added++;
