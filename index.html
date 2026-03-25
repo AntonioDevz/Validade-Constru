@@ -141,12 +141,16 @@
         
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 200; align-items: flex-start; justify-content: center; padding: 60px 20px 20px; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
         .modal.show { display: flex; opacity: 1; visibility: visible; }
-        .modal-content { background: var(--surface); border-radius: 20px; padding: 24px; width: 100%; max-width: 420px; max-height: calc(100vh - 100px); overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transform: translateY(-30px); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; opacity: 0; }
-        .modal.show .modal-content { transform: translateY(0); opacity: 1; }
+        .modal-content { background: var(--surface); border-radius: 20px; padding: 24px; width: 100%; max-width: 420px; max-height: calc(100vh - 100px); overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transform: translateY(-100vh); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal.show .modal-content { transform: translateY(0); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .modal-title { font-size: 18px; font-weight: 600; }
         .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; padding: 4px; color: var(--text-light); transition: color 0.2s ease; }
         .close-btn:hover { color: var(--red); }
+        
+        /* User Menu - slide down from top */
+        #userMenu { align-items: flex-start; padding-top: 80px; }
+        #userMenu.show .modal-content { transform: translateY(0); }
         
         /* Spreadsheet Editor Styles - Modern & Compact */
         .spreadsheet-wrapper { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 100%; max-width: 100%; }
@@ -4926,9 +4930,9 @@
         // User Menu functions
         function toggleUserMenu() {
             const menu = document.getElementById('userMenu');
-            menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+            menu.classList.toggle('show');
             
-            if (menu.style.display === 'flex') {
+            if (menu.classList.contains('show')) {
                 const users = getUsers();
                 const currentUser = getCurrentUser();
                 const key = currentUser.username || currentUser.email;
@@ -5777,6 +5781,14 @@
             const searchInput = document.getElementById('searchInput');
             if (suggestions && searchInput && !suggestions.contains(e.target) && !searchInput.contains(e.target)) {
                 suggestions.style.display = 'none';
+            }
+            
+            const userMenu = document.getElementById('userMenu');
+            const userAvatar = document.getElementById('userAvatar');
+            if (userMenu && userMenu.classList.contains('show')) {
+                if (!userMenu.contains(e.target) && !userAvatar.contains(e.target)) {
+                    userMenu.classList.remove('show');
+                }
             }
         });
         
