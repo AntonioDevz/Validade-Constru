@@ -7593,10 +7593,10 @@
             if (matches.length === 0) {
                 container.innerHTML = '<div style="padding: 12px; color: var(--text-light); font-size: 13px;">Nenhum produto encontrado</div>';
             } else {
-                container.innerHTML = matches.map(p => {
+                container.innerHTML = matches.map((p, idx) => {
                     const preco = p.preco_venda || 0;
                     return `
-                        <div onclick="addQuickDevedorProduct('${p.id}')" style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='white'">
+                        <div onclick="addQuickDevedorProductByIndex(${produtos.indexOf(p)})" style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='white'">
                             <div>
                                 <div style="font-weight: 500; font-size: 14px;">${p.nome}</div>
                                 <div style="font-size: 11px; color: var(--text-light);">${p.categoria || ''} ${p.marca ? '• ' + p.marca : ''}</div>
@@ -7613,8 +7613,34 @@
             container.style.display = 'block';
         }
 
+        function addQuickDevedorProductByIndex(index) {
+            const product = produtos[index];
+            if (!product) return;
+            
+            if (quickAddDevedorProducts.some(p => p.nome === product.nome)) {
+                document.getElementById('quickAddProductSuggestions').style.display = 'none';
+                document.getElementById('quickAddProductSearch').value = '';
+                return;
+            }
+            
+            quickAddDevedorProducts.push({
+                id: product.id,
+                nome: product.nome,
+                marca: product.marca || '',
+                categoria: product.categoria || '',
+                quantidade: 1,
+                preco: product.preco_venda || 0,
+                total: product.preco_venda || 0
+            });
+            
+            document.getElementById('quickAddProductSuggestions').style.display = 'none';
+            document.getElementById('quickAddProductSearch').value = '';
+            
+            renderQuickAddDevedorProducts();
+        }
+
         function addQuickDevedorProduct(productId) {
-            const product = produtos.find(p => p.id === productId);
+            const product = produtos.find(p => String(p.id) === String(productId));
             if (!product) return;
             
             if (quickAddDevedorProducts.some(p => p.nome === product.nome)) {
