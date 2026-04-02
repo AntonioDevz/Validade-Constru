@@ -978,7 +978,7 @@
         <!-- User Menu Modal -->
         <div id="userMenu" class="modal">
             <div class="modal-content" style="padding: 0; max-width: 400px;">
-                <div style="background: linear-gradient(135deg, var(--primary) 0%, #3B82F6 100%); padding: 24px 20px; color: white; text-align: center; position: relative; border-radius: 20px 20px 0 0;">
+                <div style="background: linear-gradient(135deg, var(--primary) 0%, #3B82F6 100%); padding: 24px 20px; color: white; text-align: center; position: relative;">
                     <button onclick="toggleUserMenu()" style="position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;">&times;</button>
                     <div style="width: 72px; height: 72px; background: white; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: var(--primary);" id="menuUserAvatar">U</div>
                     <div style="font-size: 18px; font-weight: 700;" id="menuUserName">Usuario</div>
@@ -1286,7 +1286,7 @@
 
         <!-- Devedor Modal -->
         <div id="devedorModal" class="modal">
-            <div class="modal-content" style="padding: 20px; max-width: 500px;">
+            <div class="modal-content" style="padding: 20px; max-width: 550px; max-height: 90vh; overflow-y: auto;">
                 <div class="modal-header">
                     <div class="modal-title">✏️ Editar Devedor</div>
                     <button class="close-btn" onclick="closeDevedorModal()">&times;</button>
@@ -1305,6 +1305,15 @@
                 </div>
                 
                 <div class="form-group">
+                    <label class="form-label">Produtos</label>
+                    <div style="position: relative; margin-bottom: 8px;">
+                        <input type="text" class="input" id="editDevedorProductSearch" placeholder="Buscar produto para adicionar..." autocomplete="off" oninput="searchDevedorEditProducts(this.value)" onfocus="if(this.value)searchDevedorEditProducts(this.value)" style="margin-bottom: 0;">
+                        <div id="editDevedorProductSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 0 0 12px 12px; max-height: 200px; overflow-y: auto; z-index: 50; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>
+                    </div>
+                    <div id="editDevedorSelectedProducts" style="max-height: 180px; overflow-y: auto;"></div>
+                </div>
+                
+                <div class="form-group">
                     <label class="form-label">Valor Total do Débito (R$) *</label>
                     <input type="number" class="input" id="editDevedorValor" placeholder="0,00" step="0.01" min="0">
                 </div>
@@ -1315,8 +1324,43 @@
                 </div>
                 
                 <div style="display: flex; gap: 8px; margin-top: 16px;">
-                    <button class="btn" onclick="updateDevedor()">Salvar Alteracoes</button>
+                    <button class="btn" onclick="updateDevedor()">Salvar Alterações</button>
                     <button class="btn btn-outline" onclick="closeDevedorModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Add Products to Devedor Modal -->
+        <div id="quickAddProductsModal" class="modal">
+            <div class="modal-content" style="padding: 20px; max-width: 450px; max-height: 85vh; overflow-y: auto;">
+                <div class="modal-header">
+                    <div class="modal-title">➕ Adicionar Produtos</div>
+                    <button class="close-btn" onclick="closeQuickAddProductsModal()">&times;</button>
+                </div>
+                
+                <div style="background: var(--bg); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                    <div style="font-size: 12px; color: var(--text-light); margin-bottom: 4px;">Cliente:</div>
+                    <div style="font-weight: 600; font-size: 16px; color: var(--primary);" id="quickAddDevedorName">-</div>
+                    <div style="font-size: 12px; color: var(--text-light); margin-top: 8px;">Valor total com novos produtos:</div>
+                    <div style="font-weight: 700; font-size: 20px; color: var(--green);" id="quickAddDevedorValorAtual">R$ 0,00</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Buscar Produto</label>
+                    <div style="position: relative;">
+                        <input type="text" class="input" id="quickAddProductSearch" placeholder="Digite para buscar..." autocomplete="off" oninput="searchQuickAddProducts(this.value)" onfocus="if(this.value)searchQuickAddProducts(this.value)" onblur="setTimeout(()=>document.getElementById('quickAddProductSuggestions').style.display='none', 200)" style="margin-bottom: 0;">
+                        <div id="quickAddProductSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 0 0 12px 12px; max-height: 200px; overflow-y: auto; z-index: 50; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Produtos Adicionados</label>
+                    <div id="quickAddProductsList"></div>
+                </div>
+                
+                <div style="display: flex; gap: 8px; margin-top: 16px;">
+                    <button class="btn" onclick="saveQuickAddProducts()" style="background: var(--green);">Salvar Produtos</button>
+                    <button class="btn btn-outline" onclick="closeQuickAddProductsModal()">Cancelar</button>
                 </div>
             </div>
         </div>
@@ -2057,14 +2101,7 @@
             <div class="modal-header"><div class="modal-title" id="modalTitle">Adicionar Produto</div><button class="close-btn" onclick="closeModal()">&times;</button></div>
             <div id="scannedInfo" class="hidden result-box"><h4>✓ Produto Encontrado!</h4><p id="scannedProductName"></p></div>
             <div class="form-group"><label class="form-label">Nome do Produto *</label><input type="text" class="input" id="produtoNome" placeholder="Ex: Tinta Acrílica"></div>
-            <div class="form-group"><label class="form-label">Código EAN</label>
-                <div style="position: relative;">
-                    <input type="text" class="input" id="produtoEan" placeholder="7891234567890" style="padding-right: 50px;">
-                    <button type="button" onclick="openEanScanner()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: var(--primary); color: white; border: none; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Escanear código de barras">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="8" x2="13" y2="8"/><line x1="7" y1="16" x2="11" y2="16"/></svg>
-                    </button>
-                </div>
-            </div>
+            <div class="form-group"><label class="form-label">Código EAN</label><input type="text" class="input" id="produtoEan" placeholder="7891234567890"></div>
             <div class="form-group"><label class="form-label">Categoria</label>
                 <div class="category-grid" id="categoryGrid">
                     <button type="button" class="category-chip active" onclick="setCategory('Tintas', this)">Tintas</button>
@@ -2092,6 +2129,25 @@
             <div class="form-group"><label class="form-label">Quantidade do Lote</label><input type="number" class="input" id="loteQuantidade" value="1"></div>
             <div class="form-group"><label class="form-label">Data de Validade (opcional)</label><input type="date" class="input" id="loteDataValidade" onchange="autoSyncDate()"></div>
             <button class="btn" onclick="addProduct()">Salvar Produto</button>
+        </div>
+    </div>
+
+    <!-- Quick Stock Edit Modal -->
+    <div id="quickStockModal" class="modal">
+        <div class="modal-content" style="max-width: 350px;">
+            <div class="modal-header">
+                <div class="modal-title">📦 Editar Estoque</div>
+                <button class="close-btn" onclick="closeQuickStockModal()">&times;</button>
+            </div>
+            <div id="quickStockProductName" style="font-weight: 600; font-size: 16px; margin-bottom: 16px; color: var(--primary); text-align: center;"></div>
+            <div class="form-group">
+                <label class="form-label">Quantidade em Estoque</label>
+                <input type="number" class="input" id="quickStockQuantity" min="0" style="font-size: 24px; text-align: center; height: 60px;">
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 16px;">
+                <button class="btn" onclick="saveQuickStock()" style="background: var(--green);">Salvar</button>
+                <button class="btn btn-outline" onclick="closeQuickStockModal()">Cancelar</button>
+            </div>
         </div>
     </div>
 
@@ -4744,6 +4800,7 @@
                         <div class="product-card-header">
                             <div class="product-check ${isSelected ? 'checked' : ''}">${isSelected ? '✓' : ''}</div>
                             <div class="product-category-badge">${p.categoria || 'Sem categoria'}</div>
+                            ${isSelected ? `<button onclick="event.stopPropagation(); openQuickStockEdit(${p.id})" style="background: var(--green); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;">📦 Editar Estoque</button>` : ''}
                         </div>
                         <div class="product-card-body">
                             <div class="product-name">${p.nome}</div>
@@ -5723,6 +5780,7 @@
                         </div>
                         ` : ''}
                         <div class="actions">
+                            <button class="btn btn-outline btn-small" onclick="openQuickStockEdit(${p.id})" style="background: var(--green); color: white; border-color: var(--green);">📦 Editar Estoque</button>
                             <button class="btn btn-outline btn-small" onclick="editProduct(${p.id})">Editar</button>
                             <button class="btn btn-outline btn-small" onclick="deleteProduct(${p.id})" style="border-color: var(--red); color: var(--red);">Excluir</button>
                         </div>
@@ -5819,6 +5877,52 @@
             });
             
             document.getElementById('addModal').classList.add('show');
+        }
+        
+        let quickStockEditId = null;
+        
+        function openQuickStockEdit(id) {
+            const p = produtos.find(x => x.id === id);
+            if (!p) return;
+            
+            quickStockEditId = id;
+            document.getElementById('quickStockProductName').textContent = p.nome;
+            document.getElementById('quickStockQuantity').value = p.quantidade || 0;
+            document.getElementById('quickStockModal').classList.add('show');
+            document.getElementById('quickStockQuantity').focus();
+            document.getElementById('quickStockQuantity').select();
+        }
+        
+        function closeQuickStockModal() {
+            quickStockEditId = null;
+            document.getElementById('quickStockModal').classList.remove('show');
+        }
+        
+        function saveQuickStock() {
+            const newQuantity = parseInt(document.getElementById('quickStockQuantity').value) || 0;
+            
+            const user = getCurrentUser();
+            if (!user || !quickStockEditId) return;
+            
+            const prod = user.produtos.find(p => p.id === quickStockEditId);
+            if (!prod) return;
+            
+            prod.quantidade = newQuantity;
+            
+            setCurrentUser(user);
+            const users = getUsers();
+            if (users[user.username]) {
+                users[user.username] = user;
+                saveUsers(users);
+            }
+            
+            produtos = user.produtos || [];
+            lotes = user.lotes || [];
+            
+            closeQuickStockModal();
+            renderProducts();
+            renderDashboard();
+            renderMissions();
         }
         
         function deleteProduct(id) {
@@ -6080,11 +6184,7 @@
                         if (navigator.vibrate) navigator.vibrate(200);
                         updateMissionProgress('scanner');
                         stopScanner();
-                        if (eanScannerCallback) {
-                            handleEanScannedCode(code);
-                        } else {
-                            handleScannedCode(code);
-                        }
+                        handleScannedCode(code);
                         return;
                     }
                 } catch (e) {}
@@ -6096,15 +6196,7 @@
         function stopScanner() { isScanning = false; if (stream) stream.getTracks().forEach(t => t.stop()); document.getElementById('scannerRunning').classList.add('hidden'); document.getElementById('scannerStart').classList.remove('hidden'); }
         function showManualInput() { document.getElementById('scannerStart').classList.add('hidden'); document.getElementById('scannerRunning').classList.add('hidden'); document.getElementById('manualInput').classList.remove('hidden'); }
         function showScannerStart() { document.getElementById('manualInput').classList.add('hidden'); document.getElementById('scannerRunning').classList.add('hidden'); document.getElementById('scannerStart').classList.remove('hidden'); }
-        function searchManualCode() { 
-            const ean = document.getElementById('manualEan').value.trim(); 
-            if (!ean) { alert('Digite um código'); return; } 
-            if (eanScannerCallback) {
-                handleEanScannedCode(ean);
-            } else {
-                handleScannedCode(ean); 
-            }
-        }
+        function searchManualCode() { const ean = document.getElementById('manualEan').value.trim(); if (!ean) { alert('Digite um código'); return; } handleScannedCode(ean); }
         
         function handleScannedCode(code) {
             scannedCode = code;
@@ -6162,31 +6254,6 @@
             const t = new Date(); t.setDate(t.getDate() + 30);
             document.getElementById('loteDataValidade').value = t.toISOString().split('T')[0];
             document.getElementById('addModal').classList.add('show');
-        }
-        
-        let eanScannerCallback = null;
-        
-        function openEanScanner() {
-            eanScannerCallback = (code) => {
-                document.getElementById('produtoEan').value = code;
-                showTab('add');
-                setTimeout(() => {
-                    document.getElementById('addModal').classList.add('show');
-                }, 100);
-            };
-            
-            showTab('scanner');
-            setTimeout(() => {
-                startScanner();
-            }, 300);
-        }
-        
-        function handleEanScannedCode(code) {
-            if (eanScannerCallback) {
-                eanScannerCallback(code);
-                eanScannerCallback = null;
-            }
-            stopScanner();
         }
   
         // Chat Bot
@@ -7155,8 +7222,11 @@
                                 📄 Exportar PDF
                             </button>
                             ${!d.pago ? `
+                                <button class="devedor-btn pago" onclick="openAddProductsDevedor(${d.id})">
+                                    ➕ Adicionar Produtos
+                                </button>
                                 <button class="devedor-btn pago" onclick="marcarDevedorPago(${d.id})">
-                                    ✅ Quitar Debito
+                                    ✅ Quitar Débito
                                 </button>
                             ` : ''}
                             <button class="devedor-btn edit" onclick="openEditDevedorModal(${d.id})">
@@ -7422,11 +7492,15 @@
             const devedor = devedores.find(d => d.id === id);
             if (!devedor) return;
             
+            editDevedorSelectedProducts = JSON.parse(JSON.stringify(devedor.produtos || []));
+            
             document.getElementById('editingDevedorId').value = id;
             document.getElementById('editDevedorClientName').value = devedor.nome;
             document.getElementById('editDevedorClientPhone').value = devedor.telefone || '';
             document.getElementById('editDevedorValor').value = devedor.valor;
             document.getElementById('editDevedorObs').value = devedor.obs || '';
+            
+            renderEditDevedorProducts();
             
             document.getElementById('devedorModal').classList.add('show');
         }
@@ -7434,6 +7508,7 @@
         function closeDevedorModal() {
             document.getElementById('devedorModal').classList.remove('show');
             document.getElementById('editingDevedorId').value = '';
+            editDevedorSelectedProducts = [];
         }
 
         function updateDevedor() {
@@ -7458,6 +7533,7 @@
                 devedores[index].telefone = telefone;
                 devedores[index].valor = valor;
                 devedores[index].obs = obs;
+                devedores[index].produtos = JSON.parse(JSON.stringify(editDevedorSelectedProducts));
                 
                 if (telefone && !devedoresClientList.includes(telefone)) {
                     devedoresClientList.push(telefone);
@@ -7468,6 +7544,285 @@
                 closeDevedorModal();
                 alert('Devedor atualizado com sucesso!');
             }
+        }
+
+        let editDevedorSelectedProducts = [];
+
+        let quickAddDevedorId = null;
+
+        function openAddProductsDevedor(id) {
+            quickAddDevedorId = id;
+            const devedor = devedores.find(d => d.id === id);
+            if (!devedor) return;
+            
+            quickAddDevedorProducts = JSON.parse(JSON.stringify(devedor.produtos || []));
+            
+            document.getElementById('quickAddDevedorName').textContent = devedor.nome;
+            document.getElementById('quickAddDevedorValorAtual').textContent = 'R$ ' + devedor.valor.toFixed(2).replace('.', ',');
+            renderQuickAddDevedorProducts();
+            
+            document.getElementById('quickAddProductsModal').classList.add('show');
+            setTimeout(() => {
+                document.getElementById('quickAddProductSearch').focus();
+            }, 100);
+        }
+
+        function closeQuickAddProductsModal() {
+            document.getElementById('quickAddProductsModal').classList.remove('show');
+            quickAddDevedorId = null;
+            quickAddDevedorProducts = [];
+        }
+
+        let quickAddDevedorProducts = [];
+
+        function searchQuickAddProducts(query) {
+            const container = document.getElementById('quickAddProductSuggestions');
+            
+            if (!query || query.length < 2) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            const term = query.toLowerCase().trim();
+            const matches = produtos.filter(p => 
+                (p.nome && p.nome.toLowerCase().includes(term)) ||
+                (p.marca && p.marca.toLowerCase().includes(term)) ||
+                (p.categoria && p.categoria.toLowerCase().includes(term))
+            ).filter(p => !quickAddDevedorProducts.some(ep => ep.nome === p.nome)).slice(0, 8);
+            
+            if (matches.length === 0) {
+                container.innerHTML = '<div style="padding: 12px; color: var(--text-light); font-size: 13px;">Nenhum produto encontrado</div>';
+            } else {
+                container.innerHTML = matches.map(p => {
+                    const preco = p.preco_venda || 0;
+                    return `
+                        <div onclick="addQuickDevedorProduct('${p.id}')" style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='white'">
+                            <div>
+                                <div style="font-weight: 500; font-size: 14px;">${p.nome}</div>
+                                <div style="font-size: 11px; color: var(--text-light);">${p.categoria || ''} ${p.marca ? '• ' + p.marca : ''}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; color: var(--primary); font-size: 14px;">R$ ${preco.toFixed(2).replace('.', ',')}</div>
+                                <div style="font-size: 10px; color: var(--text-light);">Estoque: ${p.quantidade || 0}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            container.style.display = 'block';
+        }
+
+        function addQuickDevedorProduct(productId) {
+            const product = produtos.find(p => p.id === productId);
+            if (!product) return;
+            
+            if (quickAddDevedorProducts.some(p => p.nome === product.nome)) {
+                document.getElementById('quickAddProductSuggestions').style.display = 'none';
+                document.getElementById('quickAddProductSearch').value = '';
+                return;
+            }
+            
+            quickAddDevedorProducts.push({
+                id: product.id,
+                nome: product.nome,
+                marca: product.marca || '',
+                categoria: product.categoria || '',
+                quantidade: 1,
+                preco: product.preco_venda || 0,
+                total: product.preco_venda || 0
+            });
+            
+            document.getElementById('quickAddProductSuggestions').style.display = 'none';
+            document.getElementById('quickAddProductSearch').value = '';
+            
+            renderQuickAddDevedorProducts();
+        }
+
+        function removeQuickDevedorProduct(index) {
+            quickAddDevedorProducts.splice(index, 1);
+            renderQuickAddDevedorProducts();
+        }
+
+        function updateQuickDevedorProductQtd(index, qtd) {
+            const qty = parseInt(qtd) || 1;
+            quickAddDevedorProducts[index].quantidade = qty;
+            quickAddDevedorProducts[index].total = quickAddDevedorProducts[index].preco * qty;
+            renderQuickAddDevedorProducts();
+        }
+
+        function renderQuickAddDevedorProducts() {
+            const container = document.getElementById('quickAddProductsList');
+            const valorAtualEl = document.getElementById('quickAddDevedorValorAtual');
+            
+            const totalProdutos = quickAddDevedorProducts.reduce((sum, p) => sum + (p.total || 0), 0);
+            
+            if (valorAtualEl) {
+                const devedor = devedores.find(d => d.id === quickAddDevedorId);
+                if (devedor) {
+                    const novoTotal = devedor.valor + totalProdutos;
+                    valorAtualEl.textContent = 'R$ ' + novoTotal.toFixed(2).replace('.', ',');
+                }
+            }
+            
+            if (quickAddDevedorProducts.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-light); font-size: 13px; background: var(--bg); border-radius: 8px;">Busque e adicione produtos abaixo</div>';
+                return;
+            }
+            
+            container.innerHTML = quickAddDevedorProducts.map((p, i) => `
+                <div style="display: flex; align-items: center; gap: 8px; padding: 10px; background: white; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px;">
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.nome}</div>
+                        <div style="font-size: 12px; color: var(--text-light);">R$ ${(p.preco || 0).toFixed(2).replace('.', ',')} un</div>
+                    </div>
+                    <input type="number" value="${p.quantidade}" min="1" onchange="updateQuickDevedorProductQtd(${i}, this.value)" style="width: 50px; padding: 6px; border: 1px solid var(--border); border-radius: 6px; text-align: center; font-size: 13px;">
+                    <div style="font-weight: 600; font-size: 13px; color: var(--primary); min-width: 70px; text-align: right;">R$ ${(p.total || 0).toFixed(2).replace('.', ',')}</div>
+                    <button onclick="removeQuickDevedorProduct(${i})" style="background: #FEE2E2; color: #DC2626; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 16px; line-height: 1;">×</button>
+                </div>
+            `).join('');
+        }
+
+        function saveQuickAddProducts() {
+            if (!quickAddDevedorId) return;
+            
+            const index = devedores.findIndex(d => d.id === quickAddDevedorId);
+            if (index === -1) return;
+            
+            const valorProdutos = quickAddDevedorProducts.reduce((sum, p) => sum + (p.total || 0), 0);
+            devedores[index].valor += valorProdutos;
+            
+            if (!devedores[index].produtos) {
+                devedores[index].produtos = [];
+            }
+            
+            quickAddDevedorProducts.forEach(p => {
+                const existingIndex = devedores[index].produtos.findIndex(ep => ep.nome === p.nome);
+                if (existingIndex >= 0) {
+                    devedores[index].produtos[existingIndex].quantidade += p.quantidade;
+                    devedores[index].produtos[existingIndex].total = devedores[index].produtos[existingIndex].quantidade * devedores[index].produtos[existingIndex].preco;
+                } else {
+                    devedores[index].produtos.push({...p});
+                }
+            });
+            
+            saveUserData();
+            renderDevedores();
+            closeQuickAddProductsModal();
+            alert('Produtos adicionados com sucesso!');
+        }
+
+        function searchDevedorEditProducts(query) {
+            const container = document.getElementById('editDevedorProductSuggestions');
+            
+            if (!query || query.length < 2) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            const term = query.toLowerCase().trim();
+            const matches = produtos.filter(p => 
+                (p.nome && p.nome.toLowerCase().includes(term)) ||
+                (p.marca && p.marca.toLowerCase().includes(term)) ||
+                (p.categoria && p.categoria.toLowerCase().includes(term))
+            ).filter(p => !editDevedorSelectedProducts.some(ep => ep.nome === p.nome)).slice(0, 8);
+            
+            if (matches.length === 0) {
+                container.innerHTML = '<div style="padding: 12px; color: var(--text-light); font-size: 13px;">Nenhum produto encontrado</div>';
+            } else {
+                container.innerHTML = matches.map(p => {
+                    const preco = p.preco_venda || 0;
+                    return `
+                        <div onclick="addEditDevedorProduct('${p.id}')" style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='white'">
+                            <div>
+                                <div style="font-weight: 500; font-size: 14px;">${p.nome}</div>
+                                <div style="font-size: 11px; color: var(--text-light);">${p.categoria || ''} ${p.marca ? '• ' + p.marca : ''}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; color: var(--primary); font-size: 14px;">R$ ${preco.toFixed(2).replace('.', ',')}</div>
+                                <div style="font-size: 10px; color: var(--text-light);">Estoque: ${p.quantidade || 0}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            container.style.display = 'block';
+        }
+
+        function addEditDevedorProduct(productId) {
+            const product = produtos.find(p => p.id === productId);
+            if (!product) return;
+            
+            if (editDevedorSelectedProducts.some(p => p.nome === product.nome)) {
+                document.getElementById('editDevedorProductSuggestions').style.display = 'none';
+                document.getElementById('editDevedorProductSearch').value = '';
+                return;
+            }
+            
+            editDevedorSelectedProducts.push({
+                id: product.id,
+                nome: product.nome,
+                marca: product.marca || '',
+                categoria: product.categoria || '',
+                quantidade: 1,
+                preco: product.preco_venda || 0,
+                total: product.preco_venda || 0
+            });
+            
+            document.getElementById('editDevedorProductSuggestions').style.display = 'none';
+            document.getElementById('editDevedorProductSearch').value = '';
+            
+            renderEditDevedorProducts();
+            updateEditDevedorValor();
+        }
+
+        function removeEditDevedorProduct(index) {
+            editDevedorSelectedProducts.splice(index, 1);
+            renderEditDevedorProducts();
+            updateEditDevedorValor();
+        }
+
+        function updateEditDevedorProductQtd(index, qtd) {
+            const qty = parseInt(qtd) || 1;
+            editDevedorSelectedProducts[index].quantidade = qty;
+            editDevedorSelectedProducts[index].total = editDevedorSelectedProducts[index].preco * qty;
+            renderEditDevedorProducts();
+            updateEditDevedorValor();
+        }
+
+        function renderEditDevedorProducts() {
+            const container = document.getElementById('editDevedorSelectedProducts');
+            
+            if (editDevedorSelectedProducts.length === 0) {
+                container.innerHTML = '<div style="padding: 12px; text-align: center; color: var(--text-light); font-size: 13px; background: var(--bg); border-radius: 8px;">Nenhum produto adicionado</div>';
+                return;
+            }
+            
+            const total = editDevedorSelectedProducts.reduce((sum, p) => sum + (p.total || 0), 0);
+            
+            container.innerHTML = `
+                <div style="margin-bottom: 8px; padding: 8px 12px; background: var(--primary); color: white; border-radius: 8px 8px 0 0; font-size: 12px; font-weight: 600; display: flex; justify-content: space-between;">
+                    <span>Produtos (${editDevedorSelectedProducts.length})</span>
+                    <span>Total: R$ ${total.toFixed(2).replace('.', ',')}</span>
+                </div>
+                ${editDevedorSelectedProducts.map((p, i) => `
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: white; border: 1px solid var(--border); border-top: none; ${i === editDevedorSelectedProducts.length - 1 ? 'border-radius: 0 0 8px 8px;' : ''}">
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.nome}</div>
+                            <div style="font-size: 11px; color: var(--text-light);">R$ ${(p.preco || 0).toFixed(2).replace('.', ',')} un</div>
+                        </div>
+                        <input type="number" value="${p.quantidade}" min="1" onchange="updateEditDevedorProductQtd(${i}, this.value)" style="width: 50px; padding: 4px; border: 1px solid var(--border); border-radius: 4px; text-align: center; font-size: 12px;">
+                        <div style="font-weight: 600; font-size: 12px; color: var(--primary); min-width: 60px; text-align: right;">R$ ${(p.total || 0).toFixed(2).replace('.', ',')}</div>
+                        <button onclick="removeEditDevedorProduct(${i})" style="background: #FEE2E2; color: #DC2626; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 14px; line-height: 1;">×</button>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function updateEditDevedorValor() {
+            const total = editDevedorSelectedProducts.reduce((sum, p) => sum + (p.total || 0), 0);
+            document.getElementById('editDevedorValor').value = total.toFixed(2);
         }
 
         function deleteDevedor(id) {
